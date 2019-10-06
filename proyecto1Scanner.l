@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 %}
+
 %%
 "void"                  return VOID;
 "int"                   return INTEGER;
@@ -30,11 +31,12 @@
 "true"                  return TRUE;
 "false"                 return FALSE;
 [a-zA-Z][_a-zA-Z0-9]{0,30}   return ID;
+[0-9]+[a-wA-WyzYZ][_a-zA-Z0-9]* return INVCHAR;
 ["][^"\n]*["]           return STRINGVAL;
 ["][^"\n]*[\n]          return STRINGERROR;
 ["][^"\n]*[\n]["]       return STRINGERROR;
 [1-9][0-9]*             return INTVAL;
-[0][Xx][0-9a-fA-F]*     return INTVAL;
+[0][Xx]+[0-9a-fA-F]*     return INTVAL;
 [0-9]+[.][0-9]+          return DOUBLEVAL;
 [0-9]+[.][E][+][1-9][0-9]* return DOUBLEVAL;
 [+]                     return SUM;
@@ -62,7 +64,7 @@
 [}]                     return RGHGATE;
 [/][/][ _a -zA -Z0 -9 ]*     ;
 [/*][ _a -zA -Z0 -9\n]*[*/] ;
-[\\][^ntabfnr'"\\?x]    return INVESCP;
+.*[\\][^ntabfnr'"\\?x].*    return INVESCP;
 [\t]                 return TAB;
 [\n]                 return LINEJMP;
 [ ]                  return SPACE;
@@ -108,7 +110,7 @@ void printInt(struct Node *nodeLine,struct Node *nodeColumn,struct Node *nodeTok
     }
 
 }
-main()
+void main()
 {
  char* p;
  int columnNumber = 1;
@@ -124,12 +126,15 @@ main()
     switch (token){
         case STRINGERROR:
              printf("String no cerrado\n");
+             return;
              break;
         case INVCHAR:
              printf("Caracter ilegal\n");
+             return;
              break;
         case INVESCP:
              printf("Secuencia de escape ilegal\n");
+             return;
              break;
        case  LINEJMP:
              columnNumber =1;
