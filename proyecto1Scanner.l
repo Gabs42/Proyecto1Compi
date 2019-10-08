@@ -125,15 +125,15 @@ void main()
         printf(" %d\n",token);
     switch (token){
         case STRINGERROR:
-             printf("String no cerrado\n");
+             printf("String no cerrado en la linea %d columna %d\n",yylineno-1,columnNumber);
              return;
              break;
         case INVCHAR:
-             printf("Caracter ilegal\n");
+             printf("Caracter ilegal en la linea %d columna %d\n",yylineno,columnNumber);
              return;
              break;
         case INVESCP:
-             printf("Secuencia de escape ilegal\n");
+             printf("Secuencia de escape ilegal en la linea %d columna %d\n",yylineno,columnNumber);
              return;
              break;
        case  LINEJMP:
