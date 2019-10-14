@@ -1,6 +1,6 @@
 %option nounput yylineno
 %{
-#include "proyecto1Scanner.h"
+#include "proyecto1Parser.tab.h"
 #include <stdio.h>
 #include <stdlib.h>
 %}
@@ -30,7 +30,7 @@
 "ReadLine"              return READLINE;
 "true"                  return TRUE;
 "false"                 return FALSE;
-[a-zA-Z][_a-zA-Z0-9]{0,30}   return ID;
+[a-zA-Z][_a-zA-Z0-9]{0,30}   {yylval.str = strdup(yytext);return ID;}
 [0-9]+[a-wA-WyzYZ][_a-zA-Z0-9]* return INVCHAR;
 ["][^"\n]*["]           return STRINGVAL;
 ["][^"\n]*[\n]          return STRINGERROR;
@@ -69,6 +69,7 @@
 [\n]                 return LINEJMP;
 [ ]                  return SPACE;
 .                       return INVCHAR;
+
 %%
 
 struct Node{
@@ -110,104 +111,103 @@ void printInt(struct Node *nodeLine,struct Node *nodeColumn,struct Node *nodeTok
     }
 
 }
-void main()
-{
- char* p;
- int columnNumber = 1;
- char empty[] = " ";
- struct Node *lineStart = NULL;
- struct Node *columnStart = NULL;
- struct Node *tokenStart = NULL;
- struct Node *valueStart = NULL;
- int token;
- token = yylex();
- while(token){
-        printf(" %d\n",token);
-    switch (token){
-        case STRINGERROR:
-             printf("String no cerrado en la linea %d columna %d\n",yylineno-1,columnNumber);
-             return;
-             break;
-        case INVCHAR:
-             printf("Caracter ilegal en la linea %d columna %d\n",yylineno,columnNumber);
-             return;
-             break;
-        case INVESCP:
-             printf("Secuencia de escape ilegal en la linea %d columna %d\n",yylineno,columnNumber);
-             return;
-             break;
-       case  LINEJMP:
-             columnNumber =1;
-             token = yylex();
-             continue;
-             break;
-       case TAB:
-             token = yylex();
-             columnNumber= columnNumber+1;
-             continue;
-             break;
-       case SPACE:
-            token = yylex();
-            columnNumber= columnNumber+1;
-            continue;
-            break;
-       case INTVAL:
-            add(&valueStart,&yytext,sizeof(char *));
-            add(&lineStart,&yylineno,sizeof(yylineno));
-            add(&columnStart,&columnNumber,sizeof(columnNumber));
-            add(&tokenStart,&token,sizeof(token));
-            token = yylex();
-            columnNumber= columnNumber+1;
-            continue;
-            break;
-       case DOUBLEVAL:
-            add(&valueStart,&yytext,sizeof(char *));
-            add(&lineStart,&yylineno,sizeof(yylineno));
-            add(&columnStart,&columnNumber,sizeof(columnNumber));
-            add(&tokenStart,&token,sizeof(token));
-            token = yylex();
-            columnNumber= columnNumber+1;
-            continue;
-            break;
-       case STRINGVAL:
-            add(&valueStart,&yytext,sizeof(char *));
-            add(&lineStart,&yylineno,sizeof(yylineno));
-            add(&columnStart,&columnNumber,sizeof(columnNumber));
-            add(&tokenStart,&token,sizeof(token));
-            token = yylex();
-            columnNumber= columnNumber+1;
-            continue;
-            break;
-      case TRUE:
-            add(&valueStart,&yytext,sizeof(char *));
-            add(&lineStart,&yylineno,sizeof(yylineno));
-            add(&columnStart,&columnNumber,sizeof(columnNumber));
-            add(&tokenStart,&token,sizeof(token));
-            token = yylex();
-            columnNumber= columnNumber+1;
-            continue;
-            break;
-       case FALSE:
-            add(&valueStart,&yytext,sizeof(char *));
-            add(&lineStart,&yylineno,sizeof(yylineno));
-            add(&columnStart,&columnNumber,sizeof(columnNumber));
-            add(&tokenStart,&token,sizeof(token));
-            token = yylex();
-            columnNumber= columnNumber+1;
-            continue;
-            break;
+// void main()
+// {
+//  char* p;
+//  int columnNumber = 1;
+//  char empty[] = " ";
+//  struct Node *lineStart = NULL;
+//  struct Node *columnStart = NULL;
+//  struct Node *tokenStart = NULL;
+//  struct Node *valueStart = NULL;
+//  int token;
+//  token = yylex();
+//  while(token){
+//         printf(" %d\n",token);
+//     switch (token){
+//         case STRINGERROR:
+//              printf("String no cerrado en la linea %d columna %d\n",yylineno-1,columnNumber);
+//              return;
+//              break;
+//         case INVCHAR:
+//              printf("Caracter ilegal en la linea %d columna %d\n",yylineno,columnNumber);
+//              return;
+//              break;
+//         case INVESCP:
+//              printf("Secuencia de escape ilegal en la linea %d columna %d\n",yylineno,columnNumber);
+//              return;
+//              break;
+//        case  LINEJMP:
+//              columnNumber =1;
+//              token = yylex();
+//              continue;
+//              break;
+//        case TAB:
+//              token = yylex();
+//              columnNumber= columnNumber+1;
+//              continue;
+//              break;
+//        case SPACE:
+//             token = yylex();
+//             columnNumber= columnNumber+1;
+//             continue;
+//             break;
+//        case INTVAL:
+//             add(&valueStart,&yytext,sizeof(char *));
+//             add(&lineStart,&yylineno,sizeof(yylineno));
+//             add(&columnStart,&columnNumber,sizeof(columnNumber));
+//             add(&tokenStart,&token,sizeof(token));
+//             token = yylex();
+//             columnNumber= columnNumber+1;
+//             continue;
+//             break;
+//        case DOUBLEVAL:
+//             add(&valueStart,&yytext,sizeof(char *));
+//             add(&lineStart,&yylineno,sizeof(yylineno));
+//             add(&columnStart,&columnNumber,sizeof(columnNumber));
+//             add(&tokenStart,&token,sizeof(token));
+//             token = yylex();
+//             columnNumber= columnNumber+1;
+//             continue;
+//             break;
+//        case STRINGVAL:
+//             add(&valueStart,&yytext,sizeof(char *));
+//             add(&lineStart,&yylineno,sizeof(yylineno));
+//             add(&columnStart,&columnNumber,sizeof(columnNumber));
+//             add(&tokenStart,&token,sizeof(token));
+//             token = yylex();
+//             columnNumber= columnNumber+1;
+//             continue;
+//             break;
+//       case TRUE:
+//             add(&valueStart,&yytext,sizeof(char *));
+//             add(&lineStart,&yylineno,sizeof(yylineno));
+//             add(&columnStart,&columnNumber,sizeof(columnNumber));
+//             add(&tokenStart,&token,sizeof(token));
+//             token = yylex();
+//             columnNumber= columnNumber+1;
+//             continue;
+//             break;
+//        case FALSE:
+//             add(&valueStart,&yytext,sizeof(char *));
+//             add(&lineStart,&yylineno,sizeof(yylineno));
+//             add(&columnStart,&columnNumber,sizeof(columnNumber));
+//             add(&tokenStart,&token,sizeof(token));
+//             token = yylex();
+//             columnNumber= columnNumber+1;
+//             continue;
+//             break;
 
-    }
+//     }
 
-    add(&valueStart,&empty,sizeof(char *));
-    add(&lineStart,&yylineno,sizeof(yylineno));
-    add(&columnStart,&columnNumber,sizeof(columnNumber));
-    add(&tokenStart,&token,sizeof(token));
-    columnNumber = columnNumber + yyleng-1;
-    token = yylex();
-    columnNumber = columnNumber+1;
+//     add(&valueStart,&empty,sizeof(char *));
+//     add(&lineStart,&yylineno,sizeof(yylineno));
+//     add(&columnStart,&columnNumber,sizeof(columnNumber));
+//     add(&tokenStart,&token,sizeof(token));
+//     columnNumber = columnNumber + yyleng-1;
+//     token = yylex();
+//     columnNumber = columnNumber+1;
 
- }
- printInt(lineStart,columnStart,tokenStart,valueStart);
-}
-//investigar yyleng y yytext
+//  }
+//  printInt(lineStart,columnStart,tokenStart,valueStart);
+// }
