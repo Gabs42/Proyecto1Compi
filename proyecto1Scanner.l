@@ -11,7 +11,7 @@
 "double"                return DOUBLE;
 "bool"                  return BOOL;
 "string"                return STRING;
-"class"                 return INTEGER;
+"class"                 return CLASS;
 "interface"             return INTERFACE;
 "null"                  return NULLN;
 "this"                  return THIS;
@@ -30,6 +30,7 @@
 "ReadLine"              return READLINE;
 "true"                  return TRUE;
 "false"                 return FALSE;
+"null"                  return NULLVAL;
 [a-zA-Z][_a-zA-Z0-9]{0,30}   {yylval.str = strdup(yytext);return ID;}
 [0-9]+[a-wA-WyzYZ][_a-zA-Z0-9]* return INVCHAR;
 ["][^"\n]*["]           return STRINGVAL;
@@ -43,15 +44,16 @@
 [-]                     return SUB;
 [*]                     return MULT;
 [/]                     return DIV;
+[%]                     return MOD;
 [<]                     return LESSTHN;
 "<="                    return LESSEQL;
 [>]                     return GREATERTHN;
 ">="                    return GREATEREQL;
 "="                     return EQUAL;
 "=="                    return SAME;
-[!][=]                    return DIFF;
-[&][&]                    return AND;
-[|][|]                    return OR;
+[!][=]                  return DIFF;
+[&][&]                  return AND;
+[|][|]                  return OR;
 "!"                     return NOT;
 [;]                     return SEMICLN;
 [,]                     return COMMA;
@@ -84,7 +86,6 @@ void add(struct Node** head, void *new, size_t size){
     newNode->next = NULL;
     if(*head == NULL){
         *head = newNode;
-
     }
     else{
         struct Node* pointer = *head;
