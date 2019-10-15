@@ -80,9 +80,9 @@ void printInt(struct Node *nodeLine,struct Node *nodeColumn,struct Node *nodeTok
 [/][/][ _a -zA -Z0 -9 ]*     ;
 [/*][ _a -zA -Z0 -9\n]*[*/] ;
 .*[\\][^ntabfnr'"\\?x].*    printf("Secuencia de escape ilegal en la linea %d columna %d\n",yylineno,columnNumber);return INVESCP;
-[\t]                 columnNumber= columnNumber+1;return TAB;
-[\n]                columnNumber=1;return LINEJMP;
-[ ]                  columnNumber= columnNumber+1;
+[\t]                 columnNumber= columnNumber+1;
+[\n]                 columnNumber=1;
+[ ]                  printInt(lineStart,columnStart,tokenStart,valueStart);columnNumber= columnNumber+1;
 <<EOF>>             printInt(lineStart,columnStart,tokenStart,valueStart); return 0;
 .                       printf("Caracter ilegal en la linea %d columna %d\n",yylineno,columnNumber);return INVCHAR;
 
