@@ -98,149 +98,33 @@ struct treeNode * newnode(int lineNo, char* nodeType,
 %token FOR WHILE IF ELSE RETURN BREAK NEW NEWARRAY
 %token PRINT READINTEGER READLINE TRUE FALSE
 %token<str> ID
-<<<<<<< HEAD
 %token COMMA POINT LFTBRCKT RGHBRCKT LFTPARTH RGHPARTH SEMICLN
 %token LFTGATE RGHGATE STRINGERROR INVCHAR INVESCP
 %token LINEJMP TAB SPACE INTVAL DOUBLEVAL STRINGVAL
-=======
-%token COMMA POINT LFTBRCKT RGHBRCKT LFTPARTH RGHPARTH SEMICLN 
-%token LFTGATE RGHGATE STRINGERROR INVCHAR INVESCP 
-%token LINEJMP TAB SPACE INTVAL DOUBLEVAL STRINGVAL NULLVAL
->>>>>>> d44ac492da238286f754a401332d071b3adedcd4
 
-%left SUM SUB MULT DIV LESSTHN LESSEQL GREATERTHN MOD
+%left SUM SUB MULT DIV LESSTHN LESSEQL GREATERTHN
 %left GREATEREQL EQUAL SAME DIFF AND OR NOT
 
 %type<str> Type
-%type<ast> Program Variable VariableDecl FunctionDecl ClassDecl InterfaceDecl Decl Decls
-
+%type<ast> Variable VariableDecl Decl Program
 %%
 
-Program: Decls { printf("f"); printNode($1);}
+Program: Decl {printf("f");printNode($1);}
 ;
-
-Decls: Decl | Decls Decl
+Decl: VariableDecl {printf("d");$$=$1;}
 ;
-Decl:   VariableDecl {printf("d");$$=$1;}
-        | FunctionDecl
-        | ClassDecl
-        | InterfaceDecl 
+VariableDecl: Variable {printf("c");$$=$1;}
 ;
-<<<<<<< HEAD
 Variable: Type SPACE ID  {
 			printf("b");
 			$$=newnode(yylineno, "variable", none, none, $1, 0);
-=======
-
-VariableDecl: Variable SEMICLN {printf("c");$$=$1;}
-;
-
-Variable: Type ID  {
-			$$=newnode(yylineno, "variable", none, none, $1, 0); 
->>>>>>> d44ac492da238286f754a401332d071b3adedcd4
 			}
 ;
-Type: 	INTEGER 	{printf("integer");$$="INTEGER";}
+Type: 	INTEGER 	{printf("a");$$="INTEGER";}
 		| DOUBLE 	{printf("double");}
 		| BOOL 		{printf("boolean");}
 		| STRING 	{printf("string");}
-		| ID 		{printf("Identificador");}
-        | Type LFTBRCKT RGHBRCKT {printf("Identificador");}
-;
-
-FunctionDecl: Type ID LFTPARTH Formals RGHPARTH StmtBlock {$$=newnode(yylineno, "function", none, none, $1, 0);}
-                |VOID ID LFTPARTH Formals RGHPARTH StmtBlock
-;
-Formals:  ManyFormals| /* empty */
-;
-ManyFormals: Variable | ManyFormals COMMA Variable
-;
-Identis: ID | Identis COMMA ID
-;
-
-Fields:   /* empty */ | Fields Field 
-;
-ClassDecl:    CLASS ID  extend implementsList LFTGATE Fields RGHGATE
-            | CLASS ID LFTGATE Fields RGHGATE
-;
-extend: EXTENDS ID | /* empty */
-;
-implementsList: IMPLEMENTS Identis | /* empty */
-;
-Field: VariableDecl | FunctionDecl
-;
-InterfaceDecl: INTERFACE ID LFTGATE Prototypes RGHGATE
-;
-Prototypes: /* empty*/ | Prototypes Prototype
-;
-Prototype:  Type ID LFTPARTH Formals RGHPARTH SEMICLN | 
-            VOID ID LFTPARTH Formals RGHPARTH SEMICLN
-;
-StmtBlock: LFTGATE  ManyVariables ManyStmt RGHGATE
-;
-ManyVariables:  /* empty */| ManyVariables VariableDecl
-;
-ManyStmt: /* empty */
-    | ManyStmt Stmt
-;
-Stmt:  Exprs | IfStmt | WhileStmt | ForStmt | BreakStmt |
-       ReturnStmt | PrintStmt | StmtBlock
-;
-Exprs: Expr SEMICLN | /* empty */
-;
-IfStmt: IF LFTPARTH Expr RGHPARTH Stmt ElseStmt
-;
-ElseStmt: /* empty */ | ELSE Stmt 
-;
-WhileStmt: WHILE LFTPARTH Expr RGHPARTH Stmt
-;
-ExprOneOrZero: Expr | /* emptye */
-;
-ForStmt: FOR  LFTPARTH ExprOneOrZero SEMICLN ExprOneOrZero SEMICLN ExprOneOrZero RGHPARTH Stmt
-;
-ReturnStmt:  RETURN ExprOneOrZero 
-;
-BreakStmt: BREAK SEMICLN
-;
-ManyExpr:  Expr | ManyExpr COMMA Expr
-;
-PrintStmt: PRINT LFTPARTH ManyExpr RGHPARTH;
-;
-Expr:   LValue EQUAL Expr | 
-        Constant | 
-        LValue | 
-        THIS | Call | 
-        LFTPARTH Expr RGHPARTH| 
-        Expr SUM Expr | 
-        Expr SUB Expr | 
-        Expr MULT Expr | 
-        Expr DIV Expr | 
-        Expr  MOD Expr | 
-        SUB Expr | 
-        Expr LESSTHN Expr | 
-        Expr LESSEQL Expr |
-        Expr GREATERTHN Expr | 
-        Expr GREATEREQL Expr | 
-        Expr SAME Expr | 
-        Expr DIFF Expr |
-        Expr AND Expr | 
-        Expr OR Expr | 
-        NOT Expr | 
-        READINTEGER| 
-        READLINE | 
-        NEW LFTPARTH ID RGHPARTH | 
-        LFTPARTH Expr COMMA Type RGHPARTH
-;
-LValue: ID | Expr POINT ID | Expr LFTBRCKT Expr RGHBRCKT
-;
-Call: ID LFTPARTH Actuals RGHPARTH | Expr POINT ID LFTPARTH Actuals RGHPARTH
-;
-Actuals: ActualsLists | /* empty */
-;
-ActualsLists: Expr | ActualsLists COMMA Expr
-;
-Constant:   INTVAL | DOUBLEVAL | TRUE | FALSE 
-            STRINGVAL | NULLVAL
+		| ID 		{printf("identificador");}
 ;
 
 %%
@@ -282,8 +166,4 @@ int main() {
 }
 
 void yyerror (char *s) {
-<<<<<<< HEAD
 	fprintf (stderr, "%s\n", s);}
-=======
-	fprintf (stderr, "%s\n", s);} 
->>>>>>> d44ac492da238286f754a401332d071b3adedcd4
