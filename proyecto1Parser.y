@@ -124,8 +124,7 @@ Decl:   VariableDecl {printf("d");$$=$1;}
 VariableDecl: Variable SEMICLN {printf("c");$$=$1;}
 ;
 
-Variable: Type SPACE ID  {
-			
+Variable: Type ID  {
 			$$=newnode(yylineno, "variable", none, none, $1, 0); 
 			}
 ;
@@ -134,14 +133,19 @@ Type: 	INTEGER 	{printf("integer");$$="INTEGER";}
 		| BOOL 		{printf("boolean");} 
 		| STRING 	{printf("string");}
 		| ID 		{printf("Identificador");}
+        | Type LFTBRCKT RGHBRCKT {printf("Identificador");}
 ;
-FunctionDecl:   Type ID LFTPARTH Formals RGHPARTH StmtBlock {$$=newnode(yylineno, "function", none, none, $1, 0); }
+
+FunctionDecl: Type ID LFTPARTH Formals RGHPARTH StmtBlock {$$=newnode(yylineno, "function", none, none, $1, 0);}
                 |VOID ID LFTPARTH Formals RGHPARTH StmtBlock
 ;
-Formals: Variable | Formals COMMA Variable | /* empty */
+Formals:  ManyFormals| /* empty */
+;
+ManyFormals: Variable | ManyFormals COMMA Variable
 ;
 Identis: ID | Identis COMMA ID
 ;
+
 Fields:   /* empty */ | Fields Field 
 ;
 ClassDecl:    CLASS ID  extend implementsList LFTGATE Fields RGHGATE
@@ -160,7 +164,7 @@ Prototypes: /* empty*/ | Prototypes Prototype
 Prototype:  Type ID LFTPARTH Formals RGHPARTH SEMICLN | 
             VOID ID LFTPARTH Formals RGHPARTH SEMICLN
 ;
-StmtBlock: LFTGATE  ManyStmt RGHGATE
+StmtBlock: LFTGATE  ManyVariables ManyStmt RGHGATE
 ;
 ManyVariables:  /* empty */| ManyVariables VariableDecl
 ;
