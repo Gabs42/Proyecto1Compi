@@ -21,6 +21,7 @@ void printInt(struct Node *nodeLine,struct Node *nodeColumn,struct Node *nodeTok
 
 
 %%
+<<<<<<< HEAD
 "void"                  addList(1,columnNumber,yylineno);columnNumber= columnNumber+yyleng-1;return VOID;
 "int"                   addList(2,columnNumber,yylineno);columnNumber= columnNumber+yyleng-1; return INTEGER;
 "double"                addList(3,columnNumber,yylineno);columnNumber= columnNumber+yyleng-1;return DOUBLE;
@@ -77,6 +78,66 @@ void printInt(struct Node *nodeLine,struct Node *nodeColumn,struct Node *nodeTok
 [)]                     addList(46,columnNumber,yylineno);columnNumber= columnNumber+yyleng-1;return RGHPARTH;
 [{]                     addList(47,columnNumber,yylineno);columnNumber= columnNumber+yyleng-1;return LFTGATE;
 [}]                     addList(48,columnNumber,yylineno);columnNumber= columnNumber+yyleng-1;return RGHGATE;
+=======
+"void"                  return VOID;
+"int"                   return INTEGER;
+"double"                return DOUBLE;
+"bool"                  return BOOL;
+"string"                return STRING;
+"class"                 return CLASS;
+"interface"             return INTERFACE;
+"null"                  return NULLN;
+"this"                  return THIS;
+"extends"               return EXTENDS;
+"implements"            return IMPLEMENTS;
+"for"                   return FOR;
+"while"                 return WHILE;
+"if"                    return IF;
+"else"                  return ELSE;
+"return"                return RETURN;
+"break"                 return BREAK;
+"New"                   return NEW;
+"NewArray"              return NEWARRAY;
+"Print"                 return PRINT;
+"ReadInteger"           return READINTEGER;
+"ReadLine"              return READLINE;
+"true"                  return TRUE;
+"false"                 return FALSE;
+"null"                  return NULLVAL;
+[a-zA-Z][_a-zA-Z0-9]{0,30}   {yylval.str = strdup(yytext);return ID;}
+[0-9]+[a-wA-WyzYZ][_a-zA-Z0-9]* return INVCHAR;
+["][^"\n]*["]           return STRINGVAL;
+["][^"\n]*[\n]          return STRINGERROR;
+["][^"\n]*[\n]["]       return STRINGERROR;
+[1-9][0-9]*             return INTVAL;
+[0][Xx]+[0-9a-fA-F]*     return INTVAL;
+[0-9]+[.][0-9]+          return DOUBLEVAL;
+[0-9]+[.][E][+][1-9][0-9]* return DOUBLEVAL;
+[+]                     return SUM;
+[-]                     return SUB;
+[*]                     return MULT;
+[/]                     return DIV;
+[%]                     return MOD;
+[<]                     return LESSTHN;
+"<="                    return LESSEQL;
+[>]                     return GREATERTHN;
+">="                    return GREATEREQL;
+"="                     return EQUAL;
+"=="                    return SAME;
+[!][=]                  return DIFF;
+[&][&]                  return AND;
+[|][|]                  return OR;
+"!"                     return NOT;
+[;]                     return SEMICLN;
+[,]                     return COMMA;
+[.]                     return POINT;
+[[]                     return LFTBRCKT;
+[]]                     return RGHBRCKT;
+[(]                     return LFTPARTH;
+[)]                     return RGHPARTH;
+[{]                     return LFTGATE;
+[}]                     return RGHGATE;
+>>>>>>> d44ac492da238286f754a401332d071b3adedcd4
 [/][/][ _a -zA -Z0 -9 ]*     ;
 [/*][ _a -zA -Z0 -9\n]*[*/] ;
 .*[\\][^ntabfnr'"\\?x].*    printf("Secuencia de escape ilegal en la linea %d columna %d\n",yylineno,columnNumber);return INVESCP;
