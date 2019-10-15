@@ -43,12 +43,12 @@ struct treeNode{
     int Nchildren;
 };
 void printNode(struct treeNode* node){
-    printf("%s<Tree lineNo=\"%d\" nodeType=\"%s\" string=\"%s\" value=\"%s\" dataType=\"%s\">\n",
+    printf("%s<Tree lineNo=\"%d\" nodeType=\"%s\" string=\"%s\" value=\"%s\" dataType=\"%s\">\n", 
         indent,
         node->lineNo,
         node->nodeType,
         node->string,
-        node->value,
+        node->value, 
         node->dataType);
     int i;
     if (node->Nchildren > 0){
@@ -63,8 +63,8 @@ void printNode(struct treeNode* node){
     printf("%s</Tree>\n", indent);
 }
 
-struct treeNode * newnode(int lineNo, char* nodeType,
-							char* string, char* value,
+struct treeNode * newnode(int lineNo, char* nodeType, 
+							char* string, char* value, 
 								char* dataType, int Nchildren, ...){
 
     struct treeNode * node = (struct treeNode*) malloc(sizeof(struct treeNode));
@@ -93,13 +93,13 @@ struct treeNode * newnode(int lineNo, char* nodeType,
 }
 
 %start Program
-%token VOID INTEGER DOUBLE BOOL STRING
-%token CLASS INTERFACE NULLN THIS EXTENDS IMPLEMENTS
-%token FOR WHILE IF ELSE RETURN BREAK NEW NEWARRAY
-%token PRINT READINTEGER READLINE TRUE FALSE
+%token VOID INTEGER DOUBLE BOOL STRING 
+%token CLASS INTERFACE NULLN THIS EXTENDS IMPLEMENTS 
+%token FOR WHILE IF ELSE RETURN BREAK NEW NEWARRAY 
+%token PRINT READINTEGER READLINE TRUE FALSE 
 %token<str> ID
-%token COMMA POINT LFTBRCKT RGHBRCKT LFTPARTH RGHPARTH SEMICLN
-%token LFTGATE RGHGATE STRINGERROR INVCHAR INVESCP
+%token COMMA POINT LFTBRCKT RGHBRCKT LFTPARTH RGHPARTH SEMICLN 
+%token LFTGATE RGHGATE STRINGERROR INVCHAR INVESCP 
 %token LINEJMP TAB SPACE INTVAL DOUBLEVAL STRINGVAL
 
 %left SUM SUB MULT DIV LESSTHN LESSEQL GREATERTHN
@@ -117,17 +117,17 @@ VariableDecl: Variable {printf("c");$$=$1;}
 ;
 Variable: Type SPACE ID  {
 			printf("b");
-			$$=newnode(yylineno, "variable", none, none, $1, 0);
+			$$=newnode(yylineno, "variable", none, none, $1, 0); 
 			}
 ;
 Type: 	INTEGER 	{printf("a");$$="INTEGER";}
 		| DOUBLE 	{printf("double");}
-		| BOOL 		{printf("boolean");}
+		| BOOL 		{printf("boolean");} 
 		| STRING 	{printf("string");}
 		| ID 		{printf("identificador");}
 ;
 
-%%
+%%        
              /* C code */
 
 int computeSymbolIndex(char token)
@@ -139,7 +139,7 @@ int computeSymbolIndex(char token)
 		idx = token - 'A';
 	}
 	return idx;
-}
+} 
 
 /* returns the value of a given symbol */
 int symbolVal(char symbol)
@@ -161,9 +161,9 @@ int main() {
 	do {
 		yyparse();
 	} while(!feof(yyin));
-  
+
 	return 0;
 }
 
 void yyerror (char *s) {
-	fprintf (stderr, "%s\n", s);}
+	fprintf (stderr, "%s\n", s);} 
