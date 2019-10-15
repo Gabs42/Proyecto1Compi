@@ -106,9 +106,6 @@ struct treeNode * newnode(int lineNo, char* nodeType,
 %token COMMA POINT LFTBRCKT RGHBRCKT LFTPARTH RGHPARTH SEMICLN 
 %token LFTGATE RGHGATE STRINGERROR INVCHAR INVESCP 
 %token LINEJMP TAB SPACE INTVAL DOUBLEVAL STRINGVAL NULLVAL
-<<<<<<< HEAD
->>>>>>> d44ac492da238286f754a401332d071b3adedcd4
-=======
 >>>>>>> d44ac492da238286f754a401332d071b3adedcd4
 
 %left SUM SUB MULT DIV LESSTHN LESSEQL GREATERTHN MOD
@@ -130,13 +127,10 @@ Decl:   VariableDecl {printf("d");$$=$1;}
         | InterfaceDecl 
 ;
 <<<<<<< HEAD
-<<<<<<< HEAD
 Variable: Type SPACE ID  {
 			printf("b");
 			$$=newnode(yylineno, "variable", none, none, $1, 0);
 =======
-=======
->>>>>>> d44ac492da238286f754a401332d071b3adedcd4
 
 VariableDecl: Variable SEMICLN {printf("c");$$=$1;}
 ;
@@ -289,11 +283,7 @@ int main() {
 
 void yyerror (char *s) {
 <<<<<<< HEAD
-<<<<<<< HEAD
 	fprintf (stderr, "%s\n", s);}
-=======
-	fprintf (stderr, "%s\n", s);} 
->>>>>>> d44ac492da238286f754a401332d071b3adedcd4
 =======
 	fprintf (stderr, "%s\n", s);} 
 >>>>>>> d44ac492da238286f754a401332d071b3adedcd4
