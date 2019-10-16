@@ -5,36 +5,14 @@
 #include <string.h>
 #include <stdarg.h>
 
-#define MAXCHILD 10
+extern FILE* yyin;
+extern int yylineno;
 void yyerror (char *s);
 int yylex();
 extern int yyparse();
-extern FILE* yyin;
-extern int yylineno;
-
-int symbols[52];
-int symbolVal(char symbol);
-void updateSymbolVal(char symbol, int val);
-
-
-char* tab="  ";
-char indent[100]="";
-
-char* integer="INT";
-char* floating="float";
-char* none = "none";
-char* assign = "=";
-
-void incIndent(){
-    strcat(indent, tab);
-}
-void decIndent(){
-    int len = strlen(indent);
-    indent[len-2]='\0';
-}
 
 struct treeNode{
-    struct treeNode *child[MAXCHILD];
+    struct treeNode *child[10];
     char* nodeType;
     char* string;
     char* value;
@@ -42,48 +20,6 @@ struct treeNode{
     int lineNo;
     int Nchildren;
 };
-void printNode(struct treeNode* node){
-    printf("%s<Tree lineNo=\"%d\" nodeType=\"%s\" string=\"%s\" value=\"%s\" dataType=\"%s\">\n", 
-        indent,
-        node->lineNo,
-        node->nodeType,
-        node->string,
-        node->value, 
-        node->dataType);
-    int i;
-    if (node->Nchildren > 0){
-        printf("%s<Child>\n", indent);
-        incIndent();
-        for (i=0;i<node->Nchildren;i++){
-            printNode(node->child[i]);
-        }
-        decIndent();
-        printf("%s</Child>\n", indent);
-    }
-    printf("%s</Tree>\n", indent);
-}
-
-struct treeNode * newnode(int lineNo, char* nodeType, 
-							char* string, char* value, 
-								char* dataType, int Nchildren, ...){
-
-    struct treeNode * node = (struct treeNode*) malloc(sizeof(struct treeNode));
-    node->nodeType = nodeType;
-    node->string = string;
-    node->value = value;
-    node->dataType = dataType;
-    node->lineNo = lineNo;
-    node->Nchildren = Nchildren;
-    va_list ap;
-    int i;
-    va_start(ap, Nchildren);
-    for (i=0;i<Nchildren;i++){
-        node->child[i]=va_arg(ap, struct treeNode *);
-    }
-    va_end(ap);
-    return node;
-}
-
 
 %}
 
@@ -110,77 +46,104 @@ struct treeNode * newnode(int lineNo, char* nodeType,
 
 %%
 
-Program: Decls { printf("f"); printNode($1);}
+Program: Decls { printf("f");}
 ;
 
-Decls: Decl | Decls Decl
+Decls: Decl | Decls Decl {printf("ff");}
 ;
-Decl:   VariableDecl {printf("d");$$=$1;}
+
+Decl:    
+          VariableDecl 
         | FunctionDecl
-        | ClassDecl
-        | InterfaceDecl 
+        |  ClassDecl {printf(" class ");}
+        | InterfaceDecl {printf(" interface ");}
 ;
 
 VariableDecl: Variable SEMICLN {printf("c");$$=$1;}
 ;
 
-Variable: Type ID  {
-            printf("d");
-			$$=newnode(yylineno, "variable", none, none, $1, 0); 
-			}
+Variable: Type ID  {printf(" var");}
 ;
-Type: 	INTEGER 	{printf("integer");$$="INTEGER";}
+
+Type: 	INTEGER 	{printf("integer");}
 		| DOUBLE 	{printf("double");}
 		| BOOL 		{printf("boolean");} 
 		| STRING 	{printf("string");}
 		| ID 		{printf("Identificador");}
-        | Type LFTBRCKT RGHBRCKT {printf("Identificador");}
+        | Type LFTBRCKT RGHBRCKT {printf("Identificador Type");}
 ;
 
-FunctionDecl: Type ID LFTPARTH Formals RGHPARTH StmtBlock {$$=newnode(yylineno, "function", none, none, $1, 0);}
-                |VOID ID LFTPARTH Formals RGHPARTH StmtBlock
-;
-Formals:  ManyFormals| /* empty */
-;
-ManyFormals: Variable | ManyFormals COMMA Variable
-;
-Identis: ID | Identis COMMA ID
+FunctionDecl:   Type ID LFTPARTH Formals RGHPARTH StmtBlock {
+                    printf(" functionDecl\n");
+                    }
+                |VOID ID LFTPARTH Formals RGHPARTH StmtBlock {
+                    printf(" functionDecl void\n");
+                }
 ;
 
-Fields:   /* empty */ | Fields Field 
+Formals:    ManyFormals {printf(" Formals\n");}
+            | /* empty */ {printf(" Formals Vacio\n");}
 ;
-ClassDecl:    CLASS ID  extend implementsList LFTGATE Fields RGHGATE
-            | CLASS ID LFTGATE Fields RGHGATE
+
+ManyFormals:   Variable {printf(" manyFormals");}
+             | ManyFormals COMMA Variable {printf(" manyFormals comma");}
 ;
+
+Identis:      ID {printf(" identis");} 
+            | Identis COMMA ID {printf(" identisList");}
+;
+
+ClassDecl:     CLASS ID LFTGATE Fields RGHGATE {printf(" classDecl ");}
+            |  CLASS ID  extend implementsList LFTGATE Fields RGHGATE {printf(" classDecl ");}
+;
+
+Fields:   /* empty */ {printf(" vacio");}
+        | Field  {printf(" uno");}
+        |Fields Field {printf(" field de fields");};
+;
+
 extend: EXTENDS ID | /* empty */
 ;
+
 implementsList: IMPLEMENTS Identis | /* empty */
 ;
+
 Field: VariableDecl | FunctionDecl
 ;
+
 InterfaceDecl: INTERFACE ID LFTGATE Prototypes RGHGATE
 ;
+
 Prototypes: /* empty*/ | Prototypes Prototype
 ;
+
 Prototype:  Type ID LFTPARTH Formals RGHPARTH SEMICLN | 
             VOID ID LFTPARTH Formals RGHPARTH SEMICLN
 ;
+
 StmtBlock: LFTGATE  ManyVariables ManyStmt RGHGATE
 ;
+
 ManyVariables:  /* empty */| ManyVariables VariableDecl
 ;
+
 ManyStmt: /* empty */
     | ManyStmt Stmt
 ;
-Stmt:  Exprs | IfStmt | WhileStmt | ForStmt | BreakStmt |
+
+Stmt:  Exprs SEMICLN | IfStmt | WhileStmt | ForStmt | BreakStmt |
        ReturnStmt | PrintStmt | StmtBlock
 ;
+
 Exprs: Expr SEMICLN | /* empty */
 ;
+
 IfStmt: IF LFTPARTH Expr RGHPARTH Stmt ElseStmt
 ;
+
 ElseStmt: /* empty */ | ELSE Stmt 
 ;
+
 WhileStmt: WHILE LFTPARTH Expr RGHPARTH Stmt
 ;
 ExprOneOrZero: Expr | /* emptye */
@@ -235,40 +198,21 @@ Constant:   INTVAL | DOUBLEVAL | TRUE | FALSE
 %%        
              /* C code */
 
-int computeSymbolIndex(char token)
-{
-	int idx = -1;
-	if(islower(token)) {
-		idx = token - 'a' + 26;
-	} else if(isupper(token)) {
-		idx = token - 'A';
-	}
-	return idx;
-} 
-
-/* returns the value of a given symbol */
-int symbolVal(char symbol)
-{
-	int bucket = computeSymbolIndex(symbol);
-	return symbols[bucket];
-}
-
-/* updates the value of a given symbol */
-void updateSymbolVal(char symbol, int val)
-{
-	int bucket = computeSymbolIndex(symbol);
-	symbols[bucket] = val;
-}
 
 int main() {
+    #ifdef YYDEBUG
+        yydebug = 1;
+    #endif
+
 	yyin = stdin;
 
 	do {
 		yyparse();
 	} while(!feof(yyin));
-
+//ya
 	return 0;
 }
 
 void yyerror (char *s) {
-	fprintf (stderr, "%s\n", s);} 
+	fprintf (stderr, "%s\n", s);
+} 

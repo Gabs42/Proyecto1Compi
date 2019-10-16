@@ -26,7 +26,7 @@ void printInt(struct Node *nodeLine,struct Node *nodeColumn,struct Node *nodeTok
 "double"                addList(3,columnNumber,yylineno);columnNumber= columnNumber+yyleng-1;return DOUBLE;
 "bool"                  addList(4,columnNumber,yylineno);columnNumber= columnNumber+yyleng-1;return BOOL;
 "string"                addList(5,columnNumber,yylineno);columnNumber= columnNumber+yyleng-1;return STRING;
-"class"                 addList(6,columnNumber,yylineno);columnNumber= columnNumber+yyleng-1;return INTEGER;
+"class"                 addList(6,columnNumber,yylineno);columnNumber= columnNumber+yyleng-1;return CLASS;
 "interface"             addList(7,columnNumber,yylineno);columnNumber= columnNumber+yyleng-1;return INTERFACE;
 "null"                  addList(8,columnNumber,yylineno);columnNumber= columnNumber+yyleng-1;return NULLN;
 "this"                  addList(9,columnNumber,yylineno);columnNumber= columnNumber+yyleng-1;return THIS;
@@ -50,10 +50,10 @@ void printInt(struct Node *nodeLine,struct Node *nodeColumn,struct Node *nodeTok
 ["][^"\n]*["]           addListVal(57,columnNumber,yylineno,yytext);columnNumber= columnNumber+yyleng-1;return STRINGVAL;
 ["][^"\n]*[\n]          printf("String no cerrado en la linea %d columna %d\n",yylineno-1,columnNumber);return STRINGERROR;
 ["][^"\n]*[\n]["]       printf("String no cerrado en la linea %d columna %d\n",yylineno-1,columnNumber);return STRINGERROR;
-[1-9][0-9]*             addListVal(57,columnNumber,yylineno,yytext);columnNumber= columnNumber+yyleng-1;return STRINGVAL;return INTVAL;
-[0][Xx]+[0-9a-fA-F]*     addListVal(57,columnNumber,yylineno,yytext);columnNumber= columnNumber+yyleng-1;return STRINGVAL;return INTVAL;
-[0-9]+[.][0-9]+          addListVal(56,columnNumber,yylineno,yytext);columnNumber= columnNumber+yyleng-1;return STRINGVAL;return DOUBLEVAL;
-[0-9]+[.][E][+][1-9][0-9]* addListVal(56,columnNumber,yylineno,yytext);columnNumber= columnNumber+yyleng-1;return STRINGVAL;return DOUBLEVAL;
+[1-9][0-9]*             addListVal(57,columnNumber,yylineno,yytext);columnNumber= columnNumber+yyleng-1;return INTVAL;
+[0][Xx]+[0-9a-fA-F]*     addListVal(57,columnNumber,yylineno,yytext);columnNumber= columnNumber+yyleng-1;return INTVAL;
+[0-9]+[.][0-9]+          addListVal(56,columnNumber,yylineno,yytext);columnNumber= columnNumber+yyleng-1;return DOUBLEVAL;
+[0-9]+[.][E][+][1-9][0-9]* addListVal(56,columnNumber,yylineno,yytext);columnNumber= columnNumber+yyleng-1;return DOUBLEVAL;
 [+]                     addList(26,columnNumber,yylineno);columnNumber= columnNumber+yyleng-1;return SUM;
 [-]                     addList(27,columnNumber,yylineno);columnNumber= columnNumber+yyleng-1;return SUB;
 [*]                     addList(28,columnNumber,yylineno);columnNumber= columnNumber+yyleng-1;return MULT;
@@ -82,13 +82,12 @@ void printInt(struct Node *nodeLine,struct Node *nodeColumn,struct Node *nodeTok
 .*[\\][^ntabfnr'"\\?x].*    printf("Secuencia de escape ilegal en la linea %d columna %d\n",yylineno,columnNumber);return INVESCP;
 [\t]                 columnNumber= columnNumber+1;
 [\n]                 columnNumber=1;
-[ ]                  printInt(lineStart,columnStart,tokenStart,valueStart);columnNumber= columnNumber+1;
-<<EOF>>             printInt(lineStart,columnStart,tokenStart,valueStart); return 0;
-.                       printf("Caracter ilegal en la linea %d columna %d\n",yylineno,columnNumber);return INVCHAR;
-
+[ ]                  columnNumber= columnNumber+1;
+<<EOF>>              ;
+.                       ;
 %%
 
-
+//acordar poner el return 0 en EOF return 0
 
 void addList(int token,int column,int line){
    add(&valueStart,&empty,sizeof(char *));
