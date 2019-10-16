@@ -83,8 +83,8 @@ void printInt(struct Node *nodeLine,struct Node *nodeColumn,struct Node *nodeTok
 [\t]                 columnNumber= columnNumber+1;
 [\n]                 columnNumber=1;
 [ ]                  columnNumber= columnNumber+1;
-<<EOF>>              return 0;
-.                       ;
+<<EOF>>              printInt(lineStart, columnStart, tokenStart, valueStart); return 0;
+.                    ;
 %%
 
 //acordar poner el return 0 en EOF return 0
