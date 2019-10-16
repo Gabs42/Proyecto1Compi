@@ -1,0 +1,5 @@
+interface Fruta {
+    void crecer(){};
+    int mover();
+    string plantarse();
+}
