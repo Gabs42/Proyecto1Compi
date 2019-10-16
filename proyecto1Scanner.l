@@ -45,7 +45,7 @@ void printInt(struct Node *nodeLine,struct Node *nodeColumn,struct Node *nodeTok
 "ReadLine"              addList(22,columnNumber,yylineno);columnNumber= columnNumber+yyleng-1;return READLINE;
 "true"                  addListVal(23,columnNumber,yylineno,yytext);columnNumber= columnNumber+yyleng-1;return TRUE;
 "false"                addListVal(24,columnNumber,yylineno,yytext);columnNumber= columnNumber+yyleng-1;return FALSE;
-[a-zA-Z][_a-zA-Z0-9]{0,30}   {addList(25,columnNumber,yylineno);columnNumber= columnNumber+yyleng-1;yylval.str = strdup(yytext);return ID;}
+[a-zA-Z][_a-zA-Z0-9]{0,30}   {addList(25,columnNumber,yylineno);yylval.intval =columnNumber;columnNumber= columnNumber+yyleng-1;yylval.str = strdup(yytext);return ID;}
 [0-9]+[a-wA-WyzYZ][_a-zA-Z0-9]* printf("Caracter ilegal en la linea %d columna %d\n",yylineno,columnNumber);return INVCHAR;
 ["][^"\n]*["]           addListVal(57,columnNumber,yylineno,yytext);columnNumber= columnNumber+yyleng-1;yylval.str = strdup(yytext);return STRINGVAL;
 ["][^"\n]*[\n]          printf("String no cerrado en la linea %d columna %d\n",yylineno-1,columnNumber);return STRINGERROR;
