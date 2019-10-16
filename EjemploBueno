@@ -1,0 +1,17 @@
+int nadar() {
+    int a;
+  //  a=1232
+    b = 12E+13
+    a=1+1;
+    a=120;
+    a=1-1;
+    print("asd");
+    a= 120+120;
+    a= 312;
+    b = 3 * 4;
+    if(a < 3 ) {
+        return 0;
+    }else {
+        int ab;
+     }
+}
