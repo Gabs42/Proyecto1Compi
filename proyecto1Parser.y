@@ -52,25 +52,25 @@ Program: Decls { printf("f");}
 Decls: Decl | Decls Decl {printf("ff");}
 ;
 
-Decl:    
-          VariableDecl 
+Decl:     VariableDecl 
         | FunctionDecl
         |  ClassDecl {printf(" class ");}
         | InterfaceDecl {printf(" interface ");}
 ;
 
-VariableDecl: Variable SEMICLN {printf("c");$$=$1;}
+VariableDecl: Variable SEMICLN {printf(" varDecl ");$$=$1;}
+                
 ;
 
-Variable: Type ID  {printf(" var");}
+Variable: Type ID  {printf(" var ");}
 ;
 
 Type: 	INTEGER 	{printf("integer");}
 		| DOUBLE 	{printf("double");}
 		| BOOL 		{printf("boolean");} 
 		| STRING 	{printf("string");}
-		| ID 		{printf("Identificador");}
-        | Type LFTBRCKT RGHBRCKT {printf("Identificador Type");}
+		| ID 		{printf(" Identificador");}
+        | Type LFTBRCKT RGHBRCKT {printf(" Identificador Type");}
 ;
 
 FunctionDecl:   Type ID LFTPARTH Formals RGHPARTH StmtBlock {
@@ -98,7 +98,6 @@ ClassDecl:     CLASS ID LFTGATE Fields RGHGATE {printf(" classDecl ");}
 ;
 
 Fields:   /* empty */ {printf(" vacio");}
-        | Field  {printf(" uno");}
         |Fields Field {printf(" field de fields");};
 ;
 
@@ -111,7 +110,7 @@ implementsList: IMPLEMENTS Identis | /* empty */
 Field: VariableDecl | FunctionDecl
 ;
 
-InterfaceDecl: INTERFACE ID LFTGATE Prototypes RGHGATE
+InterfaceDecl: INTERFACE ID LFTGATE Prototypes RGHGATE {printf("interface");}
 ;
 
 Prototypes: /* empty*/ | Prototypes Prototype
@@ -121,7 +120,7 @@ Prototype:  Type ID LFTPARTH Formals RGHPARTH SEMICLN |
             VOID ID LFTPARTH Formals RGHPARTH SEMICLN
 ;
 
-StmtBlock: LFTGATE  ManyVariables ManyStmt RGHGATE
+StmtBlock: LFTGATE  ManyVariables ManyStmt RGHGATE {printf(" stmBlock ");}
 ;
 
 ManyVariables:  /* empty */| ManyVariables VariableDecl
@@ -135,53 +134,55 @@ Stmt:  Exprs SEMICLN | IfStmt | WhileStmt | ForStmt | BreakStmt |
        ReturnStmt | PrintStmt | StmtBlock
 ;
 
-Exprs: Expr SEMICLN | /* empty */
+Exprs: /* empty */ | Expr
 ;
 
 IfStmt: IF LFTPARTH Expr RGHPARTH Stmt ElseStmt
 ;
 
-ElseStmt: /* empty */ | ELSE Stmt 
+ElseStmt:   /* empty */ 
+            | ELSE Stmt {printf(" else Carepu");}
 ;
 
 WhileStmt: WHILE LFTPARTH Expr RGHPARTH Stmt
 ;
-ExprOneOrZero: Expr | /* emptye */
+ExprOneOrZero: /* emptye */ | Expr
 ;
-ForStmt: FOR  LFTPARTH ExprOneOrZero SEMICLN ExprOneOrZero SEMICLN ExprOneOrZero RGHPARTH Stmt
+ForStmt: FOR  LFTPARTH ExprOneOrZero SEMICLN ExprOneOrZero SEMICLN ExprOneOrZero RGHPARTH Stmt {printf(" for ");}
 ;
-ReturnStmt:  RETURN ExprOneOrZero 
+ReturnStmt:  RETURN ExprOneOrZero SEMICLN
 ;
 BreakStmt: BREAK SEMICLN
 ;
 ManyExpr:  Expr | ManyExpr COMMA Expr
 ;
-PrintStmt: PRINT LFTPARTH ManyExpr RGHPARTH;
+PrintStmt: PRINT LFTPARTH ManyExpr RGHPARTH SEMICLN
 ;
-Expr:   LValue EQUAL Expr | 
-        Constant | 
-        LValue | 
-        THIS | Call | 
-        LFTPARTH Expr RGHPARTH| 
-        Expr SUM Expr | 
-        Expr SUB Expr | 
-        Expr MULT Expr | 
-        Expr DIV Expr | 
-        Expr  MOD Expr | 
-        SUB Expr | 
-        Expr LESSTHN Expr | 
-        Expr LESSEQL Expr |
-        Expr GREATERTHN Expr | 
-        Expr GREATEREQL Expr | 
-        Expr SAME Expr | 
-        Expr DIFF Expr |
-        Expr AND Expr | 
-        Expr OR Expr | 
-        NOT Expr | 
-        READINTEGER| 
-        READLINE | 
-        NEW LFTPARTH ID RGHPARTH | 
-        LFTPARTH Expr COMMA Type RGHPARTH
+Expr:     LValue EQUAL Expr {printf(" asignacion");} 
+        | LValue 
+        | Constant
+        | THIS  
+        | Call 
+        | LFTPARTH Expr RGHPARTH
+        | Expr SUM Expr {printf(" suma");}
+        | Expr SUB Expr 
+        | Expr MULT Expr 
+        | Expr DIV Expr 
+        | Expr  MOD Expr 
+        | SUB Expr 
+        | Expr LESSTHN Expr 
+        | Expr LESSEQL Expr 
+        | Expr GREATERTHN Expr 
+        | Expr GREATEREQL Expr 
+        | Expr SAME Expr 
+        | Expr DIFF Expr 
+        | Expr AND Expr 
+        | Expr OR Expr 
+        | NOT Expr 
+        | READINTEGER
+        | READLINE 
+        | NEW LFTPARTH ID RGHPARTH 
+        | NEWARRAY LFTPARTH Expr COMMA Type RGHPARTH
 ;
 LValue: ID | Expr POINT ID | Expr LFTBRCKT Expr RGHBRCKT
 ;
@@ -200,9 +201,9 @@ Constant:   INTVAL | DOUBLEVAL | TRUE | FALSE
 
 
 int main() {
-    #ifdef YYDEBUG
-        yydebug = 1;
-    #endif
+    // #ifdef YYDEBUG
+    //     yydebug = 1;
+    // #endif
 
 	yyin = stdin;
 
