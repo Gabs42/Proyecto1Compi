@@ -43,17 +43,17 @@ void printInt(struct Node *nodeLine,struct Node *nodeColumn,struct Node *nodeTok
 "Print"                 addList(20,columnNumber,yylineno);columnNumber= columnNumber+yyleng-1;return PRINT;
 "ReadInteger"           addList(21,columnNumber,yylineno);columnNumber= columnNumber+yyleng-1;return READINTEGER;
 "ReadLine"              addList(22,columnNumber,yylineno);columnNumber= columnNumber+yyleng-1;return READLINE;
-"true"                  addListVal(23,columnNumber,yylineno,yytext);columnNumber= columnNumber+yyleng-1;return STRINGVAL;return TRUE;
-"false"                addListVal(24,columnNumber,yylineno,yytext);columnNumber= columnNumber+yyleng-1;return STRINGVAL;return FALSE;
+"true"                  addListVal(23,columnNumber,yylineno,yytext);columnNumber= columnNumber+yyleng-1;return TRUE;
+"false"                addListVal(24,columnNumber,yylineno,yytext);columnNumber= columnNumber+yyleng-1;return FALSE;
 [a-zA-Z][_a-zA-Z0-9]{0,30}   {addList(25,columnNumber,yylineno);columnNumber= columnNumber+yyleng-1;yylval.str = strdup(yytext);return ID;}
 [0-9]+[a-wA-WyzYZ][_a-zA-Z0-9]* printf("Caracter ilegal en la linea %d columna %d\n",yylineno,columnNumber);return INVCHAR;
-["][^"\n]*["]           addListVal(57,columnNumber,yylineno,yytext);columnNumber= columnNumber+yyleng-1;return STRINGVAL;
+["][^"\n]*["]           addListVal(57,columnNumber,yylineno,yytext);columnNumber= columnNumber+yyleng-1;yylval.str = strdup(yytext);return STRINGVAL;
 ["][^"\n]*[\n]          printf("String no cerrado en la linea %d columna %d\n",yylineno-1,columnNumber);return STRINGERROR;
 ["][^"\n]*[\n]["]       printf("String no cerrado en la linea %d columna %d\n",yylineno-1,columnNumber);return STRINGERROR;
-[1-9][0-9]*             addListVal(57,columnNumber,yylineno,yytext);columnNumber= columnNumber+yyleng-1;return INTVAL;
-[0][Xx]+[0-9a-fA-F]*     addListVal(57,columnNumber,yylineno,yytext);columnNumber= columnNumber+yyleng-1;return INTVAL;
-[0-9]+[.][0-9]+          addListVal(56,columnNumber,yylineno,yytext);columnNumber= columnNumber+yyleng-1;return DOUBLEVAL;
-[0-9]+[.][E][+][1-9][0-9]* addListVal(56,columnNumber,yylineno,yytext);columnNumber= columnNumber+yyleng-1;return DOUBLEVAL;
+[1-9][0-9]*             addListVal(57,columnNumber,yylineno,yytext);columnNumber= columnNumber+yyleng-1;yylval.str = strdup(yytext);return INTVAL;
+[0][Xx]+[0-9a-fA-F]*     addListVal(57,columnNumber,yylineno,yytext);columnNumber= columnNumber+yyleng-1;yylval.str = strdup(yytext);return INTVAL;
+[0-9]+[.][0-9]+          addListVal(56,columnNumber,yylineno,yytext);columnNumber= columnNumber+yyleng-1;yylval.str = strdup(yytext);return DOUBLEVAL;
+[0-9]+[.][E][+][1-9][0-9]* addListVal(56,columnNumber,yylineno,yytext);columnNumber= columnNumber+yyleng-1;yylval.str = strdup(yytext);return DOUBLEVAL;
 [+]                     addList(26,columnNumber,yylineno);columnNumber= columnNumber+yyleng-1;return SUM;
 [-]                     addList(27,columnNumber,yylineno);columnNumber= columnNumber+yyleng-1;return SUB;
 [*]                     addList(28,columnNumber,yylineno);columnNumber= columnNumber+yyleng-1;return MULT;
