@@ -39,47 +39,47 @@ extern int yyparse();
 
 %%
 
-Program:    Decls { printf("f");}
+Program:    Decls { $$ = createTreeNode(yylineno, 0, "NULL", "Program", 1, $1); printTree($$); freeTree($$);}
 ;
 
-Decls:      Decl | Decls Decl {printf("ff");}
+Decls:      Decl {$$ = createTreeNode(yylineno, 0, "NULL", "Decls", 1, $1);}
+        |   Decls Decl {$$ = createTreeNode(yylineno, 0, "NULL", "Decls", 2, $1, $2);}
 ;
 
-Decl:       VariableDecl 
-        |   FunctionDecl
-        |   ClassDecl {printf(" class ");}
-        |   InterfaceDecl {printf(" interface ");}
+Decl:       VariableDecl {$$ = createTreeNode(yylineno, 0, "NULL", "Decl", 1, $1);}
+        |   FunctionDecl {$$ = createTreeNode(yylineno, 0, "NULL", "Decl", 1, $1);}
+        |   ClassDecl {$$ = createTreeNode(yylineno, 0, "NULL", "Decl", 1, $1);}
+        |   InterfaceDecl {$$ = createTreeNode(yylineno, 0, "NULL", "Decl", 1, $1);}
 ;
 
-VariableDecl: Variable SEMICLN {printf(" varDecl ");$$=$1;}
-                
+VariableDecl: Variable SEMICLN {struct TreeNode * node = createTreeNode(yylineno, 0, ";", "SEMICLN", 0); $$ = createTreeNode(yylineno, 0, "NULL", "VariableDecl", 2, $1, node);}               
 ;
 
-Variable: Type ID  {printf(" var ");}
+Variable: Type ID  {struct TreeNode * node = createTreeNode(yylineno, 0, yylval.str, "ID", 0); $$ = createTreeNode(yylineno, 0, "NULL", "Variable", 2, $1, node);}
 ;
 
-Type: 	    INTEGER 	{printf("integer");}
-		|   DOUBLE 	{printf("double");}
-		|   BOOL 		{printf("boolean");} 
-		|   STRING 	{printf("string");}
-		|   ID 		{printf(" Identificador");}
-        |   Type LFTBRCKT RGHBRCKT {printf(" Identificador Type");}
+Type: 	    INTEGER {$$ = createTreeNode(yylineno, 0, "int", "Type", 0);}
+		|   DOUBLE 	{$$ = createTreeNode(yylineno, 0, "double", "Type", 0);}
+		|   BOOL 	{$$ = createTreeNode(yylineno, 0, "bool", "Type", 0);} 
+		|   STRING 	{$$ = createTreeNode(yylineno, 0, "string", "Type", 0);}
+		|   ID 		{$$ = createTreeNode(yylineno, 0, yylval.str, "Type", 0);}
+        |   Type LFTBRCKT RGHBRCKT {struct TreeNode * lft = createTreeNode(yylineno, 0, "{", "LFTBRCKT", 0); struct TreeNode * rgh = createTreeNode(yylineno, 0, "}", "RGHBRCKT", 0); $$ = createTreeNode(yylineno, 0, "NULL", "Type", 3, $1, lft, rgh);}
 ;
 
-FunctionDecl:       Type ID LFTPARTH Formals RGHPARTH StmtBlock {printf(" functionDecl\n");}
-                |   VOID ID LFTPARTH Formals RGHPARTH StmtBlock {printf(" functionDecl void\n");}
+FunctionDecl:       Type ID LFTPARTH Formals RGHPARTH StmtBlock {struct TreeNode * node = createTreeNode(yylineno, 0, yylval.str, "ID", 0); struct TreeNode * lft = createTreeNode(yylineno, 0, "(", "LFTPARTH", 0); struct TreeNode * rgh = createTreeNode(yylineno, 0, ")", "RGHPARTH", 0); $$ = createTreeNode(yylineno, 0, "NULL", "Type", 6, $1, node, lft, $4, rgh, $6);}
+                |   VOID ID LFTPARTH Formals RGHPARTH StmtBlock {struct TreeNode * void = createTreeNode(yylineno, 0, "void", "VOID", 0); struct TreeNode * node = createTreeNode(yylineno, 0, yylval.str, "ID", 0); struct TreeNode * lft = createTreeNode(yylineno, 0, "(", "LFTPARTH", 0); struct TreeNode * rgh = createTreeNode(yylineno, 0, ")", "RGHPARTH", 0); $$ = createTreeNode(yylineno, 0, "NULL", "FunctionDecl", 6, void, node, lft, $4, rgh, $6);}
 ;
 
-Formals:        ManyFormals {printf(" Formals\n");}
-            |   /* empty */ {printf(" Formals Vacio\n");}
+Formals:        ManyFormals {$$ = createTreeNode(yylineno, 0, "NULL", "Formals", 1, $1);}
+            |   /* empty */ {$$ = createTreeNode(yylineno, 0, "NULL", "Formals", 0);}
 ;
 
-ManyFormals:   Variable {printf(" manyFormals");}
-             | ManyFormals COMMA Variable {printf(" manyFormals comma");}
+ManyFormals:   Variable {$$ = createTreeNode(yylineno, 0, "NULL", "ManyFormals", 1, $1);}
+             | ManyFormals COMMA Variable {struct TreeNode * node = createTreeNode(yylineno, 0, ",", "COMMA", 0); $$ = createTreeNode(yylineno, 0, "NULL", "ManyFormals", 3, $1, node, $3);}
 ;
 
-Identis:      ID {printf(" identis");} 
-            | Identis COMMA ID {printf(" identisList");}
+Identis:      ID {struct TreeNode * node = createTreeNode(yylineno, 0, yylval.str, "ID", 0); $$ = createTreeNode(yylineno, 0, "NULL", "Identis", 1, node);} 
+            | Identis COMMA ID {struct TreeNode * comma = createTreeNode(yylineno, 0, ",", "COMMA", 0); struct TreeNode * id = createTreeNode(yylineno, 0, yylval.str, "ID", 0); $$ = createTreeNode(yylineno, 0, "NULL", "Identis", 3, $1, comma, id);}
 ;
 
 ClassDecl:     CLASS ID LFTGATE Fields RGHGATE {printf(" classDecl ");}
