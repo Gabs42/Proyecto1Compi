@@ -1,0 +1,6 @@
+class Hello {
+ void main() {
+    int a;
+    int y;
+ }
+}
