@@ -1,4 +1,5 @@
 %{
+
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,428 +9,227 @@
 
 extern FILE* yyin;
 extern int yylineno;
+extern int yyparse();
 void yyerror (char *s);
 int yylex();
-extern int yyparse();
 
 %}
+
 %locations
 
 %union {
-	char* str;
+  char* str;
 	struct TreeNode * treeNode;
-    int intval;
+  int intval;
 }
 
 %start Program
-%token VOID INTEGER DOUBLE BOOL STRING 
-%token CLASS INTERFACE NULLN THIS EXTENDS IMPLEMENTS 
-%token FOR WHILE IF ELSE RETURN BREAK NEW NEWARRAY 
-%token PRINT READINTEGER READLINE TRUE FALSE 
-%token<str> ID
-%token COMMA POINT LFTBRCKT RGHBRCKT LFTPARTH RGHPARTH SEMICLN 
-%token LFTGATE RGHGATE STRINGERROR INVCHAR INVESCP 
-%token LINEJMP TAB SPACE INTVAL DOUBLEVAL STRINGVAL NULLVAL
 
-%left SUM SUB MULT DIV LESSTHN LESSEQL GREATERTHN MOD
-%left GREATEREQL EQUAL SAME DIFF AND OR NOT
+%token VOID INTEGER DOUBLE BOOL STRING
+%token CLASS INTERFACE NULLN THIS EXTENDS IMPLEMENTS
+%token FOR WHILE IF ELSE RETURN BREAK NEW NEWARRAY
+%token PRINT READINTEGER READLINE TRUE FALSE
+%token COMMA POINT LFTBRCKT RGHBRCKT LFTPARTH RGHPARTH SEMICLN
+%token LFTGATE RGHGATE STRINGERROR INVCHAR INVESCP
+%token LINEJMP TAB SPACE INTVAL DOUBLEVAL STRINGVAL NULLVAL
+%token<str> ID
+
+%left SUM SUB MULT DIV LESSTHN LESSEQL GREATERTHN MOD GREATEREQL
+%left EQUAL SAME DIFF AND OR NOT
 
 %type<str> SUM SUB MULT DIV LESSTHN LESSEQL GREATERTHN MOD
-%type<treeNode> Field Prototype Prototypes 
-%type<treeNode> LValue Call Actuals Expr ActualsLists Constant Program 
-%type<treeNode> Variable VariableDecl FunctionDecl ClassDecl InterfaceDecl 
-%type<treeNode> Decl Decls Type PrintStmt ManyExpr BreakStmt ReturnStmt ForStmt 
-%type<treeNode> WhileStmt ElseStmt IfStmt Exprs Stmt ManyStmt ManyVariables StmtBlock
-%type<treeNode> Fields ManyFormals ExprOneOrZero Formals implementsList Identis extend
+
+%type<treeNode> Program Declarations Declaration VariableDecl Variable Type
+%type<treeNode> FunctionDecl Formals Variables ClassDecl Extend Implement
+%type<treeNode> ListIdents Fields Field InterfaceDecl Prototypes Prototype
+%type<treeNode> StmtBlock VariableDecls Stmts Stmt PossibleExpr IfStmt
+%type<treeNode> PossibleElse WhileStmt ForStmt ReturnStmt BreakStmt PrintStmt
+%type<treeNode> ListExpr Expr LValue Call Actuals Constant
+
 %%
 
-Program: Decls { $$ = createTreeNode(yylineno, 0, "NULL", "Program", 1, $1); printTree($$); freeTree($$);}
+Program:        Declarations { $$ = createTreeNode(yylineno, "Program", 1, $1); printTree($$); freeTree($$); }
 ;
 
-Decls:    Decl {$$ = createTreeNode(yylineno, 0, "NULL", "Decls", 1, $1);}
-        | Decls Decl {$$ = createTreeNode(yylineno, 0, "NULL", "Decls", 2, $1, $2);}
+Declarations:   Declaration               { $$ = createTreeNode(yylineno, "Declarations", 1, $1); }
+              | Declarations Declaration  { $$ = createTreeNode(yylineno, "Declarations", 2, $1, $2); }
 ;
 
-Decl:     VariableDecl {$$ = createTreeNode(yylineno, 0, "NULL", "Decl", 1, $1);}
-        | FunctionDecl {$$ = createTreeNode(yylineno, 0, "NULL", "Decl", 1, $1);}
-        |  ClassDecl {$$ = createTreeNode(yylineno, 0, "NULL", "Decl", 1, $1);}
-        | InterfaceDecl {$$ = createTreeNode(yylineno, 0, "NULL", "Decl", 1, $1);}
+Declaration:    VariableDecl  { $$ = createTreeNode(yylineno, "Declaration", 1, $1); }
+              | FunctionDecl  { $$ = createTreeNode(yylineno, "Declaration", 1, $1); }
+              | ClassDecl     { $$ = createTreeNode(yylineno, "Declaration", 1, $1); }
+              | InterfaceDecl { $$ = createTreeNode(yylineno, "Declaration", 1, $1); }
 ;
 
-VariableDecl: Variable SEMICLN {
-                struct TreeNode * node = createTreeNode(yylineno, 0, ";", "SEMICLN", 0);
-                $$ = createTreeNode(yylineno, 0, "NULL", "VariableDecl", 2, $1, node);
-                } 
-                
+VariableDecl:   Variable SEMICLN { $$ = createTreeNode(yylineno, "VariableDecl", 2, $1, tN(";")); }
 ;
 
-Variable: Type ID  {struct TreeNode * node = createTreeNode(yylineno, 0, yylval.str, "ID", 0); $$ = createTreeNode(yylineno, 0, "NULL", "Variable", 2, $1, node);}
+Variable:       Type ID { $$ = createTreeNode(yylineno, "Variable", 2, $1, tT(yylval.str, "ID")); }
 ;
 
-Type: 	INTEGER 	{$$ = createTreeNode(yylineno, 0, "int", "Type", 0);}
-		| DOUBLE 	{$$ = createTreeNode(yylineno, 0, "double", "Type", 0);}
-		| BOOL 		{$$ = createTreeNode(yylineno, 0, "bool", "Type", 0);} 
-		| STRING 	{$$ = createTreeNode(yylineno, 0, "string", "Type", 0);}
-		| ID 		{$$ = createTreeNode(yylineno, 0, yylval.str, "Type", 0);}
-        | Type LFTBRCKT RGHBRCKT {
-            struct TreeNode * lft = createTreeNode(yylineno, 0, "{", "LFTBRCKT", 0); 
-            struct TreeNode * rgh = createTreeNode(yylineno, 0, "}", "RGHBRCKT", 0); 
-            $$ = createTreeNode(yylineno, 0, "NULL", "Type", 3, $1, lft, rgh);
-            }
+Type:           INTEGER                 { $$ = createTreeNode(yylineno, "Type", 1, tN("integer")); }
+		          | DOUBLE                  { $$ = createTreeNode(yylineno, "Type", 1, tN("double")); }
+              | BOOL                    { $$ = createTreeNode(yylineno, "Type", 1, tN("boolean")); }
+              | STRING                  { $$ = createTreeNode(yylineno, "Type", 1, tN("string")); }
+              | ID                      { $$ = createTreeNode(yylineno, "Type", 1, tN(yylval.str)); }
+              | Type LFTBRCKT RGHBRCKT  { $$ = createTreeNode(yylineno, "Type", 3, $1, tN("["), tN("]")); }
 ;
 
-FunctionDecl:   Type ID LFTPARTH Formals RGHPARTH StmtBlock {
-                    struct TreeNode * node = createTreeNode(yylineno, 0, yylval.str, "ID", 0); 
-                    struct TreeNode * lft = createTreeNode(yylineno, 0, "(", "LFTPARTH", 0); 
-                    struct TreeNode * rgh = createTreeNode(yylineno, 0, ")", "RGHPARTH", 0); 
-                    $$ = createTreeNode(yylineno, 0, "NULL", "FunctionDecl", 6, $1, node, lft, $4, rgh, $6);
-                    }
-                | VOID ID LFTPARTH Formals RGHPARTH StmtBlock {
-                
-                struct TreeNode * Nvoid = createTreeNode(yylineno, 0, "void", "VOID", 0); 
-                struct TreeNode * node = createTreeNode(yylineno, 0, yylval.str, "ID", 0); 
-                struct TreeNode * lft = createTreeNode(yylineno, 0, "(", "LFTPARTH", 0); 
-                struct TreeNode * rgh = createTreeNode(yylineno, 0, ")", "RGHPARTH", 0); 
-                $$ = createTreeNode(yylineno, 0, "NULL", "FunctionDecl", 6, Nvoid, node, lft, $4, rgh, $6);}
+FunctionDecl:   Type ID LFTPARTH Formals RGHPARTH StmtBlock { $$ = createTreeNode(yylineno, "FunctionDecl", 6, $1, tT(yylval.str, "ID"), tN("("), $4, tN(")"), $6); }
+              | VOID ID LFTPARTH Formals RGHPARTH StmtBlock { $$ = createTreeNode(yylineno, "FunctionDecl", 6, tN("void"), tT(yylval.str, "ID"), tN("("), $4, tN(")"), $6); }
 ;
 
-Formals:        ManyFormals {$$ = createTreeNode(yylineno, 0, "NULL", "Formals", 1, $1);}
-            |   /* empty */ {$$ = createTreeNode(yylineno, 0, "NULL", "Formals", 0);}
-;
-ManyFormals:   Variable {$$ = createTreeNode(yylineno, 0, "NULL", "ManyFormals", 1, $1);}
-             | ManyFormals COMMA Variable {struct TreeNode * node = createTreeNode(yylineno, 0, ",", "COMMA", 0); $$ = createTreeNode(yylineno, 0, "NULL", "ManyFormals", 3, $1, node, $3);}
+Formals:        Variables   { $$ = createTreeNode(yylineno, "Formals", 1, $1); }
+              | /* empty */ { $$ = eN(); }
 ;
 
-Identis:      ID {struct TreeNode * node = createTreeNode(yylineno, 0, yylval.str, "ID", 0); $$ = createTreeNode(yylineno, 0, "NULL", "Identis", 1, node);} 
-            | Identis COMMA ID {
-                {
-                struct TreeNode * nodeID = createTreeNode(yylineno, 0, yylval.str, "ID", 0);
-                struct TreeNode * nodeCOMMA = createTreeNode(yylineno, 0, ",", "COMMA", 0); 
-                $$ = createTreeNode(yylineno, 0, "NULL", "Identis", 3,$1,nodeCOMMA,nodeID);} 
-            }
+Variables:      Variable                  { $$ = createTreeNode(yylineno, "Variables", 1, $1); }
+              | Variables COMMA Variable  { $$ = createTreeNode(yylineno, "Variables", 3, $1, tN(","), $3); }
 ;
 
-ClassDecl:  CLASS ID LFTGATE Fields RGHGATE  {
-                struct TreeNode * class = createTreeNode(yylineno, 0, "Class", "CLASS", 0); 
-                struct TreeNode * nodeID = createTreeNode(yylineno, 0, yylval.str, "ID", 0);
-                struct TreeNode * commaL = createTreeNode(yylineno, 0, "{", "LFTGATE", 0); 
-                struct TreeNode * commaR = createTreeNode(yylineno, 0, "}", "RGHGATE", 0); 
-                struct TreeNode * id = createTreeNode(yylineno, 0, yylval.str, "ID", 0); 
-                $$ = createTreeNode(yylineno, 0, "NULL", "Identis", 5,class,nodeID,commaL,$4,commaR);} 
-            | CLASS ID  extend implementsList LFTGATE Fields RGHGATE  {
-                struct TreeNode * class = createTreeNode(yylineno, 0, "Class", "CLASS", 0); 
-                struct TreeNode * nodeID = createTreeNode(yylineno, 0, yylval.str, "ID", 0);
-                struct TreeNode * commaL = createTreeNode(yylineno, 0, "{", "LFTGATE", 0); 
-                struct TreeNode * commaR = createTreeNode(yylineno, 0, "}", "RGHGATE", 0); 
-                struct TreeNode * id = createTreeNode(yylineno, 0, yylval.str, "ID", 0); 
-                $$ = createTreeNode(yylineno, 0, "NULL", "ClassDecl", 7, class,nodeID, $3, $4,commaL,$6,commaR);}
-;
-Fields:   /* empty */ {$$ = createTreeNode(yylineno, 0, "NULL", "Fields", 0);}
-        |   Fields Field {$$ = createTreeNode(yylineno, 0, "NULL", "Fields", 2, $1, $2);};
+ClassDecl:      CLASS ID Extend Implement LFTGATE Fields RGHGATE { $$ = createTreeNode(yylineno, "ClassDecl", 7, tN("class"), tT(yylval.str, "ID"), $3, $4, tN("{"), $6, tN("}")); }
 ;
 
-extend:   EXTENDS ID {struct TreeNode * node = createTreeNode(yylineno, 0, yylval.str, "ID", 0); struct TreeNode * extend = createTreeNode(yylineno, 0, "extends", "extend", 0); $$ = createTreeNode(yylineno, 0, "NULL", "extend", 2, extend, node);}
-        |   /* empty */ {$$ = createTreeNode(yylineno, 0, "NULL", "extend", 0);}
+Extend:         EXTENDS ID  { $$ = createTreeNode(yylineno, "Extend", 2, tN("extends"), tT(yylval.str, "ID")); }
+              | /* empty */ { $$ = eN(); }
 ;
 
-implementsList:    IMPLEMENTS Identis {struct TreeNode * implement = createTreeNode(yylineno, 0, "implement", "IMPLEMENTS", 0); $$ = createTreeNode(yylineno, 0, "NULL", "implementList", 2, implement, $2);}
-                |   /* empty */ {$$ = createTreeNode(yylineno, 0, "NULL", "implementsList", 0);}
+Implement:      IMPLEMENTS ListIdents { $$ = createTreeNode(yylineno, "Implement", 2, tN("implements"), $2); }
+              | /* empty */           { $$ = eN(); }
 ;
 
-Field:    VariableDecl {$$ = createTreeNode(yylineno, 0, "NULL", "Field", 1, $1);}
-        |   FunctionDecl {$$ = createTreeNode(yylineno, 0, "NULL", "Field", 1, $1);}
+ListIdents:     ID                  { $$ = createTreeNode(yylineno, "ListIdents", 1, tT(yylval.str, "ID")); }
+              | ListIdents COMMA ID { $$ = createTreeNode(yylineno, "ListIdents", 3, $1, tN(","), tT(yylval.str, "ID")); }
 ;
 
-InterfaceDecl: INTERFACE ID LFTGATE Prototypes RGHGATE {
-    struct TreeNode * interface = createTreeNode(yylineno, 0, "interface", "INTERFACE", 0);
-    struct TreeNode * id = createTreeNode(yylineno, 0, yylval.str, "ID", 0); 
-    struct TreeNode * rgh = createTreeNode(yylineno, 0, "}", "RGHGATE", 0);
-    struct TreeNode * lft = createTreeNode(yylineno, 0, "{", "LFTGATE", 0);
-    $$ = createTreeNode(yylineno, 0, "NULL", "InterfaceDecl", 5, interface, id, lft, $4, rgh);}
+Fields:         Fields Field  { $$ = createTreeNode(yylineno, "Fields", 2, $1, $2); }
+              | /* empty */   { $$ = eN(); }
 ;
 
-Prototypes:   /* empty*/ {$$ = createTreeNode(yylineno, 0, "NULL", "Prototypes", 0);}
-            |   Prototypes Prototype {$$ = createTreeNode(yylineno, 0, "NULL", "Prototypes", 2, $1, $2);}
+Field:          VariableDecl  { $$ = createTreeNode(yylineno, "Field", 1, $1); }
+              | FunctionDecl  { $$ = createTreeNode(yylineno, "Field", 1, $1); }
 ;
 
-Prototype:      Type ID LFTPARTH Formals RGHPARTH SEMICLN {
-    struct TreeNode * id = createTreeNode(yylineno, 0, yylval.str, "ID", 0); 
-    struct TreeNode * rgh = createTreeNode(yylineno, 0, ")", "RGHPARTH", 0);
-    struct TreeNode * lft = createTreeNode(yylineno, 0, "(", "LFTPARTH", 0);
-    struct TreeNode * cln = createTreeNode(yylineno, 0, ";", "SEMICLN", 0);
-    $$ = createTreeNode(yylineno, 0, "NULL", "Prototype", 6, $1, id, lft, $4, rgh, cln);}
-            |   VOID ID LFTPARTH Formals RGHPARTH SEMICLN {
-    struct TreeNode * Nvoid = createTreeNode(yylineno, 0, "void", "VOID", 0);
-    struct TreeNode * id = createTreeNode(yylineno, 0, yylval.str, "ID", 0); 
-    struct TreeNode * rgh = createTreeNode(yylineno, 0, ")", "RGHPARTH", 0);
-    struct TreeNode * lft = createTreeNode(yylineno, 0, "(", "LFTPARTH", 0);
-    struct TreeNode * cln = createTreeNode(yylineno, 0, ";", "SEMICLN", 0);
-    $$ = createTreeNode(yylineno, 0, "NULL", "Prototype", 6, Nvoid, id, lft, $4, rgh, cln);}
+InterfaceDecl:  INTERFACE ID LFTGATE Prototypes RGHGATE { $$ = createTreeNode(yylineno, "InterfaceDecl", 5, tN("interface"), tT(yylval.str, "ID"), tN("{"), $4, tN("}")); }
 ;
 
-StmtBlock: LFTGATE  ManyVariables ManyStmt RGHGATE {
-    struct TreeNode * rgh = createTreeNode(yylineno, 0, "}", "RGHGATE", 0);
-    struct TreeNode * lft = createTreeNode(yylineno, 0, "{", "LFTGATE", 0);
-    $$ = createTreeNode(yylineno, 0, "NULL", "StmtBlock", 4, lft, $2, $3, rgh);}
-;
-ManyVariables:      /* empty */ {$$ = createTreeNode(yylineno, 0, "NULL", "ManyVariables", 0);}
-                |   ManyVariables VariableDecl {$$ = createTreeNode(yylineno, 0, "NULL", "ManyVariables", 2, $1, $2);}
+Prototypes:     Prototypes Prototype  { $$ = createTreeNode(yylineno, "Prototypes", 2, $1, $2); }
+              | /* empty */           { $$ = eN(); }
 ;
 
-ManyStmt:       /* empty */ {$$ = createTreeNode(yylineno, 0, "NULL", "ManyStmt", 0);}
-            |   ManyStmt Stmt {$$ = createTreeNode(yylineno, 0, "NULL", "ManyStmt", 2, $1, $2);}
+Prototype:      Type ID LFTPARTH Formals RGHPARTH SEMICLN { $$ = createTreeNode(yylineno, "Prototype", 6, $1, tT(yylval.str, "ID"), tN("("), $4, tN(")"), tN(";")); }
+              | VOID ID LFTPARTH Formals RGHPARTH SEMICLN { $$ = createTreeNode(yylineno, "Prototype", 6, tN("void"), tT(yylval.str, "ID"), tN("("), $4, tN(")"), tN(";")); }
 ;
 
-Stmt:       Exprs SEMICLN {
-            struct TreeNode * cln = createTreeNode(yylineno, 0, ";", "SEMICLN", 0);
-            $$ = createTreeNode(yylineno, 0, "NULL", "Stmt",2, $1, cln);}
-        |   IfStmt {$$ = createTreeNode(yylineno, 0, "NULL", "Stmt", 1, $1);}
-        |   WhileStmt {$$ = createTreeNode(yylineno, 0, "NULL", "Stmt", 1, $1);}
-        |   ForStmt {$$ = createTreeNode(yylineno, 0, "NULL", "Stmt", 1, $1);}
-        |   BreakStmt {$$ = createTreeNode(yylineno, 0, "NULL", "Stmt", 1, $1);}
-        |   ReturnStmt {$$ = createTreeNode(yylineno, 0, "NULL", "Stmt", 1, $1);}
-        |   PrintStmt {$$ = createTreeNode(yylineno, 0, "NULL", "Stmt", 1, $1);}
-        |   StmtBlock {$$ = createTreeNode(yylineno, 0, "NULL", "Stmt", 1, $1);}
+StmtBlock:      LFTGATE VariableDecls Stmts RGHGATE { $$ = createTreeNode(yylineno, "StmtBlock", 4, tN("{"), $2, $3, tN("}")); }
 ;
 
-Exprs:      /* empty */ {$$ = createTreeNode(yylineno, 0, "NULL", "Exprs", 0);}
-        |   Expr {$$ = createTreeNode(yylineno, 0, "NULL", "Exprs", 1, $1);}
+VariableDecls:  VariableDecls VariableDecl  { $$ = createTreeNode(yylineno, "VariableDecls", 2, $1, $2); }
+              | /* empty */                 { $$ = eN(); }
 ;
 
-IfStmt: IF LFTPARTH Expr RGHPARTH Stmt ElseStmt {
-        struct TreeNode * rgh = createTreeNode(yylineno, 0, ")", "RGHPARTH", 0);
-        struct TreeNode * lft = createTreeNode(yylineno, 0, "(", "LFTPARTH", 0);
-        struct TreeNode * nodoIf = createTreeNode(yylineno, 0, "if", "IF", 0);
-        $$ = createTreeNode(yylineno, 0, "NULL", "IfStmt", 6, nodoIf, lft, $3, rgh, $5, $6);}
+Stmts:          Stmts Stmt  { $$ = createTreeNode(yylineno, "Stmts", 2, $1, $2); }
+              | /* empty */ { $$ = eN(); }
 ;
 
-ElseStmt:       /* empty */ {$$ = createTreeNode(yylineno, 0, "NULL", "ElseStmt", 0);}
-            |   ELSE Stmt {
-                struct TreeNode * Nelse = createTreeNode(yylineno, 0, "else", "ELSE", 0);
-                $$ = createTreeNode(yylineno, 0, "NULL", "ElseStmt", 2, Nelse, $2);
-            }
+Stmt:           IfStmt        { $$ = createTreeNode(yylineno, "Stmt", 1, $1); }
+              | WhileStmt     { $$ = createTreeNode(yylineno, "Stmt", 1, $1); }
+              | ForStmt       { $$ = createTreeNode(yylineno, "Stmt", 1, $1); }
+              | BreakStmt     { $$ = createTreeNode(yylineno, "Stmt", 1, $1); }
+              | ReturnStmt    { $$ = createTreeNode(yylineno, "Stmt", 1, $1); }
+              | PrintStmt     { $$ = createTreeNode(yylineno, "Stmt", 1, $1); }
+              | StmtBlock     { $$ = createTreeNode(yylineno, "Stmt", 1, $1); }
+              | PossibleExpr  { $$ = createTreeNode(yylineno, "Stmt", 1, $1); }
 ;
 
-WhileStmt: WHILE LFTPARTH Expr RGHPARTH Stmt {
-    struct TreeNode * rgh = createTreeNode(yylineno, 0, ")", "RGHPARTH", 0);
-    struct TreeNode * lft = createTreeNode(yylineno, 0, "(", "LFTPARTH", 0);
-    struct TreeNode * Nwhile = createTreeNode(yylineno, 0, "while", "WHILE", 0);
-    $$ = createTreeNode(yylineno, 0, "NULL", "WhileStmt", 5, Nwhile, lft, $3, rgh, $5);}
+PossibleExpr:   Expr        { $$ = createTreeNode(yylineno, "Expr", 1, $1); }
+              | /* empty */ { $$ = eN(); }
 ;
 
-ExprOneOrZero:      /* emptye */ {$$ = createTreeNode(yylineno, 0, "NULL", "ExprOneOrZero", 0);}
-                |   Expr {$$ = createTreeNode(yylineno, 0, "NULL", "WhileStmt", 1, $1);}
+IfStmt:         IF LFTPARTH Expr RGHPARTH Stmt PossibleElse { $$ = createTreeNode(yylineno, "IfStmt", 6, tN("if"), tN("("), $3, tN(")"), $5, $6); }
 ;
 
-ForStmt: FOR  LFTPARTH ExprOneOrZero SEMICLN ExprOneOrZero SEMICLN ExprOneOrZero RGHPARTH Stmt {
-    struct TreeNode * rgh = createTreeNode(yylineno, 0, ")", "RGHPARTH", 0);
-    struct TreeNode * lft = createTreeNode(yylineno, 0, "(", "LFTPARTH", 0);
-    struct TreeNode * Nfor = createTreeNode(yylineno, 0, "for", "FOR", 0);
-    struct TreeNode * cln = createTreeNode(yylineno, 0, ";", "cln", 0);
-    struct TreeNode * cln2 = createTreeNode(yylineno, 0, ";", "cln", 0);
-    $$ = createTreeNode(yylineno, 0, "NULL", "ForStmt", 9, Nfor, lft, $3, cln, $5, cln2, $7, rgh, $9);
-}
+PossibleElse:   ELSE Stmt   { $$ = createTreeNode(yylineno, "Else", 2, tN("else"), $2); }
+              | /* empty */ { $$ = eN(); }
 ;
 
-ReturnStmt:  RETURN ExprOneOrZero SEMICLN {
-    struct TreeNode * cln = createTreeNode(yylineno, 0, ";", "cln", 0);
-    struct TreeNode * Nreturn = createTreeNode(yylineno, 0, "return", "RETURN", 0);
-    $$ = createTreeNode(yylineno, 0, "NULL", "ReturnStmt", 3, Nreturn, $2, cln);
-}
+WhileStmt:      WHILE LFTPARTH Expr RGHPARTH Stmt { $$ = createTreeNode(yylineno, "WhileStmt", 5, tN("while"), tN("("), $3, tN(")"), $5); }
 ;
 
-BreakStmt: BREAK SEMICLN {
-    struct TreeNode * cln = createTreeNode(yylineno, 0, ";", "cln", 0);
-    struct TreeNode * Nbreak = createTreeNode(yylineno, 0, "break", "BREAK", 0);
-    $$ = createTreeNode(yylineno, 0, "NULL", "BreakStmt", 2, Nbreak, cln);
-}
+ForStmt:        FOR LFTPARTH PossibleExpr SEMICLN PossibleExpr SEMICLN PossibleExpr RGHPARTH Stmt { $$ = createTreeNode(yylineno, "ForStmt", 9, tN("for"), tN("("), $3, tN(";"), $5, tN(";"), $7, tN(")"), $9); }
 ;
 
-ManyExpr:       Expr {$$ = createTreeNode(yylineno, 0, "NULL", "ManyExpr", 1, $1);}
-            |   ManyExpr COMMA Expr {
-                struct TreeNode * comma = createTreeNode(yylineno, 0, ",", "COMMA", 0);
-                $$ = createTreeNode(yylineno, 0, "NULL", "ManyExpr", 3, $1, comma, $3);
-            }
+ReturnStmt:     RETURN PossibleExpr SEMICLN { $$ = createTreeNode(yylineno, "ReturnStmt", 3, tN("return"), $2, tN(";")); }
 ;
 
-PrintStmt: PRINT LFTPARTH ManyExpr RGHPARTH SEMICLN {
-    struct TreeNode * cln = createTreeNode(yylineno, 0, ";", "cln", 0);
-    struct TreeNode * rgh = createTreeNode(yylineno, 0, ")", "RGHPARTH", 0);
-    struct TreeNode * lft = createTreeNode(yylineno, 0, "(", "LFTPARTH", 0);
-    struct TreeNode * print = createTreeNode(yylineno, 0, "print", "PRINT", 0);
-    $$ = createTreeNode(yylineno, 0, "NULL", "PrintStmt", 5, print, lft, $3, rgh, cln);
-}
+BreakStmt:      BREAK SEMICLN { $$ = createTreeNode(yylineno, "BreakStmt", 2, tN("break"), tN(";")); }
 ;
 
-Expr:     LValue EQUAL Expr {
-            struct TreeNode * nodeL = createTreeNode(yylineno, 0, "=", "EQUAL", 0);
-             
-            $$ = createTreeNode(yylineno, 0,"NULL", "Expr", 3,$1,nodeL,$3);
-            }
-        | LValue { $$ = createTreeNode(yylineno, 0,"NULL", "Expr",1,$1);}
-        | Constant { $$ = createTreeNode(yylineno, 0,"NULL", "Expr",1,$1);}
-        | THIS  { $$ = createTreeNode(yylineno, 0,"THIS", "Expr",0);}
-        | Call { $$ = createTreeNode(yylineno, 0,"Call", "Expr",0);}
-        | LFTPARTH Expr RGHPARTH {
-            struct TreeNode * nodeR = createTreeNode(yylineno, 0, "(", "LFTPARTH", 0);
-            struct TreeNode * nodeL = createTreeNode(yylineno, 0, ")", "RGHPARTH", 0);
-            $$ = createTreeNode(yylineno, 0,"NULL", "Expr", 3,nodeR, $2, nodeL);
-        }
-        | Expr SUM Expr {
-            struct TreeNode * nodeL = createTreeNode(yylineno, 0, "+", "DIV", 0);
-             
-            $$ = createTreeNode(yylineno, 0,"NULL", "Expr", 3,$1,nodeL,$3);
-        }
-        | Expr SUB Expr {
-            struct TreeNode * nodeL = createTreeNode(yylineno, 0, "-", "DIV", 0);
-             
-            $$ = createTreeNode(yylineno, 0,"NULL", "Expr", 3,$1,nodeL,$3);
-        }
-        | Expr MULT Expr {
-            struct TreeNode * nodeL = createTreeNode(yylineno, 0, "*", "DIV", 0);
-             
-            $$ = createTreeNode(yylineno, 0,"NULL", "Expr", 3,$1,nodeL,$3);
-        }
-        | Expr DIV Expr {
-            struct TreeNode * nodeL = createTreeNode(yylineno, 0, "/", "DIV", 0);
-             
-            $$ = createTreeNode(yylineno, 0,"NULL", "Expr", 3,$1,nodeL,$3);
-        }
-        | Expr  MOD Expr {
-            struct TreeNode * nodeL = createTreeNode(yylineno, 0, "%", "MOD", 0);
-             
-            $$ = createTreeNode(yylineno, 0,"NULL", "Expr", 3,$1,nodeL,$3);
-        }
-        | SUB Expr {
-            struct TreeNode * nodeL = createTreeNode(yylineno, 0, "-", "SUB", 0);
-             
-            $$ = createTreeNode(yylineno, 0,"NULL", "Expr", 2,nodeL,$1);
-        }
-        | Expr LESSTHN Expr {
-             struct TreeNode * nodeL = createTreeNode(yylineno, 0, "<", "LESSTHN", 0);
-             
-             $$ = createTreeNode(yylineno, 0,"NULL", "Expr",3,$1,nodeL,$3);
-        }
-        | Expr LESSEQL Expr {
-               struct TreeNode * nodeL = createTreeNode(yylineno, 0, "<=", "LESSEQL", 0);
-             
-             $$ = createTreeNode(yylineno, 0,"NULL", "Expr", 3,$1,nodeL,$3);
-        }
-        | Expr GREATERTHN Expr {
-             struct TreeNode * nodeL = createTreeNode(yylineno, 0, ">", "GREATERTHN", 0);
+PrintStmt:      PRINT LFTPARTH ListExpr RGHPARTH SEMICLN { $$ = createTreeNode(yylineno, "PrintStmt", 5, tN("print"), tN("("), $3, tN(")"), tN(";")); }
+;
 
-             $$ = createTreeNode(yylineno, 0,"NULL", "Expr", 3,$1,nodeL,$3);
-        }
-        | Expr GREATEREQL Expr {
-             struct TreeNode * nodeL = createTreeNode(yylineno, 0, ">=", "GREATEREQL", 0);
-             
-             $$ = createTreeNode(yylineno, 0,"NULL", "Expr", 3,$1,nodeL,$3);
-        }
-        | Expr SAME Expr {
-             struct TreeNode * nodeL = createTreeNode(yylineno, 0, "==", "SAME", 0);
-             
-             $$ = createTreeNode(yylineno, 0,"NULL", "Expr", 3,$1,nodeL,$3);
-        }
-        | Expr DIFF Expr {
-            struct TreeNode * nodeL = createTreeNode(yylineno, 0, "!=", "DIFF", 0);
-             
-             $$ = createTreeNode(yylineno, 0,"NULL", "Expr", 3,$1,nodeL,$3);
-        }
-        | Expr AND Expr {
-             struct TreeNode * nodeL = createTreeNode(yylineno, 0, "&&", "AND", 0);
-             
-             $$ = createTreeNode(yylineno, 0,"NULL", "Expr", 3,$1,nodeL,$3);
-        }
-        | Expr OR Expr {
-             struct TreeNode * nodeL = createTreeNode(yylineno, 0, "||", "OR", 0);
-             
-             $$ = createTreeNode(yylineno, 0,"NULL", "Expr", 3,$1,nodeL,$3);
-        }
-        | NOT Expr {
-            struct TreeNode * nodeID = createTreeNode(yylineno, 0, "!","NOT", 0);
-            $$ = createTreeNode(yylineno, 0,"NULL", "Expr",2,nodeID,$2);
-        }
-        | READINTEGER {
-            $$ = createTreeNode(yylineno, 0,"ReadInteger","Expr",0);
-        }
-        | READLINE {
-            $$ = createTreeNode(yylineno, 0,"ReadLine","Expr",0);
-        }
-        | NEW LFTPARTH ID RGHPARTH {
-            struct TreeNode * nodeN = createTreeNode(yylineno, 0, "new", "Expr", 0);
-            struct TreeNode * nodeR = createTreeNode(yylineno, 0, "(", "Expr", 0);
-            struct TreeNode * nodeL = createTreeNode(yylineno, 0, ")", "Expr", 0);
-            struct TreeNode * nodeID = createTreeNode(yylineno, 0, yyval.str, "Expr", 0);
-            $$ = createTreeNode(yylineno, 0,"NULL", "Expr",4,nodeN,nodeR,nodeID,nodeL);
-        }
-        | NEWARRAY LFTPARTH Expr COMMA Type RGHPARTH {
-            struct TreeNode * nodeR = createTreeNode(yylineno, 0, "(", "Expr", 0);
-            struct TreeNode * nodeL = createTreeNode(yylineno, 0, ")", "Expr", 0);
-            struct TreeNode * nodeN = createTreeNode(yylineno, 0, "NEWARRAY", "Expr", 0);
-            struct TreeNode * nodeComma = createTreeNode(yylineno, 0, ",", "Expr", 0);
-           
-            $$ = createTreeNode(yylineno, 0,"NULL", "Expr",6,nodeN,nodeR,$3,nodeComma,$5,nodeL);
-            } 
+ListExpr:       Expr                { $$ = createTreeNode(yylineno, "ListExpr", 1, $1); }
+              | ListExpr COMMA Expr { $$ = createTreeNode(yylineno, "ListExpr", 3, $1, tN(","), $3); }
 ;
-LValue:     ID {$$ = createTreeNode(yylineno, 0,yylval.str, "LValue",0);} 
-            | Expr POINT ID {
-                struct TreeNode * nodeL = createTreeNode(yylineno, 0, "", "LValue", 0);
-                struct TreeNode * nodeR = createTreeNode(yylineno, 0, "]", "LValue", 0);
-                $$ = createTreeNode(yylineno, 0,"NULL", "LValue", 3,$1,nodeL,nodeR);
-                } 
-            | Expr LFTBRCKT Expr RGHBRCKT {
-                struct TreeNode * nodeL = createTreeNode(yylineno, 0, "[", "LValue", 0);
-                struct TreeNode * nodeR = createTreeNode(yylineno, 0, "]", "LValue", 0);
-                $$ = createTreeNode(yylineno, 0,"NULL", "LValue", 4,$1,nodeL,$3,nodeR);} 
-;
-Call:       ID LFTPARTH Actuals RGHPARTH {
-                        struct TreeNode * nodeL = createTreeNode(yylineno, 0, "(", "Call", 0);
-                        struct TreeNode * nodeR = createTreeNode(yylineno, 0, ")", "Call", 0);
-                        struct TreeNode * nodeID = createTreeNode(yylineno, 0, yyval.str, "Call", 0);
-                        $$ = createTreeNode(yylineno, 0,"NULL", "Call", 4,nodeID,nodeL,$3,nodeR);} 
-            | Expr POINT ID LFTPARTH Actuals RGHPARTH {
-                struct TreeNode * nodeL = createTreeNode(yylineno, 0, "(", "Call", 0);
-                struct TreeNode * nodeR = createTreeNode(yylineno, 0, ")", "Call", 0);
-                struct TreeNode * nodeID = createTreeNode(yylineno, 0, yyval.str, "Call", 0);
-                 struct TreeNode * nodePoint = createTreeNode(yylineno, 0, ".", "Call", 0);
-                $$ = createTreeNode(yylineno, 0,"NULL", "Call", 6,$1,nodePoint,nodeID,nodeL,$5,nodeR);
-            } 
-;
-Actuals:  /* empty */  {$$ = createTreeNode(yylineno, 0,"NULL", "Actuals", 0);} 
-         | ActualsLists {$$ = createTreeNode(yylineno, 0,"NULL", "Actuals", 1,$1);}
-;
-ActualsLists:       Expr {$$ = createTreeNode(yylineno, 0,"NULL", "ActualsLists", 1,$1);}
-                |   ActualsLists COMMA Expr {
-                            struct TreeNode * node = createTreeNode(yylineno, 0, ",", "COMMA", 0);
-                            $$ = createTreeNode(yylineno, 0,"NULL", "ActualsLists", 3,$1,node,$3);
-                            }
-;
-Constant:   INTVAL {$$ = createTreeNode(yylineno, 0, yylval.str, "INT", 0);}
-            | DOUBLEVAL {$$ = createTreeNode(yylineno, 0, yylval.str, "DOUBLE", 0);}
-            | TRUE {$$ = createTreeNode(yylineno, 0, "TRUE", "BOOL", 0);}
-            | FALSE {$$ = createTreeNode(yylineno, 0, "FALSE", "BOOL", 0);}
-            | STRINGVAL {$$ = createTreeNode(yylineno, 0, yylval.str, "STRINGVAL", 0);}
-            | NULLVAL {$$ = createTreeNode(yylineno, 0, "NULL", "NULL", 0);}
 
-%%        
-             /* C code */
+Expr:           LValue EQUAL Expr                           { $$ = createTreeNode(yylineno, "Expr", 3, $1, tN("equal"), $3); }
+              | Constant                                    { $$ = createTreeNode(yylineno, "Expr", 1, $1); }
+              | Lvalue                                      { $$ = createTreeNode(yylineno, "Expr", 1, $1); }
+              | THIS                                        { $$ = createTreeNode(yylineno, "Expr", 1, tN("this")); }
+              | Call                                        { $$ = createTreeNode(yylineno, "Expr", 1, $1); }
+              | LFTPARTH Expr RGHPARTH                      { $$ = createTreeNode(yylineno, "Expr", 3, tN("("), $2, tN(")")); }
+              | Expr SUM Expr                               { $$ = createTreeNode(yylineno, "Expr", 3, $1, tN("+"), $3); }
+              | Expr SUB Expr                               { $$ = createTreeNode(yylineno, "Expr", 3, $1, tN("-"), $3); }
+              | Expr MULT Expr                              { $$ = createTreeNode(yylineno, "Expr", 3, $1, tN("*"), $3); }
+              | Expr DIV Expr                               { $$ = createTreeNode(yylineno, "Expr", 3, $1, tN("/"), $3); }
+              | Expr  MOD Expr                              { $$ = createTreeNode(yylineno, "Expr", 3, $1, tN("%"), $3); }
+              | SUB Expr                                    { $$ = createTreeNode(yylineno, "Expr", 2, tN("-"), $2); }
+              | Expr LESSTHN Expr                           { $$ = createTreeNode(yylineno, "Expr", 3, $1, tN("<"), $3); }
+              | Expr LESSEQL Expr                           { $$ = createTreeNode(yylineno, "Expr", 3, $1, tN("<="), $3); }
+              | Expr GREATERTHN Expr                        { $$ = createTreeNode(yylineno, "Expr", 3, $1, tN(">"), $3); }
+              | Expr GREATEREQL Expr                        { $$ = createTreeNode(yylineno, "Expr", 3, $1, tN(">="), $3); }
+              | Expr SAME Expr                              { $$ = createTreeNode(yylineno, "Expr", 3, $1, tN("=="), $3); }
+              | Expr DIFF Expr                              { $$ = createTreeNode(yylineno, "Expr", 3, $1, tN("!="), $3); }
+              | Expr AND Expr                               { $$ = createTreeNode(yylineno, "Expr", 3, $1, tN("&&"), $3); }
+              | Expr OR Expr                                { $$ = createTreeNode(yylineno, "Expr", 3, $1, tN("||"), $3); }
+              | NOT Expr                                    { $$ = createTreeNode(yylineno, "Expr", 2, tN("!"), $2); }
+              | READINTEGER LFTPARTH RGHPARTH               { $$ = createTreeNode(yylineno, "Expr", 3, tN("readInteger"), tN("("), tN(")")); }
+              | READLINE LFTPARTH RGHPARTH                  { $$ = createTreeNode(yylineno, "Expr", 3, tN("readLine"), tN("("), tN(")")); }
+              | NEW LFTPARTH ID RGHPARTH                    { $$ = createTreeNode(yylineno, "Expr", 4, tN("new"), tN("("), tT(yylval.str, "ID"), tN(")")); }
+              | NEWARRAY LFTPARTH Expr COMMA Type RGHPARTH  { $$ = createTreeNode(yylineno, "Expr", 6, tN("newArray"), tN("("), $3, tN(","), $4, tN(")")); }
+;
 
+LValue:         ID                          { $$ = createTreeNode(yylineno, "LValue", 1, tT(yylval.str, "ID")); }
+              | Expr POINT ID               { $$ = createTreeNode(yylineno, "LValue", 3, $1, tN("."), tT(yylval.str, "ID")); }
+              | Expr LFTBRCKT Expr RGHBRCKT { $$ = createTreeNode(yylineno, "LValue", 4, $1, tN("["), $3, tN("]")); }
+;
+
+Call:           ID LFTPARTH Actuals RGHPARTH            { $$ = createTreeNode(yylineno, "Call", 4, tT(yylval.str, "ID"), tN("("), $3, tN(")")); }
+              | Expr POINT ID LFTPARTH Actuals RGHPARTH { $$ = createTreeNode(yylineno, "Call", 6, $1, tN("."), tT(yylval.str, "ID"), tN("("), $5, tN(")")); }
+;
+
+Actuals:        ListExpr    { $$ = createTreeNode(yylineno, "Actuals", 1, $1); }
+              | /* empty */ { $$ = eN(); }
+;
+
+Constant:       INTVAL    { $$ = createTreeNode(yylineno, "Constant", 1, tT(yylval.str, "integer")); }
+              | DOUBLEVAL { $$ = createTreeNode(yylineno, "Constant", 1, tT(yylval.str, "double")); }
+              | TRUE      { $$ = createTreeNode(yylineno, "Constant", 1, tT("true", "boolean")); }
+              | FALSE     { $$ = createTreeNode(yylineno, "Constant", 1, tT("false", "boolean")); }
+              | STRINGVAL { $$ = createTreeNode(yylineno, "Constant", 1, tT(yylval.str, "string")); }
+              | NULLVAL   { $$ = createTreeNode(yylineno, "Constant", 1, tT("null", "null")); }
+;
+
+%%
 
 int main() {
-    // #ifdef YYDEBUG
-    //     yydebug = 1;
-    // #endif
-
-	yyin = stdin;
-
-	do {
-		yyparse();
+  yyin = stdin;
+  do {
+    yyparse();
 	} while(!feof(yyin));
-//ya
 	return 0;
 }
 
-void yyerror(char *s)
-{
-    fprintf(stderr,"Error | Line: %d\n%s\n",yylineno,s);
+void yyerror(char *s) {
+  fprintf(stderr,"Error | Line: %d\n%s\n",yylineno,s);
 }

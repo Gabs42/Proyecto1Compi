@@ -26,7 +26,10 @@ int listSize(struct ListNode * root);
 
 /* Tree Functions */
 
-struct TreeNode * createTreeNode(int lineNumber, int columnNumber, char * value, char * type, int childs, ...);
+struct TreeNode * createTreeNode(int lineNumber, char * type, int childs, ...);
+struct TreeNode * eN();
+struct TreeNode * tN(char * value);
+struct TreeNode * tT(char * value, char * type);
 void freeTree(struct TreeNode * node);
 
 /* Print functions */
@@ -71,21 +74,49 @@ struct ListNode * insertListNode(struct ListNode * root, struct ListNode * newNo
   return root;
 };
 
-struct TreeNode * createTreeNode(int lineNumber, int columnNumber, char * value, char * type, int childs, ...) {
+struct TreeNode * createTreeNode(int lineNumber, char * type, int childs, ...) {
   struct TreeNode * treeNode = malloc(sizeof(struct TreeNode));
   treeNode->lineNumber = lineNumber;
-  treeNode->columnNumber = columnNumber;
-  treeNode->value = value;
+  treeNode->columnNumber = 0;
+  treeNode->value = "NaT";
   treeNode->type = type;
   treeNode->root = 0;
   va_list ap;
   va_start(ap, childs);
   for(int i = 0; i < childs; i++) {
     struct TreeNode * argument = va_arg(ap, struct TreeNode *);
-    struct ListNode * child = createListNode(argument);
-    treeNode->root = insertListNode(treeNode->root, child);
+    if(argument->columnNumber > -1) {
+      struct ListNode * child = createListNode(argument);
+      treeNode->root = insertListNode(treeNode->root, child);
+    }
   }
   va_end(ap);
+  return treeNode;
+};
+
+struct TreeNode * eN() {
+  struct TreeNode * treeNode = malloc(sizeof(struct TreeNode));
+  treeNode->columnNumber = -1;
+  return treeNode;
+};
+
+struct TreeNode * tN(char * value) {
+  struct TreeNode * treeNode = malloc(sizeof(struct TreeNode));
+  treeNode->value = value;
+  treeNode->type = "Terminal";
+  treeNode->columnNumber = 0;
+  treeNode->root = 0;
+  treeNode->lineNumber = 0;
+  return treeNode;
+};
+
+struct TreeNode * tT(char * value, char * type) {
+  struct TreeNode * treeNode = malloc(sizeof(struct TreeNode));
+  treeNode->value = value;
+  treeNode->type = type;
+  treeNode->columnNumber = 0;
+  treeNode->root = 0;
+  treeNode->lineNumber = 0;
   return treeNode;
 };
 
