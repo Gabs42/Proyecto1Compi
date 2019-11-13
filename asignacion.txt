@@ -1,0 +1,58 @@
+/*
+    Creador: Jean Pierre Monterrey
+    Tecnologico de Costa Rica
+*/
+class Nadador extends Deportista implements Humano {
+
+    //Variables
+    string nombre;
+    int edad;
+    int velocidad;
+    bool preparado;
+
+    public Nadador(string nombre, int edad, int velocidad, bool preparado) {
+        this.nombre = nombre
+        this.edad = edad
+        this.velocidad = velocidad
+        this.preparado = preparado
+    }
+
+    void setEdad(int edad) {
+        this.edad = edad
+    }
+
+    int getEdad() {
+        return edad;
+    }
+
+    string getNombre() {
+        return nombre;
+    }
+
+    void setNombre(string nombre) {
+        this.nombre = nombre
+    }
+
+    void setVelocidad(int nuevaVelocidad) {
+        this.velocidad = velocidad
+    }
+
+    int getVelocidad() {
+        return velocidad;
+    }
+
+    void setPreparado(bool preparado) {
+        this.preparado = preparado
+    }
+
+    bool isPreparado() {
+        return preparado;
+    }
+
+    int calcularTrayecto(int tiempo) {
+        int trayecto;
+        trayecto = tiempo * this.velocidad
+        return trayecto;
+    }
+
+}

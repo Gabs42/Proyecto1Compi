@@ -32,6 +32,7 @@ int yylex();
 %token COMMA POINT LFTBRCKT RGHBRCKT LFTPARTH RGHPARTH SEMICLN
 %token LFTGATE RGHGATE STRINGERROR INVCHAR INVESCP
 %token LINEJMP TAB SPACE INTVAL DOUBLEVAL STRINGVAL NULLVAL
+%token OR LESSEQL
 %token<str> ID
 
 %left SUM SUB MULT DIV LESSTHN LESSEQL GREATERTHN MOD GREATEREQL
@@ -42,7 +43,7 @@ int yylex();
 %type<treeNode> Program Declarations Declaration VariableDecl Variable Type
 %type<treeNode> FunctionDecl Formals Variables ClassDecl Extend Implement
 %type<treeNode> ListIdents Fields Field InterfaceDecl Prototypes Prototype
-%type<treeNode> StmtBlock VariableDecls Stmts Stmt PossibleExpr IfStmt
+%type<treeNode> StmtBlock Stmts Stmt PossibleExpr IfStmt
 %type<treeNode> PossibleElse WhileStmt ForStmt ReturnStmt BreakStmt PrintStmt
 %type<treeNode> ListExpr Expr LValue Call Actuals Constant
 
@@ -121,11 +122,7 @@ Prototype:      Type ID LFTPARTH Formals RGHPARTH SEMICLN { $$ = createTreeNode(
               | VOID ID LFTPARTH Formals RGHPARTH SEMICLN { $$ = createTreeNode(yylineno, "Prototype", 6, tN("void"), tT(yylval.str, "ID"), tN("("), $4, tN(")"), tN(";")); }
 ;
 
-StmtBlock:      LFTGATE VariableDecls Stmts RGHGATE { $$ = createTreeNode(yylineno, "StmtBlock", 4, tN("{"), $2, $3, tN("}")); }
-;
-
-VariableDecls:  VariableDecls VariableDecl  { $$ = createTreeNode(yylineno, "VariableDecls", 2, $1, $2); }
-              | /* empty */                 { $$ = eN(); }
+StmtBlock:      LFTGATE Stmts RGHGATE { $$ = createTreeNode(yylineno, "StmtBlock", 3, tN("{"), $2, tN("}")); } //No olvidar
 ;
 
 Stmts:          Stmts Stmt  { $$ = createTreeNode(yylineno, "Stmts", 2, $1, $2); }
@@ -139,7 +136,8 @@ Stmt:           IfStmt        { $$ = createTreeNode(yylineno, "Stmt", 1, $1); }
               | ReturnStmt    { $$ = createTreeNode(yylineno, "Stmt", 1, $1); }
               | PrintStmt     { $$ = createTreeNode(yylineno, "Stmt", 1, $1); }
               | StmtBlock     { $$ = createTreeNode(yylineno, "Stmt", 1, $1); }
-              | PossibleExpr  { $$ = createTreeNode(yylineno, "Stmt", 1, $1); }
+              | Expr          { $$ = createTreeNode(yylineno, "Stmt", 1, $1); } //No olvidar
+              | VariableDecl  { $$ = createTreeNode(yylineno, "Stmt", 1, $1); } //No olvidar
 ;
 
 PossibleExpr:   Expr        { $$ = createTreeNode(yylineno, "Expr", 1, $1); }
@@ -150,7 +148,7 @@ IfStmt:         IF LFTPARTH Expr RGHPARTH Stmt PossibleElse { $$ = createTreeNod
 ;
 
 PossibleElse:   ELSE Stmt   { $$ = createTreeNode(yylineno, "Else", 2, tN("else"), $2); }
-              | /* empty */ { $$ = eN(); }
+              //| /* empty */ { $$ = eN(); } // No olvidar
 ;
 
 WhileStmt:      WHILE LFTPARTH Expr RGHPARTH Stmt { $$ = createTreeNode(yylineno, "WhileStmt", 5, tN("while"), tN("("), $3, tN(")"), $5); }
@@ -172,9 +170,9 @@ ListExpr:       Expr                { $$ = createTreeNode(yylineno, "ListExpr", 
               | ListExpr COMMA Expr { $$ = createTreeNode(yylineno, "ListExpr", 3, $1, tN(","), $3); }
 ;
 
-Expr:           LValue EQUAL Expr                           { $$ = createTreeNode(yylineno, "Expr", 3, $1, tN("equal"), $3); }
+Expr:           LValue EQUAL Expr                           { $$ = createTreeNode(yylineno, "Expr", 3, $1, tN("="), $3); }
               | Constant                                    { $$ = createTreeNode(yylineno, "Expr", 1, $1); }
-              | Lvalue                                      { $$ = createTreeNode(yylineno, "Expr", 1, $1); }
+              | LValue                                      { $$ = createTreeNode(yylineno, "Expr", 1, $1); }
               | THIS                                        { $$ = createTreeNode(yylineno, "Expr", 1, tN("this")); }
               | Call                                        { $$ = createTreeNode(yylineno, "Expr", 1, $1); }
               | LFTPARTH Expr RGHPARTH                      { $$ = createTreeNode(yylineno, "Expr", 3, tN("("), $2, tN(")")); }
@@ -182,7 +180,7 @@ Expr:           LValue EQUAL Expr                           { $$ = createTreeNod
               | Expr SUB Expr                               { $$ = createTreeNode(yylineno, "Expr", 3, $1, tN("-"), $3); }
               | Expr MULT Expr                              { $$ = createTreeNode(yylineno, "Expr", 3, $1, tN("*"), $3); }
               | Expr DIV Expr                               { $$ = createTreeNode(yylineno, "Expr", 3, $1, tN("/"), $3); }
-              | Expr  MOD Expr                              { $$ = createTreeNode(yylineno, "Expr", 3, $1, tN("%"), $3); }
+              | Expr  MOD Expr                              { $$ = createTreeNode(yylineno, "Expr", 3, $1, tN("mod"), $3); }
               | SUB Expr                                    { $$ = createTreeNode(yylineno, "Expr", 2, tN("-"), $2); }
               | Expr LESSTHN Expr                           { $$ = createTreeNode(yylineno, "Expr", 3, $1, tN("<"), $3); }
               | Expr LESSEQL Expr                           { $$ = createTreeNode(yylineno, "Expr", 3, $1, tN("<="), $3); }
@@ -196,7 +194,7 @@ Expr:           LValue EQUAL Expr                           { $$ = createTreeNod
               | READINTEGER LFTPARTH RGHPARTH               { $$ = createTreeNode(yylineno, "Expr", 3, tN("readInteger"), tN("("), tN(")")); }
               | READLINE LFTPARTH RGHPARTH                  { $$ = createTreeNode(yylineno, "Expr", 3, tN("readLine"), tN("("), tN(")")); }
               | NEW LFTPARTH ID RGHPARTH                    { $$ = createTreeNode(yylineno, "Expr", 4, tN("new"), tN("("), tT(yylval.str, "ID"), tN(")")); }
-              | NEWARRAY LFTPARTH Expr COMMA Type RGHPARTH  { $$ = createTreeNode(yylineno, "Expr", 6, tN("newArray"), tN("("), $3, tN(","), $4, tN(")")); }
+              | NEWARRAY LFTPARTH Expr COMMA Type RGHPARTH  { $$ = createTreeNode(yylineno, "Expr", 6, tN("newArray"), tN("("), $3, tN(","), $5, tN(")")); }
 ;
 
 LValue:         ID                          { $$ = createTreeNode(yylineno, "LValue", 1, tT(yylval.str, "ID")); }
