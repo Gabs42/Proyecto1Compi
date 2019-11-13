@@ -1,0 +1,8 @@
+interface Humano {
+
+    //Funciones
+    int respirar();
+    bool estaVivo();
+    void notificar();
+
+}
