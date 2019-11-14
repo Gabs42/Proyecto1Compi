@@ -1,4 +1,4 @@
-Terminals unused in grammar
+Terminales no usados en la gramática
 
     NULLN
     STRINGERROR
@@ -9,29 +9,29 @@ Terminals unused in grammar
     SPACE
 
 
-State 87 conflicts: 1 shift/reduce, 2 reduce/reduce
-State 99 conflicts: 1 shift/reduce
-State 108 conflicts: 1 shift/reduce
-State 119 conflicts: 2 shift/reduce
-State 120 conflicts: 2 shift/reduce
-State 152 conflicts: 1 shift/reduce
-State 154 conflicts: 2 shift/reduce
-State 155 conflicts: 2 shift/reduce
-State 156 conflicts: 2 shift/reduce
-State 157 conflicts: 2 shift/reduce
-State 158 conflicts: 2 shift/reduce
-State 159 conflicts: 2 shift/reduce
-State 160 conflicts: 2 shift/reduce
-State 161 conflicts: 2 shift/reduce
-State 162 conflicts: 2 shift/reduce
-State 163 conflicts: 2 shift/reduce
-State 164 conflicts: 2 shift/reduce
-State 165 conflicts: 2 shift/reduce
-State 166 conflicts: 2 shift/reduce
-State 167 conflicts: 2 shift/reduce
+Estado 85 conflictos: 1 desplazamiento/reducción, 2 reducción/reducción
+Estado 97 conflictos: 1 desplazamiento/reducción
+Estado 106 conflictos: 1 desplazamiento/reducción
+Estado 117 conflictos: 2 desplazamiento/reducción
+Estado 118 conflictos: 2 desplazamiento/reducción
+Estado 150 conflictos: 1 desplazamiento/reducción
+Estado 152 conflictos: 2 desplazamiento/reducción
+Estado 153 conflictos: 2 desplazamiento/reducción
+Estado 154 conflictos: 2 desplazamiento/reducción
+Estado 155 conflictos: 2 desplazamiento/reducción
+Estado 156 conflictos: 2 desplazamiento/reducción
+Estado 157 conflictos: 2 desplazamiento/reducción
+Estado 158 conflictos: 2 desplazamiento/reducción
+Estado 159 conflictos: 2 desplazamiento/reducción
+Estado 160 conflictos: 2 desplazamiento/reducción
+Estado 161 conflictos: 2 desplazamiento/reducción
+Estado 162 conflictos: 2 desplazamiento/reducción
+Estado 163 conflictos: 2 desplazamiento/reducción
+Estado 164 conflictos: 2 desplazamiento/reducción
+Estado 165 conflictos: 2 desplazamiento/reducción
 
 
-Grammar
+Gramática
 
     0 $accept: Program $end
 
@@ -56,185 +56,189 @@ Grammar
    14     | ID
    15     | Type LFTBRCKT RGHBRCKT
 
-   16 FunctionDecl: Type ID LFTPARTH Formals RGHPARTH StmtBlock
-   17             | VOID ID LFTPARTH Formals RGHPARTH StmtBlock
+   16 FunctionDecl: FunctionName LFTPARTH Formals RGHPARTH StmtBlock
 
-   18 Formals: Variables
-   19        | %empty
+   17 FunctionName: Type ID
+   18             | VOID ID
 
-   20 Variables: Variable
-   21          | Variables COMMA Variable
+   19 Formals: Variables
+   20        | %empty
 
-   22 ClassDecl: CLASS ID Extend Implement LFTGATE Fields RGHGATE
+   21 Variables: Variable
+   22          | Variables COMMA Variable
 
-   23 Extend: EXTENDS ID
-   24       | %empty
+   23 ClassDecl: ClassName Extend Implement LFTGATE Fields RGHGATE
 
-   25 Implement: IMPLEMENTS ListIdents
-   26          | %empty
+   24 ClassName: CLASS ID
 
-   27 ListIdents: ID
-   28           | ListIdents COMMA ID
+   25 Extend: EXTENDS ID
+   26       | %empty
 
-   29 Fields: Fields Field
-   30       | %empty
+   27 Implement: IMPLEMENTS ListIdents
+   28          | %empty
 
-   31 Field: VariableDecl
-   32      | FunctionDecl
+   29 ListIdents: ID
+   30           | ListIdents COMMA ID
 
-   33 InterfaceDecl: INTERFACE ID LFTGATE Prototypes RGHGATE
+   31 Fields: Fields Field
+   32       | %empty
 
-   34 Prototypes: Prototypes Prototype
-   35           | %empty
+   33 Field: VariableDecl
+   34      | FunctionDecl
 
-   36 Prototype: Type ID LFTPARTH Formals RGHPARTH SEMICLN
-   37          | VOID ID LFTPARTH Formals RGHPARTH SEMICLN
+   35 InterfaceDecl: INTERFACE ID LFTGATE Prototypes RGHGATE
 
-   38 StmtBlock: LFTGATE Stmts RGHGATE
+   36 Prototypes: Prototypes Prototype
+   37           | %empty
 
-   39 Stmts: Stmts Stmt
-   40      | %empty
+   38 Prototype: Type ID LFTPARTH Formals RGHPARTH SEMICLN
+   39          | VOID ID LFTPARTH Formals RGHPARTH SEMICLN
 
-   41 Stmt: IfStmt
-   42     | WhileStmt
-   43     | ForStmt
-   44     | BreakStmt
-   45     | ReturnStmt
-   46     | PrintStmt
-   47     | StmtBlock
-   48     | Expr
-   49     | VariableDecl
+   40 StmtBlock: LFTGATE Stmts RGHGATE
 
-   50 PossibleExpr: Expr
-   51             | %empty
+   41 Stmts: Stmts Stmt
+   42      | %empty
 
-   52 IfStmt: IF LFTPARTH Expr RGHPARTH Stmt PossibleElse
+   43 Stmt: IfStmt
+   44     | WhileStmt
+   45     | ForStmt
+   46     | BreakStmt
+   47     | ReturnStmt
+   48     | PrintStmt
+   49     | StmtBlock
+   50     | Expr
+   51     | VariableDecl
 
-   53 PossibleElse: ELSE Stmt
+   52 PossibleExpr: Expr
+   53             | %empty
 
-   54 WhileStmt: WHILE LFTPARTH Expr RGHPARTH Stmt
+   54 IfStmt: IF LFTPARTH Expr RGHPARTH Stmt PossibleElse
 
-   55 ForStmt: FOR LFTPARTH PossibleExpr SEMICLN PossibleExpr SEMICLN PossibleExpr RGHPARTH Stmt
+   55 PossibleElse: ELSE Stmt
 
-   56 ReturnStmt: RETURN PossibleExpr SEMICLN
+   56 WhileStmt: WHILE LFTPARTH Expr RGHPARTH Stmt
 
-   57 BreakStmt: BREAK SEMICLN
+   57 ForStmt: FOR LFTPARTH PossibleExpr SEMICLN PossibleExpr SEMICLN PossibleExpr RGHPARTH Stmt
 
-   58 PrintStmt: PRINT LFTPARTH ListExpr RGHPARTH SEMICLN
+   58 ReturnStmt: RETURN PossibleExpr SEMICLN
 
-   59 ListExpr: Expr
-   60         | ListExpr COMMA Expr
+   59 BreakStmt: BREAK SEMICLN
 
-   61 Expr: LValue EQUAL Expr
-   62     | Constant
-   63     | LValue
-   64     | THIS
-   65     | Call
-   66     | LFTPARTH Expr RGHPARTH
-   67     | Expr SUM Expr
-   68     | Expr SUB Expr
-   69     | Expr MULT Expr
-   70     | Expr DIV Expr
-   71     | Expr MOD Expr
-   72     | SUB Expr
-   73     | Expr LESSTHN Expr
-   74     | Expr LESSEQL Expr
-   75     | Expr GREATERTHN Expr
-   76     | Expr GREATEREQL Expr
-   77     | Expr SAME Expr
-   78     | Expr DIFF Expr
-   79     | Expr AND Expr
-   80     | Expr OR Expr
-   81     | NOT Expr
-   82     | READINTEGER LFTPARTH RGHPARTH
-   83     | READLINE LFTPARTH RGHPARTH
-   84     | NEW LFTPARTH ID RGHPARTH
-   85     | NEWARRAY LFTPARTH Expr COMMA Type RGHPARTH
+   60 PrintStmt: PRINT LFTPARTH ListExpr RGHPARTH SEMICLN
 
-   86 LValue: ID
-   87       | Expr POINT ID
-   88       | Expr LFTBRCKT Expr RGHBRCKT
+   61 ListExpr: Expr
+   62         | ListExpr COMMA Expr
 
-   89 Call: ID LFTPARTH Actuals RGHPARTH
-   90     | Expr POINT ID LFTPARTH Actuals RGHPARTH
+   63 Expr: LValue EQUAL Expr
+   64     | Constant
+   65     | LValue
+   66     | THIS
+   67     | Call
+   68     | LFTPARTH Expr RGHPARTH
+   69     | Expr SUM Expr
+   70     | Expr SUB Expr
+   71     | Expr MULT Expr
+   72     | Expr DIV Expr
+   73     | Expr MOD Expr
+   74     | SUB Expr
+   75     | Expr LESSTHN Expr
+   76     | Expr LESSEQL Expr
+   77     | Expr GREATERTHN Expr
+   78     | Expr GREATEREQL Expr
+   79     | Expr SAME Expr
+   80     | Expr DIFF Expr
+   81     | Expr AND Expr
+   82     | Expr OR Expr
+   83     | NOT Expr
+   84     | READINTEGER LFTPARTH RGHPARTH
+   85     | READLINE LFTPARTH RGHPARTH
+   86     | NEW LFTPARTH ID RGHPARTH
+   87     | NEWARRAY LFTPARTH Expr COMMA Type RGHPARTH
 
-   91 Actuals: ListExpr
-   92        | %empty
+   88 LValue: ID
+   89       | Expr POINT ID
+   90       | Expr LFTBRCKT Expr RGHBRCKT
 
-   93 Constant: INTVAL
-   94         | DOUBLEVAL
-   95         | TRUE
-   96         | FALSE
-   97         | STRINGVAL
-   98         | NULLVAL
+   91 Call: ID LFTPARTH Actuals RGHPARTH
+   92     | Expr POINT ID LFTPARTH Actuals RGHPARTH
+
+   93 Actuals: ListExpr
+   94        | %empty
+
+   95 Constant: INTVAL
+   96         | DOUBLEVAL
+   97         | TRUE
+   98         | FALSE
+   99         | STRINGVAL
+  100         | NULLVAL
 
 
-Terminals, with rules where they appear
+Terminales con las reglas donde aparecen
 
     $end (0) 0
     error (256)
-    VOID (258) 17 37
+    VOID (258) 18 39
     INTEGER (259) 10
     DOUBLE (260) 11
     BOOL (261) 12
     STRING (262) 13
-    CLASS (263) 22
-    INTERFACE (264) 33
+    CLASS (263) 24
+    INTERFACE (264) 35
     NULLN (265)
-    THIS (266) 64
-    EXTENDS (267) 23
-    IMPLEMENTS (268) 25
-    FOR (269) 55
-    WHILE (270) 54
-    IF (271) 52
-    ELSE (272) 53
-    RETURN (273) 56
-    BREAK (274) 57
-    NEW (275) 84
-    NEWARRAY (276) 85
-    PRINT (277) 58
-    READINTEGER (278) 82
-    READLINE (279) 83
-    TRUE (280) 95
-    FALSE (281) 96
-    COMMA (282) 21 28 60 85
-    POINT (283) 87 90
-    LFTBRCKT (284) 15 88
-    RGHBRCKT (285) 15 88
-    LFTPARTH (286) 16 17 36 37 52 54 55 58 66 82 83 84 85 89 90
-    RGHPARTH (287) 16 17 36 37 52 54 55 58 66 82 83 84 85 89 90
-    SEMICLN (288) 8 36 37 55 56 57 58
-    LFTGATE (289) 22 33 38
-    RGHGATE (290) 22 33 38
+    THIS (266) 66
+    EXTENDS (267) 25
+    IMPLEMENTS (268) 27
+    FOR (269) 57
+    WHILE (270) 56
+    IF (271) 54
+    ELSE (272) 55
+    RETURN (273) 58
+    BREAK (274) 59
+    NEW (275) 86
+    NEWARRAY (276) 87
+    PRINT (277) 60
+    READINTEGER (278) 84
+    READLINE (279) 85
+    TRUE (280) 97
+    FALSE (281) 98
+    COMMA (282) 22 30 62 87
+    POINT (283) 89 92
+    LFTBRCKT (284) 15 90
+    RGHBRCKT (285) 15 90
+    LFTPARTH (286) 16 38 39 54 56 57 60 68 84 85 86 87 91 92
+    RGHPARTH (287) 16 38 39 54 56 57 60 68 84 85 86 87 91 92
+    SEMICLN (288) 8 38 39 57 58 59 60
+    LFTGATE (289) 23 35 40
+    RGHGATE (290) 23 35 40
     STRINGERROR (291)
     INVCHAR (292)
     INVESCP (293)
     LINEJMP (294)
     TAB (295)
     SPACE (296)
-    INTVAL (297) 93
-    DOUBLEVAL (298) 94
-    STRINGVAL (299) 97
-    NULLVAL (300) 98
-    OR (301) 80
-    LESSEQL <str> (302) 74
-    ID <str> (303) 9 14 16 17 22 23 27 28 33 36 37 84 86 87 89 90
-    SUM <str> (304) 67
-    SUB <str> (305) 68 72
-    MULT <str> (306) 69
-    DIV <str> (307) 70
-    LESSTHN <str> (308) 73
-    GREATERTHN <str> (309) 75
-    MOD <str> (310) 71
-    GREATEREQL (311) 76
-    EQUAL (312) 61
-    SAME (313) 77
-    DIFF (314) 78
-    AND (315) 79
-    NOT (316) 81
+    INTVAL (297) 95
+    DOUBLEVAL (298) 96
+    STRINGVAL (299) 99
+    NULLVAL (300) 100
+    OR (301) 82
+    LESSEQL <str> (302) 76
+    ID <str> (303) 9 14 17 18 24 25 29 30 35 38 39 86 88 89 91 92
+    SUM <str> (304) 69
+    SUB <str> (305) 70 74
+    MULT <str> (306) 71
+    DIV <str> (307) 72
+    LESSTHN <str> (308) 75
+    GREATERTHN <str> (309) 77
+    MOD <str> (310) 73
+    GREATEREQL (311) 78
+    EQUAL (312) 63
+    SAME (313) 79
+    DIFF (314) 80
+    AND (315) 81
+    NOT (316) 83
 
 
-Nonterminals, with rules where they appear
+No terminales con las reglas donde aparecen
 
     $accept (62)
         on left: 0
@@ -249,3089 +253,3072 @@ Nonterminals, with rules where they appear
         on right: 2 3
     VariableDecl <treeNode> (66)
         on left: 8
-        on right: 4 31 49
+        on right: 4 33 51
     Variable <treeNode> (67)
         on left: 9
-        on right: 8 20 21
+        on right: 8 21 22
     Type <treeNode> (68)
         on left: 10 11 12 13 14 15
-        on right: 9 15 16 36 85
+        on right: 9 15 17 38 87
     FunctionDecl <treeNode> (69)
-        on left: 16 17
-        on right: 5 32
-    Formals <treeNode> (70)
-        on left: 18 19
-        on right: 16 17 36 37
-    Variables <treeNode> (71)
-        on left: 20 21
-        on right: 18 21
-    ClassDecl <treeNode> (72)
-        on left: 22
+        on left: 16
+        on right: 5 34
+    FunctionName <treeNode> (70)
+        on left: 17 18
+        on right: 16
+    Formals <treeNode> (71)
+        on left: 19 20
+        on right: 16 38 39
+    Variables <treeNode> (72)
+        on left: 21 22
+        on right: 19 22
+    ClassDecl <treeNode> (73)
+        on left: 23
         on right: 6
-    Extend <treeNode> (73)
-        on left: 23 24
-        on right: 22
-    Implement <treeNode> (74)
+    ClassName <treeNode> (74)
+        on left: 24
+        on right: 23
+    Extend <treeNode> (75)
         on left: 25 26
-        on right: 22
-    ListIdents <treeNode> (75)
+        on right: 23
+    Implement <treeNode> (76)
         on left: 27 28
-        on right: 25 28
-    Fields <treeNode> (76)
+        on right: 23
+    ListIdents <treeNode> (77)
         on left: 29 30
-        on right: 22 29
-    Field <treeNode> (77)
+        on right: 27 30
+    Fields <treeNode> (78)
         on left: 31 32
-        on right: 29
-    InterfaceDecl <treeNode> (78)
-        on left: 33
+        on right: 23 31
+    Field <treeNode> (79)
+        on left: 33 34
+        on right: 31
+    InterfaceDecl <treeNode> (80)
+        on left: 35
         on right: 7
-    Prototypes <treeNode> (79)
-        on left: 34 35
-        on right: 33 34
-    Prototype <treeNode> (80)
+    Prototypes <treeNode> (81)
         on left: 36 37
-        on right: 34
-    StmtBlock <treeNode> (81)
-        on left: 38
-        on right: 16 17 47
-    Stmts <treeNode> (82)
-        on left: 39 40
-        on right: 38 39
-    Stmt <treeNode> (83)
-        on left: 41 42 43 44 45 46 47 48 49
-        on right: 39 52 53 54 55
-    PossibleExpr <treeNode> (84)
-        on left: 50 51
-        on right: 55 56
-    IfStmt <treeNode> (85)
-        on left: 52
-        on right: 41
-    PossibleElse <treeNode> (86)
-        on left: 53
-        on right: 52
-    WhileStmt <treeNode> (87)
+        on right: 35 36
+    Prototype <treeNode> (82)
+        on left: 38 39
+        on right: 36
+    StmtBlock <treeNode> (83)
+        on left: 40
+        on right: 16 49
+    Stmts <treeNode> (84)
+        on left: 41 42
+        on right: 40 41
+    Stmt <treeNode> (85)
+        on left: 43 44 45 46 47 48 49 50 51
+        on right: 41 54 55 56 57
+    PossibleExpr <treeNode> (86)
+        on left: 52 53
+        on right: 57 58
+    IfStmt <treeNode> (87)
         on left: 54
-        on right: 42
-    ForStmt <treeNode> (88)
-        on left: 55
         on right: 43
-    ReturnStmt <treeNode> (89)
+    PossibleElse <treeNode> (88)
+        on left: 55
+        on right: 54
+    WhileStmt <treeNode> (89)
         on left: 56
-        on right: 45
-    BreakStmt <treeNode> (90)
-        on left: 57
         on right: 44
-    PrintStmt <treeNode> (91)
+    ForStmt <treeNode> (90)
+        on left: 57
+        on right: 45
+    ReturnStmt <treeNode> (91)
         on left: 58
+        on right: 47
+    BreakStmt <treeNode> (92)
+        on left: 59
         on right: 46
-    ListExpr <treeNode> (92)
-        on left: 59 60
-        on right: 58 60 91
-    Expr <treeNode> (93)
-        on left: 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85
-        on right: 48 50 52 54 59 60 61 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 85 87 88 90
-    LValue <treeNode> (94)
-        on left: 86 87 88
-        on right: 61 63
-    Call <treeNode> (95)
-        on left: 89 90
-        on right: 65
-    Actuals <treeNode> (96)
+    PrintStmt <treeNode> (93)
+        on left: 60
+        on right: 48
+    ListExpr <treeNode> (94)
+        on left: 61 62
+        on right: 60 62 93
+    Expr <treeNode> (95)
+        on left: 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87
+        on right: 50 52 54 56 61 62 63 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 87 89 90 92
+    LValue <treeNode> (96)
+        on left: 88 89 90
+        on right: 63 65
+    Call <treeNode> (97)
         on left: 91 92
-        on right: 89 90
-    Constant <treeNode> (97)
-        on left: 93 94 95 96 97 98
-        on right: 62
+        on right: 67
+    Actuals <treeNode> (98)
+        on left: 93 94
+        on right: 91 92
+    Constant <treeNode> (99)
+        on left: 95 96 97 98 99 100
+        on right: 64
 
 
-State 0
+Estado 0
 
     0 $accept: . Program $end
 
-    VOID       shift, and go to state 1
-    INTEGER    shift, and go to state 2
-    DOUBLE     shift, and go to state 3
-    BOOL       shift, and go to state 4
-    STRING     shift, and go to state 5
-    CLASS      shift, and go to state 6
-    INTERFACE  shift, and go to state 7
-    ID         shift, and go to state 8
+    VOID       desplazar e ir al estado 1
+    INTEGER    desplazar e ir al estado 2
+    DOUBLE     desplazar e ir al estado 3
+    BOOL       desplazar e ir al estado 4
+    STRING     desplazar e ir al estado 5
+    CLASS      desplazar e ir al estado 6
+    INTERFACE  desplazar e ir al estado 7
+    ID         desplazar e ir al estado 8
 
-    Program        go to state 9
-    Declarations   go to state 10
-    Declaration    go to state 11
-    VariableDecl   go to state 12
-    Variable       go to state 13
-    Type           go to state 14
-    FunctionDecl   go to state 15
-    ClassDecl      go to state 16
-    InterfaceDecl  go to state 17
-
-
-State 1
-
-   17 FunctionDecl: VOID . ID LFTPARTH Formals RGHPARTH StmtBlock
-
-    ID  shift, and go to state 18
+    Program        ir al estado 9
+    Declarations   ir al estado 10
+    Declaration    ir al estado 11
+    VariableDecl   ir al estado 12
+    Variable       ir al estado 13
+    Type           ir al estado 14
+    FunctionDecl   ir al estado 15
+    FunctionName   ir al estado 16
+    ClassDecl      ir al estado 17
+    ClassName      ir al estado 18
+    InterfaceDecl  ir al estado 19
 
 
-State 2
+Estado 1
+
+   18 FunctionName: VOID . ID
+
+    ID  desplazar e ir al estado 20
+
+
+Estado 2
 
    10 Type: INTEGER .
 
-    $default  reduce using rule 10 (Type)
+    $default  reduce usando la regla 10 (Type)
 
 
-State 3
+Estado 3
 
    11 Type: DOUBLE .
 
-    $default  reduce using rule 11 (Type)
+    $default  reduce usando la regla 11 (Type)
 
 
-State 4
+Estado 4
 
    12 Type: BOOL .
 
-    $default  reduce using rule 12 (Type)
+    $default  reduce usando la regla 12 (Type)
 
 
-State 5
+Estado 5
 
    13 Type: STRING .
 
-    $default  reduce using rule 13 (Type)
+    $default  reduce usando la regla 13 (Type)
 
 
-State 6
+Estado 6
 
-   22 ClassDecl: CLASS . ID Extend Implement LFTGATE Fields RGHGATE
+   24 ClassName: CLASS . ID
 
-    ID  shift, and go to state 19
-
-
-State 7
-
-   33 InterfaceDecl: INTERFACE . ID LFTGATE Prototypes RGHGATE
-
-    ID  shift, and go to state 20
+    ID  desplazar e ir al estado 21
 
 
-State 8
+Estado 7
+
+   35 InterfaceDecl: INTERFACE . ID LFTGATE Prototypes RGHGATE
+
+    ID  desplazar e ir al estado 22
+
+
+Estado 8
 
    14 Type: ID .
 
-    $default  reduce using rule 14 (Type)
+    $default  reduce usando la regla 14 (Type)
 
 
-State 9
+Estado 9
 
     0 $accept: Program . $end
 
-    $end  shift, and go to state 21
+    $end  desplazar e ir al estado 23
 
 
-State 10
+Estado 10
 
     1 Program: Declarations .
     3 Declarations: Declarations . Declaration
 
-    VOID       shift, and go to state 1
-    INTEGER    shift, and go to state 2
-    DOUBLE     shift, and go to state 3
-    BOOL       shift, and go to state 4
-    STRING     shift, and go to state 5
-    CLASS      shift, and go to state 6
-    INTERFACE  shift, and go to state 7
-    ID         shift, and go to state 8
+    VOID       desplazar e ir al estado 1
+    INTEGER    desplazar e ir al estado 2
+    DOUBLE     desplazar e ir al estado 3
+    BOOL       desplazar e ir al estado 4
+    STRING     desplazar e ir al estado 5
+    CLASS      desplazar e ir al estado 6
+    INTERFACE  desplazar e ir al estado 7
+    ID         desplazar e ir al estado 8
 
-    $default  reduce using rule 1 (Program)
+    $default  reduce usando la regla 1 (Program)
 
-    Declaration    go to state 22
-    VariableDecl   go to state 12
-    Variable       go to state 13
-    Type           go to state 14
-    FunctionDecl   go to state 15
-    ClassDecl      go to state 16
-    InterfaceDecl  go to state 17
+    Declaration    ir al estado 24
+    VariableDecl   ir al estado 12
+    Variable       ir al estado 13
+    Type           ir al estado 14
+    FunctionDecl   ir al estado 15
+    FunctionName   ir al estado 16
+    ClassDecl      ir al estado 17
+    ClassName      ir al estado 18
+    InterfaceDecl  ir al estado 19
 
 
-State 11
+Estado 11
 
     2 Declarations: Declaration .
 
-    $default  reduce using rule 2 (Declarations)
+    $default  reduce usando la regla 2 (Declarations)
 
 
-State 12
+Estado 12
 
     4 Declaration: VariableDecl .
 
-    $default  reduce using rule 4 (Declaration)
+    $default  reduce usando la regla 4 (Declaration)
 
 
-State 13
+Estado 13
 
     8 VariableDecl: Variable . SEMICLN
 
-    SEMICLN  shift, and go to state 23
+    SEMICLN  desplazar e ir al estado 25
 
 
-State 14
+Estado 14
 
     9 Variable: Type . ID
    15 Type: Type . LFTBRCKT RGHBRCKT
-   16 FunctionDecl: Type . ID LFTPARTH Formals RGHPARTH StmtBlock
+   17 FunctionName: Type . ID
 
-    LFTBRCKT  shift, and go to state 24
-    ID        shift, and go to state 25
+    LFTBRCKT  desplazar e ir al estado 26
+    ID        desplazar e ir al estado 27
 
 
-State 15
+Estado 15
 
     5 Declaration: FunctionDecl .
 
-    $default  reduce using rule 5 (Declaration)
+    $default  reduce usando la regla 5 (Declaration)
 
 
-State 16
+Estado 16
+
+   16 FunctionDecl: FunctionName . LFTPARTH Formals RGHPARTH StmtBlock
+
+    LFTPARTH  desplazar e ir al estado 28
+
+
+Estado 17
 
     6 Declaration: ClassDecl .
 
-    $default  reduce using rule 6 (Declaration)
+    $default  reduce usando la regla 6 (Declaration)
 
 
-State 17
+Estado 18
+
+   23 ClassDecl: ClassName . Extend Implement LFTGATE Fields RGHGATE
+
+    EXTENDS  desplazar e ir al estado 29
+
+    $default  reduce usando la regla 26 (Extend)
+
+    Extend  ir al estado 30
+
+
+Estado 19
 
     7 Declaration: InterfaceDecl .
 
-    $default  reduce using rule 7 (Declaration)
+    $default  reduce usando la regla 7 (Declaration)
 
 
-State 18
+Estado 20
 
-   17 FunctionDecl: VOID ID . LFTPARTH Formals RGHPARTH StmtBlock
+   18 FunctionName: VOID ID .
 
-    LFTPARTH  shift, and go to state 26
-
-
-State 19
-
-   22 ClassDecl: CLASS ID . Extend Implement LFTGATE Fields RGHGATE
-
-    EXTENDS  shift, and go to state 27
-
-    $default  reduce using rule 24 (Extend)
-
-    Extend  go to state 28
+    $default  reduce usando la regla 18 (FunctionName)
 
 
-State 20
+Estado 21
 
-   33 InterfaceDecl: INTERFACE ID . LFTGATE Prototypes RGHGATE
+   24 ClassName: CLASS ID .
 
-    LFTGATE  shift, and go to state 29
+    $default  reduce usando la regla 24 (ClassName)
 
 
-State 21
+Estado 22
+
+   35 InterfaceDecl: INTERFACE ID . LFTGATE Prototypes RGHGATE
+
+    LFTGATE  desplazar e ir al estado 31
+
+
+Estado 23
 
     0 $accept: Program $end .
 
-    $default  accept
+    $default  aceptar
 
 
-State 22
+Estado 24
 
     3 Declarations: Declarations Declaration .
 
-    $default  reduce using rule 3 (Declarations)
+    $default  reduce usando la regla 3 (Declarations)
 
 
-State 23
+Estado 25
 
     8 VariableDecl: Variable SEMICLN .
 
-    $default  reduce using rule 8 (VariableDecl)
+    $default  reduce usando la regla 8 (VariableDecl)
 
 
-State 24
+Estado 26
 
    15 Type: Type LFTBRCKT . RGHBRCKT
 
-    RGHBRCKT  shift, and go to state 30
+    RGHBRCKT  desplazar e ir al estado 32
 
 
-State 25
+Estado 27
 
     9 Variable: Type ID .
-   16 FunctionDecl: Type ID . LFTPARTH Formals RGHPARTH StmtBlock
+   17 FunctionName: Type ID .
 
-    LFTPARTH  shift, and go to state 31
-
-    $default  reduce using rule 9 (Variable)
-
-
-State 26
-
-   17 FunctionDecl: VOID ID LFTPARTH . Formals RGHPARTH StmtBlock
-
-    INTEGER  shift, and go to state 2
-    DOUBLE   shift, and go to state 3
-    BOOL     shift, and go to state 4
-    STRING   shift, and go to state 5
-    ID       shift, and go to state 8
-
-    $default  reduce using rule 19 (Formals)
-
-    Variable   go to state 32
-    Type       go to state 33
-    Formals    go to state 34
-    Variables  go to state 35
+    LFTPARTH  reduce usando la regla 17 (FunctionName)
+    $default  reduce usando la regla 9 (Variable)
 
 
-State 27
+Estado 28
 
-   23 Extend: EXTENDS . ID
+   16 FunctionDecl: FunctionName LFTPARTH . Formals RGHPARTH StmtBlock
 
-    ID  shift, and go to state 36
+    INTEGER  desplazar e ir al estado 2
+    DOUBLE   desplazar e ir al estado 3
+    BOOL     desplazar e ir al estado 4
+    STRING   desplazar e ir al estado 5
+    ID       desplazar e ir al estado 8
 
+    $default  reduce usando la regla 20 (Formals)
 
-State 28
-
-   22 ClassDecl: CLASS ID Extend . Implement LFTGATE Fields RGHGATE
-
-    IMPLEMENTS  shift, and go to state 37
-
-    $default  reduce using rule 26 (Implement)
-
-    Implement  go to state 38
-
-
-State 29
-
-   33 InterfaceDecl: INTERFACE ID LFTGATE . Prototypes RGHGATE
-
-    $default  reduce using rule 35 (Prototypes)
-
-    Prototypes  go to state 39
+    Variable   ir al estado 33
+    Type       ir al estado 34
+    Formals    ir al estado 35
+    Variables  ir al estado 36
 
 
-State 30
+Estado 29
+
+   25 Extend: EXTENDS . ID
+
+    ID  desplazar e ir al estado 37
+
+
+Estado 30
+
+   23 ClassDecl: ClassName Extend . Implement LFTGATE Fields RGHGATE
+
+    IMPLEMENTS  desplazar e ir al estado 38
+
+    $default  reduce usando la regla 28 (Implement)
+
+    Implement  ir al estado 39
+
+
+Estado 31
+
+   35 InterfaceDecl: INTERFACE ID LFTGATE . Prototypes RGHGATE
+
+    $default  reduce usando la regla 37 (Prototypes)
+
+    Prototypes  ir al estado 40
+
+
+Estado 32
 
    15 Type: Type LFTBRCKT RGHBRCKT .
 
-    $default  reduce using rule 15 (Type)
+    $default  reduce usando la regla 15 (Type)
 
 
-State 31
+Estado 33
 
-   16 FunctionDecl: Type ID LFTPARTH . Formals RGHPARTH StmtBlock
+   21 Variables: Variable .
 
-    INTEGER  shift, and go to state 2
-    DOUBLE   shift, and go to state 3
-    BOOL     shift, and go to state 4
-    STRING   shift, and go to state 5
-    ID       shift, and go to state 8
-
-    $default  reduce using rule 19 (Formals)
-
-    Variable   go to state 32
-    Type       go to state 33
-    Formals    go to state 40
-    Variables  go to state 35
+    $default  reduce usando la regla 21 (Variables)
 
 
-State 32
-
-   20 Variables: Variable .
-
-    $default  reduce using rule 20 (Variables)
-
-
-State 33
+Estado 34
 
     9 Variable: Type . ID
    15 Type: Type . LFTBRCKT RGHBRCKT
 
-    LFTBRCKT  shift, and go to state 24
-    ID        shift, and go to state 41
+    LFTBRCKT  desplazar e ir al estado 26
+    ID        desplazar e ir al estado 41
 
 
-State 34
+Estado 35
 
-   17 FunctionDecl: VOID ID LFTPARTH Formals . RGHPARTH StmtBlock
+   16 FunctionDecl: FunctionName LFTPARTH Formals . RGHPARTH StmtBlock
 
-    RGHPARTH  shift, and go to state 42
-
-
-State 35
-
-   18 Formals: Variables .
-   21 Variables: Variables . COMMA Variable
-
-    COMMA  shift, and go to state 43
-
-    $default  reduce using rule 18 (Formals)
+    RGHPARTH  desplazar e ir al estado 42
 
 
-State 36
+Estado 36
 
-   23 Extend: EXTENDS ID .
+   19 Formals: Variables .
+   22 Variables: Variables . COMMA Variable
 
-    $default  reduce using rule 23 (Extend)
+    COMMA  desplazar e ir al estado 43
 
-
-State 37
-
-   25 Implement: IMPLEMENTS . ListIdents
-
-    ID  shift, and go to state 44
-
-    ListIdents  go to state 45
+    $default  reduce usando la regla 19 (Formals)
 
 
-State 38
+Estado 37
 
-   22 ClassDecl: CLASS ID Extend Implement . LFTGATE Fields RGHGATE
+   25 Extend: EXTENDS ID .
 
-    LFTGATE  shift, and go to state 46
-
-
-State 39
-
-   33 InterfaceDecl: INTERFACE ID LFTGATE Prototypes . RGHGATE
-   34 Prototypes: Prototypes . Prototype
-
-    VOID     shift, and go to state 47
-    INTEGER  shift, and go to state 2
-    DOUBLE   shift, and go to state 3
-    BOOL     shift, and go to state 4
-    STRING   shift, and go to state 5
-    RGHGATE  shift, and go to state 48
-    ID       shift, and go to state 8
-
-    Type       go to state 49
-    Prototype  go to state 50
+    $default  reduce usando la regla 25 (Extend)
 
 
-State 40
+Estado 38
 
-   16 FunctionDecl: Type ID LFTPARTH Formals . RGHPARTH StmtBlock
+   27 Implement: IMPLEMENTS . ListIdents
 
-    RGHPARTH  shift, and go to state 51
+    ID  desplazar e ir al estado 44
+
+    ListIdents  ir al estado 45
 
 
-State 41
+Estado 39
+
+   23 ClassDecl: ClassName Extend Implement . LFTGATE Fields RGHGATE
+
+    LFTGATE  desplazar e ir al estado 46
+
+
+Estado 40
+
+   35 InterfaceDecl: INTERFACE ID LFTGATE Prototypes . RGHGATE
+   36 Prototypes: Prototypes . Prototype
+
+    VOID     desplazar e ir al estado 47
+    INTEGER  desplazar e ir al estado 2
+    DOUBLE   desplazar e ir al estado 3
+    BOOL     desplazar e ir al estado 4
+    STRING   desplazar e ir al estado 5
+    RGHGATE  desplazar e ir al estado 48
+    ID       desplazar e ir al estado 8
+
+    Type       ir al estado 49
+    Prototype  ir al estado 50
+
+
+Estado 41
 
     9 Variable: Type ID .
 
-    $default  reduce using rule 9 (Variable)
+    $default  reduce usando la regla 9 (Variable)
 
 
-State 42
+Estado 42
 
-   17 FunctionDecl: VOID ID LFTPARTH Formals RGHPARTH . StmtBlock
+   16 FunctionDecl: FunctionName LFTPARTH Formals RGHPARTH . StmtBlock
 
-    LFTGATE  shift, and go to state 52
+    LFTGATE  desplazar e ir al estado 51
 
-    StmtBlock  go to state 53
-
-
-State 43
-
-   21 Variables: Variables COMMA . Variable
-
-    INTEGER  shift, and go to state 2
-    DOUBLE   shift, and go to state 3
-    BOOL     shift, and go to state 4
-    STRING   shift, and go to state 5
-    ID       shift, and go to state 8
-
-    Variable  go to state 54
-    Type      go to state 33
+    StmtBlock  ir al estado 52
 
 
-State 44
+Estado 43
 
-   27 ListIdents: ID .
+   22 Variables: Variables COMMA . Variable
 
-    $default  reduce using rule 27 (ListIdents)
+    INTEGER  desplazar e ir al estado 2
+    DOUBLE   desplazar e ir al estado 3
+    BOOL     desplazar e ir al estado 4
+    STRING   desplazar e ir al estado 5
+    ID       desplazar e ir al estado 8
 
-
-State 45
-
-   25 Implement: IMPLEMENTS ListIdents .
-   28 ListIdents: ListIdents . COMMA ID
-
-    COMMA  shift, and go to state 55
-
-    $default  reduce using rule 25 (Implement)
+    Variable  ir al estado 53
+    Type      ir al estado 34
 
 
-State 46
+Estado 44
 
-   22 ClassDecl: CLASS ID Extend Implement LFTGATE . Fields RGHGATE
+   29 ListIdents: ID .
 
-    $default  reduce using rule 30 (Fields)
-
-    Fields  go to state 56
+    $default  reduce usando la regla 29 (ListIdents)
 
 
-State 47
+Estado 45
 
-   37 Prototype: VOID . ID LFTPARTH Formals RGHPARTH SEMICLN
+   27 Implement: IMPLEMENTS ListIdents .
+   30 ListIdents: ListIdents . COMMA ID
 
-    ID  shift, and go to state 57
+    COMMA  desplazar e ir al estado 54
 
-
-State 48
-
-   33 InterfaceDecl: INTERFACE ID LFTGATE Prototypes RGHGATE .
-
-    $default  reduce using rule 33 (InterfaceDecl)
+    $default  reduce usando la regla 27 (Implement)
 
 
-State 49
+Estado 46
+
+   23 ClassDecl: ClassName Extend Implement LFTGATE . Fields RGHGATE
+
+    $default  reduce usando la regla 32 (Fields)
+
+    Fields  ir al estado 55
+
+
+Estado 47
+
+   39 Prototype: VOID . ID LFTPARTH Formals RGHPARTH SEMICLN
+
+    ID  desplazar e ir al estado 56
+
+
+Estado 48
+
+   35 InterfaceDecl: INTERFACE ID LFTGATE Prototypes RGHGATE .
+
+    $default  reduce usando la regla 35 (InterfaceDecl)
+
+
+Estado 49
 
    15 Type: Type . LFTBRCKT RGHBRCKT
-   36 Prototype: Type . ID LFTPARTH Formals RGHPARTH SEMICLN
+   38 Prototype: Type . ID LFTPARTH Formals RGHPARTH SEMICLN
 
-    LFTBRCKT  shift, and go to state 24
-    ID        shift, and go to state 58
+    LFTBRCKT  desplazar e ir al estado 26
+    ID        desplazar e ir al estado 57
 
 
-State 50
+Estado 50
 
-   34 Prototypes: Prototypes Prototype .
+   36 Prototypes: Prototypes Prototype .
 
-    $default  reduce using rule 34 (Prototypes)
+    $default  reduce usando la regla 36 (Prototypes)
 
 
-State 51
+Estado 51
 
-   16 FunctionDecl: Type ID LFTPARTH Formals RGHPARTH . StmtBlock
+   40 StmtBlock: LFTGATE . Stmts RGHGATE
 
-    LFTGATE  shift, and go to state 52
+    $default  reduce usando la regla 42 (Stmts)
 
-    StmtBlock  go to state 59
+    Stmts  ir al estado 58
 
 
-State 52
+Estado 52
 
-   38 StmtBlock: LFTGATE . Stmts RGHGATE
+   16 FunctionDecl: FunctionName LFTPARTH Formals RGHPARTH StmtBlock .
 
-    $default  reduce using rule 40 (Stmts)
+    $default  reduce usando la regla 16 (FunctionDecl)
 
-    Stmts  go to state 60
 
+Estado 53
 
-State 53
+   22 Variables: Variables COMMA Variable .
 
-   17 FunctionDecl: VOID ID LFTPARTH Formals RGHPARTH StmtBlock .
+    $default  reduce usando la regla 22 (Variables)
 
-    $default  reduce using rule 17 (FunctionDecl)
 
+Estado 54
 
-State 54
+   30 ListIdents: ListIdents COMMA . ID
 
-   21 Variables: Variables COMMA Variable .
+    ID  desplazar e ir al estado 59
 
-    $default  reduce using rule 21 (Variables)
 
+Estado 55
 
-State 55
+   23 ClassDecl: ClassName Extend Implement LFTGATE Fields . RGHGATE
+   31 Fields: Fields . Field
 
-   28 ListIdents: ListIdents COMMA . ID
+    VOID     desplazar e ir al estado 1
+    INTEGER  desplazar e ir al estado 2
+    DOUBLE   desplazar e ir al estado 3
+    BOOL     desplazar e ir al estado 4
+    STRING   desplazar e ir al estado 5
+    RGHGATE  desplazar e ir al estado 60
+    ID       desplazar e ir al estado 8
 
-    ID  shift, and go to state 61
+    VariableDecl  ir al estado 61
+    Variable      ir al estado 13
+    Type          ir al estado 14
+    FunctionDecl  ir al estado 62
+    FunctionName  ir al estado 16
+    Field         ir al estado 63
 
 
-State 56
+Estado 56
 
-   22 ClassDecl: CLASS ID Extend Implement LFTGATE Fields . RGHGATE
-   29 Fields: Fields . Field
+   39 Prototype: VOID ID . LFTPARTH Formals RGHPARTH SEMICLN
 
-    VOID     shift, and go to state 1
-    INTEGER  shift, and go to state 2
-    DOUBLE   shift, and go to state 3
-    BOOL     shift, and go to state 4
-    STRING   shift, and go to state 5
-    RGHGATE  shift, and go to state 62
-    ID       shift, and go to state 8
+    LFTPARTH  desplazar e ir al estado 64
 
-    VariableDecl  go to state 63
-    Variable      go to state 13
-    Type          go to state 14
-    FunctionDecl  go to state 64
-    Field         go to state 65
 
+Estado 57
 
-State 57
+   38 Prototype: Type ID . LFTPARTH Formals RGHPARTH SEMICLN
 
-   37 Prototype: VOID ID . LFTPARTH Formals RGHPARTH SEMICLN
+    LFTPARTH  desplazar e ir al estado 65
 
-    LFTPARTH  shift, and go to state 66
 
+Estado 58
 
-State 58
+   40 StmtBlock: LFTGATE Stmts . RGHGATE
+   41 Stmts: Stmts . Stmt
 
-   36 Prototype: Type ID . LFTPARTH Formals RGHPARTH SEMICLN
+    INTEGER      desplazar e ir al estado 2
+    DOUBLE       desplazar e ir al estado 3
+    BOOL         desplazar e ir al estado 4
+    STRING       desplazar e ir al estado 5
+    THIS         desplazar e ir al estado 66
+    FOR          desplazar e ir al estado 67
+    WHILE        desplazar e ir al estado 68
+    IF           desplazar e ir al estado 69
+    RETURN       desplazar e ir al estado 70
+    BREAK        desplazar e ir al estado 71
+    NEW          desplazar e ir al estado 72
+    NEWARRAY     desplazar e ir al estado 73
+    PRINT        desplazar e ir al estado 74
+    READINTEGER  desplazar e ir al estado 75
+    READLINE     desplazar e ir al estado 76
+    TRUE         desplazar e ir al estado 77
+    FALSE        desplazar e ir al estado 78
+    LFTPARTH     desplazar e ir al estado 79
+    LFTGATE      desplazar e ir al estado 51
+    RGHGATE      desplazar e ir al estado 80
+    INTVAL       desplazar e ir al estado 81
+    DOUBLEVAL    desplazar e ir al estado 82
+    STRINGVAL    desplazar e ir al estado 83
+    NULLVAL      desplazar e ir al estado 84
+    ID           desplazar e ir al estado 85
+    SUB          desplazar e ir al estado 86
+    NOT          desplazar e ir al estado 87
 
-    LFTPARTH  shift, and go to state 67
+    VariableDecl  ir al estado 88
+    Variable      ir al estado 13
+    Type          ir al estado 34
+    StmtBlock     ir al estado 89
+    Stmt          ir al estado 90
+    IfStmt        ir al estado 91
+    WhileStmt     ir al estado 92
+    ForStmt       ir al estado 93
+    ReturnStmt    ir al estado 94
+    BreakStmt     ir al estado 95
+    PrintStmt     ir al estado 96
+    Expr          ir al estado 97
+    LValue        ir al estado 98
+    Call          ir al estado 99
+    Constant      ir al estado 100
 
 
-State 59
+Estado 59
 
-   16 FunctionDecl: Type ID LFTPARTH Formals RGHPARTH StmtBlock .
+   30 ListIdents: ListIdents COMMA ID .
 
-    $default  reduce using rule 16 (FunctionDecl)
+    $default  reduce usando la regla 30 (ListIdents)
 
 
-State 60
+Estado 60
 
-   38 StmtBlock: LFTGATE Stmts . RGHGATE
-   39 Stmts: Stmts . Stmt
+   23 ClassDecl: ClassName Extend Implement LFTGATE Fields RGHGATE .
 
-    INTEGER      shift, and go to state 2
-    DOUBLE       shift, and go to state 3
-    BOOL         shift, and go to state 4
-    STRING       shift, and go to state 5
-    THIS         shift, and go to state 68
-    FOR          shift, and go to state 69
-    WHILE        shift, and go to state 70
-    IF           shift, and go to state 71
-    RETURN       shift, and go to state 72
-    BREAK        shift, and go to state 73
-    NEW          shift, and go to state 74
-    NEWARRAY     shift, and go to state 75
-    PRINT        shift, and go to state 76
-    READINTEGER  shift, and go to state 77
-    READLINE     shift, and go to state 78
-    TRUE         shift, and go to state 79
-    FALSE        shift, and go to state 80
-    LFTPARTH     shift, and go to state 81
-    LFTGATE      shift, and go to state 52
-    RGHGATE      shift, and go to state 82
-    INTVAL       shift, and go to state 83
-    DOUBLEVAL    shift, and go to state 84
-    STRINGVAL    shift, and go to state 85
-    NULLVAL      shift, and go to state 86
-    ID           shift, and go to state 87
-    SUB          shift, and go to state 88
-    NOT          shift, and go to state 89
+    $default  reduce usando la regla 23 (ClassDecl)
 
-    VariableDecl  go to state 90
-    Variable      go to state 13
-    Type          go to state 33
-    StmtBlock     go to state 91
-    Stmt          go to state 92
-    IfStmt        go to state 93
-    WhileStmt     go to state 94
-    ForStmt       go to state 95
-    ReturnStmt    go to state 96
-    BreakStmt     go to state 97
-    PrintStmt     go to state 98
-    Expr          go to state 99
-    LValue        go to state 100
-    Call          go to state 101
-    Constant      go to state 102
 
+Estado 61
 
-State 61
+   33 Field: VariableDecl .
 
-   28 ListIdents: ListIdents COMMA ID .
+    $default  reduce usando la regla 33 (Field)
 
-    $default  reduce using rule 28 (ListIdents)
 
+Estado 62
 
-State 62
+   34 Field: FunctionDecl .
 
-   22 ClassDecl: CLASS ID Extend Implement LFTGATE Fields RGHGATE .
+    $default  reduce usando la regla 34 (Field)
 
-    $default  reduce using rule 22 (ClassDecl)
 
+Estado 63
 
-State 63
+   31 Fields: Fields Field .
 
-   31 Field: VariableDecl .
+    $default  reduce usando la regla 31 (Fields)
 
-    $default  reduce using rule 31 (Field)
 
+Estado 64
 
-State 64
+   39 Prototype: VOID ID LFTPARTH . Formals RGHPARTH SEMICLN
 
-   32 Field: FunctionDecl .
+    INTEGER  desplazar e ir al estado 2
+    DOUBLE   desplazar e ir al estado 3
+    BOOL     desplazar e ir al estado 4
+    STRING   desplazar e ir al estado 5
+    ID       desplazar e ir al estado 8
 
-    $default  reduce using rule 32 (Field)
+    $default  reduce usando la regla 20 (Formals)
 
+    Variable   ir al estado 33
+    Type       ir al estado 34
+    Formals    ir al estado 101
+    Variables  ir al estado 36
 
-State 65
 
-   29 Fields: Fields Field .
+Estado 65
 
-    $default  reduce using rule 29 (Fields)
+   38 Prototype: Type ID LFTPARTH . Formals RGHPARTH SEMICLN
 
+    INTEGER  desplazar e ir al estado 2
+    DOUBLE   desplazar e ir al estado 3
+    BOOL     desplazar e ir al estado 4
+    STRING   desplazar e ir al estado 5
+    ID       desplazar e ir al estado 8
 
-State 66
+    $default  reduce usando la regla 20 (Formals)
 
-   37 Prototype: VOID ID LFTPARTH . Formals RGHPARTH SEMICLN
+    Variable   ir al estado 33
+    Type       ir al estado 34
+    Formals    ir al estado 102
+    Variables  ir al estado 36
 
-    INTEGER  shift, and go to state 2
-    DOUBLE   shift, and go to state 3
-    BOOL     shift, and go to state 4
-    STRING   shift, and go to state 5
-    ID       shift, and go to state 8
 
-    $default  reduce using rule 19 (Formals)
+Estado 66
 
-    Variable   go to state 32
-    Type       go to state 33
-    Formals    go to state 103
-    Variables  go to state 35
+   66 Expr: THIS .
 
+    $default  reduce usando la regla 66 (Expr)
 
-State 67
 
-   36 Prototype: Type ID LFTPARTH . Formals RGHPARTH SEMICLN
+Estado 67
 
-    INTEGER  shift, and go to state 2
-    DOUBLE   shift, and go to state 3
-    BOOL     shift, and go to state 4
-    STRING   shift, and go to state 5
-    ID       shift, and go to state 8
+   57 ForStmt: FOR . LFTPARTH PossibleExpr SEMICLN PossibleExpr SEMICLN PossibleExpr RGHPARTH Stmt
 
-    $default  reduce using rule 19 (Formals)
+    LFTPARTH  desplazar e ir al estado 103
 
-    Variable   go to state 32
-    Type       go to state 33
-    Formals    go to state 104
-    Variables  go to state 35
 
+Estado 68
 
-State 68
+   56 WhileStmt: WHILE . LFTPARTH Expr RGHPARTH Stmt
 
-   64 Expr: THIS .
+    LFTPARTH  desplazar e ir al estado 104
 
-    $default  reduce using rule 64 (Expr)
 
+Estado 69
 
-State 69
+   54 IfStmt: IF . LFTPARTH Expr RGHPARTH Stmt PossibleElse
 
-   55 ForStmt: FOR . LFTPARTH PossibleExpr SEMICLN PossibleExpr SEMICLN PossibleExpr RGHPARTH Stmt
+    LFTPARTH  desplazar e ir al estado 105
 
-    LFTPARTH  shift, and go to state 105
 
+Estado 70
 
-State 70
+   58 ReturnStmt: RETURN . PossibleExpr SEMICLN
 
-   54 WhileStmt: WHILE . LFTPARTH Expr RGHPARTH Stmt
+    THIS         desplazar e ir al estado 66
+    NEW          desplazar e ir al estado 72
+    NEWARRAY     desplazar e ir al estado 73
+    READINTEGER  desplazar e ir al estado 75
+    READLINE     desplazar e ir al estado 76
+    TRUE         desplazar e ir al estado 77
+    FALSE        desplazar e ir al estado 78
+    LFTPARTH     desplazar e ir al estado 79
+    INTVAL       desplazar e ir al estado 81
+    DOUBLEVAL    desplazar e ir al estado 82
+    STRINGVAL    desplazar e ir al estado 83
+    NULLVAL      desplazar e ir al estado 84
+    ID           desplazar e ir al estado 106
+    SUB          desplazar e ir al estado 86
+    NOT          desplazar e ir al estado 87
 
-    LFTPARTH  shift, and go to state 106
+    $default  reduce usando la regla 53 (PossibleExpr)
 
+    PossibleExpr  ir al estado 107
+    Expr          ir al estado 108
+    LValue        ir al estado 98
+    Call          ir al estado 99
+    Constant      ir al estado 100
 
-State 71
 
-   52 IfStmt: IF . LFTPARTH Expr RGHPARTH Stmt PossibleElse
+Estado 71
 
-    LFTPARTH  shift, and go to state 107
+   59 BreakStmt: BREAK . SEMICLN
 
+    SEMICLN  desplazar e ir al estado 109
 
-State 72
 
-   56 ReturnStmt: RETURN . PossibleExpr SEMICLN
+Estado 72
 
-    THIS         shift, and go to state 68
-    NEW          shift, and go to state 74
-    NEWARRAY     shift, and go to state 75
-    READINTEGER  shift, and go to state 77
-    READLINE     shift, and go to state 78
-    TRUE         shift, and go to state 79
-    FALSE        shift, and go to state 80
-    LFTPARTH     shift, and go to state 81
-    INTVAL       shift, and go to state 83
-    DOUBLEVAL    shift, and go to state 84
-    STRINGVAL    shift, and go to state 85
-    NULLVAL      shift, and go to state 86
-    ID           shift, and go to state 108
-    SUB          shift, and go to state 88
-    NOT          shift, and go to state 89
+   86 Expr: NEW . LFTPARTH ID RGHPARTH
 
-    $default  reduce using rule 51 (PossibleExpr)
+    LFTPARTH  desplazar e ir al estado 110
 
-    PossibleExpr  go to state 109
-    Expr          go to state 110
-    LValue        go to state 100
-    Call          go to state 101
-    Constant      go to state 102
 
+Estado 73
 
-State 73
+   87 Expr: NEWARRAY . LFTPARTH Expr COMMA Type RGHPARTH
 
-   57 BreakStmt: BREAK . SEMICLN
+    LFTPARTH  desplazar e ir al estado 111
 
-    SEMICLN  shift, and go to state 111
 
+Estado 74
 
-State 74
+   60 PrintStmt: PRINT . LFTPARTH ListExpr RGHPARTH SEMICLN
 
-   84 Expr: NEW . LFTPARTH ID RGHPARTH
+    LFTPARTH  desplazar e ir al estado 112
 
-    LFTPARTH  shift, and go to state 112
 
+Estado 75
 
-State 75
+   84 Expr: READINTEGER . LFTPARTH RGHPARTH
 
-   85 Expr: NEWARRAY . LFTPARTH Expr COMMA Type RGHPARTH
+    LFTPARTH  desplazar e ir al estado 113
 
-    LFTPARTH  shift, and go to state 113
 
+Estado 76
 
-State 76
+   85 Expr: READLINE . LFTPARTH RGHPARTH
 
-   58 PrintStmt: PRINT . LFTPARTH ListExpr RGHPARTH SEMICLN
+    LFTPARTH  desplazar e ir al estado 114
 
-    LFTPARTH  shift, and go to state 114
 
+Estado 77
 
-State 77
+   97 Constant: TRUE .
 
-   82 Expr: READINTEGER . LFTPARTH RGHPARTH
+    $default  reduce usando la regla 97 (Constant)
 
-    LFTPARTH  shift, and go to state 115
 
+Estado 78
 
-State 78
+   98 Constant: FALSE .
 
-   83 Expr: READLINE . LFTPARTH RGHPARTH
+    $default  reduce usando la regla 98 (Constant)
 
-    LFTPARTH  shift, and go to state 116
 
+Estado 79
 
-State 79
+   68 Expr: LFTPARTH . Expr RGHPARTH
 
-   95 Constant: TRUE .
+    THIS         desplazar e ir al estado 66
+    NEW          desplazar e ir al estado 72
+    NEWARRAY     desplazar e ir al estado 73
+    READINTEGER  desplazar e ir al estado 75
+    READLINE     desplazar e ir al estado 76
+    TRUE         desplazar e ir al estado 77
+    FALSE        desplazar e ir al estado 78
+    LFTPARTH     desplazar e ir al estado 79
+    INTVAL       desplazar e ir al estado 81
+    DOUBLEVAL    desplazar e ir al estado 82
+    STRINGVAL    desplazar e ir al estado 83
+    NULLVAL      desplazar e ir al estado 84
+    ID           desplazar e ir al estado 106
+    SUB          desplazar e ir al estado 86
+    NOT          desplazar e ir al estado 87
 
-    $default  reduce using rule 95 (Constant)
+    Expr      ir al estado 115
+    LValue    ir al estado 98
+    Call      ir al estado 99
+    Constant  ir al estado 100
 
 
-State 80
+Estado 80
 
-   96 Constant: FALSE .
+   40 StmtBlock: LFTGATE Stmts RGHGATE .
 
-    $default  reduce using rule 96 (Constant)
+    $default  reduce usando la regla 40 (StmtBlock)
 
 
-State 81
+Estado 81
 
-   66 Expr: LFTPARTH . Expr RGHPARTH
+   95 Constant: INTVAL .
 
-    THIS         shift, and go to state 68
-    NEW          shift, and go to state 74
-    NEWARRAY     shift, and go to state 75
-    READINTEGER  shift, and go to state 77
-    READLINE     shift, and go to state 78
-    TRUE         shift, and go to state 79
-    FALSE        shift, and go to state 80
-    LFTPARTH     shift, and go to state 81
-    INTVAL       shift, and go to state 83
-    DOUBLEVAL    shift, and go to state 84
-    STRINGVAL    shift, and go to state 85
-    NULLVAL      shift, and go to state 86
-    ID           shift, and go to state 108
-    SUB          shift, and go to state 88
-    NOT          shift, and go to state 89
+    $default  reduce usando la regla 95 (Constant)
 
-    Expr      go to state 117
-    LValue    go to state 100
-    Call      go to state 101
-    Constant  go to state 102
 
+Estado 82
 
-State 82
+   96 Constant: DOUBLEVAL .
 
-   38 StmtBlock: LFTGATE Stmts RGHGATE .
+    $default  reduce usando la regla 96 (Constant)
 
-    $default  reduce using rule 38 (StmtBlock)
 
+Estado 83
 
-State 83
+   99 Constant: STRINGVAL .
 
-   93 Constant: INTVAL .
+    $default  reduce usando la regla 99 (Constant)
 
-    $default  reduce using rule 93 (Constant)
 
+Estado 84
 
-State 84
+  100 Constant: NULLVAL .
 
-   94 Constant: DOUBLEVAL .
+    $default  reduce usando la regla 100 (Constant)
 
-    $default  reduce using rule 94 (Constant)
 
-
-State 85
-
-   97 Constant: STRINGVAL .
-
-    $default  reduce using rule 97 (Constant)
-
-
-State 86
-
-   98 Constant: NULLVAL .
-
-    $default  reduce using rule 98 (Constant)
-
-
-State 87
+Estado 85
 
    14 Type: ID .
-   86 LValue: ID .
-   89 Call: ID . LFTPARTH Actuals RGHPARTH
+   88 LValue: ID .
+   91 Call: ID . LFTPARTH Actuals RGHPARTH
 
-    LFTPARTH  shift, and go to state 118
+    LFTPARTH  desplazar e ir al estado 116
 
-    LFTBRCKT  reduce using rule 14 (Type)
-    LFTBRCKT  [reduce using rule 86 (LValue)]
-    LFTPARTH  [reduce using rule 86 (LValue)]
-    ID        reduce using rule 14 (Type)
-    ID        [reduce using rule 86 (LValue)]
-    $default  reduce using rule 86 (LValue)
+    LFTBRCKT  reduce usando la regla 14 (Type)
+    LFTBRCKT  [reduce usando la regla 88 (LValue)]
+    LFTPARTH  [reduce usando la regla 88 (LValue)]
+    ID        reduce usando la regla 14 (Type)
+    ID        [reduce usando la regla 88 (LValue)]
+    $default  reduce usando la regla 88 (LValue)
 
 
-State 88
+Estado 86
 
-   72 Expr: SUB . Expr
+   74 Expr: SUB . Expr
 
-    THIS         shift, and go to state 68
-    NEW          shift, and go to state 74
-    NEWARRAY     shift, and go to state 75
-    READINTEGER  shift, and go to state 77
-    READLINE     shift, and go to state 78
-    TRUE         shift, and go to state 79
-    FALSE        shift, and go to state 80
-    LFTPARTH     shift, and go to state 81
-    INTVAL       shift, and go to state 83
-    DOUBLEVAL    shift, and go to state 84
-    STRINGVAL    shift, and go to state 85
-    NULLVAL      shift, and go to state 86
-    ID           shift, and go to state 108
-    SUB          shift, and go to state 88
-    NOT          shift, and go to state 89
+    THIS         desplazar e ir al estado 66
+    NEW          desplazar e ir al estado 72
+    NEWARRAY     desplazar e ir al estado 73
+    READINTEGER  desplazar e ir al estado 75
+    READLINE     desplazar e ir al estado 76
+    TRUE         desplazar e ir al estado 77
+    FALSE        desplazar e ir al estado 78
+    LFTPARTH     desplazar e ir al estado 79
+    INTVAL       desplazar e ir al estado 81
+    DOUBLEVAL    desplazar e ir al estado 82
+    STRINGVAL    desplazar e ir al estado 83
+    NULLVAL      desplazar e ir al estado 84
+    ID           desplazar e ir al estado 106
+    SUB          desplazar e ir al estado 86
+    NOT          desplazar e ir al estado 87
 
-    Expr      go to state 119
-    LValue    go to state 100
-    Call      go to state 101
-    Constant  go to state 102
+    Expr      ir al estado 117
+    LValue    ir al estado 98
+    Call      ir al estado 99
+    Constant  ir al estado 100
 
 
-State 89
+Estado 87
 
-   81 Expr: NOT . Expr
+   83 Expr: NOT . Expr
 
-    THIS         shift, and go to state 68
-    NEW          shift, and go to state 74
-    NEWARRAY     shift, and go to state 75
-    READINTEGER  shift, and go to state 77
-    READLINE     shift, and go to state 78
-    TRUE         shift, and go to state 79
-    FALSE        shift, and go to state 80
-    LFTPARTH     shift, and go to state 81
-    INTVAL       shift, and go to state 83
-    DOUBLEVAL    shift, and go to state 84
-    STRINGVAL    shift, and go to state 85
-    NULLVAL      shift, and go to state 86
-    ID           shift, and go to state 108
-    SUB          shift, and go to state 88
-    NOT          shift, and go to state 89
+    THIS         desplazar e ir al estado 66
+    NEW          desplazar e ir al estado 72
+    NEWARRAY     desplazar e ir al estado 73
+    READINTEGER  desplazar e ir al estado 75
+    READLINE     desplazar e ir al estado 76
+    TRUE         desplazar e ir al estado 77
+    FALSE        desplazar e ir al estado 78
+    LFTPARTH     desplazar e ir al estado 79
+    INTVAL       desplazar e ir al estado 81
+    DOUBLEVAL    desplazar e ir al estado 82
+    STRINGVAL    desplazar e ir al estado 83
+    NULLVAL      desplazar e ir al estado 84
+    ID           desplazar e ir al estado 106
+    SUB          desplazar e ir al estado 86
+    NOT          desplazar e ir al estado 87
 
-    Expr      go to state 120
-    LValue    go to state 100
-    Call      go to state 101
-    Constant  go to state 102
+    Expr      ir al estado 118
+    LValue    ir al estado 98
+    Call      ir al estado 99
+    Constant  ir al estado 100
 
 
-State 90
+Estado 88
 
-   49 Stmt: VariableDecl .
+   51 Stmt: VariableDecl .
 
-    $default  reduce using rule 49 (Stmt)
+    $default  reduce usando la regla 51 (Stmt)
 
 
-State 91
+Estado 89
 
-   47 Stmt: StmtBlock .
+   49 Stmt: StmtBlock .
 
-    $default  reduce using rule 47 (Stmt)
+    $default  reduce usando la regla 49 (Stmt)
 
 
-State 92
+Estado 90
 
-   39 Stmts: Stmts Stmt .
+   41 Stmts: Stmts Stmt .
 
-    $default  reduce using rule 39 (Stmts)
+    $default  reduce usando la regla 41 (Stmts)
 
 
-State 93
+Estado 91
 
-   41 Stmt: IfStmt .
+   43 Stmt: IfStmt .
 
-    $default  reduce using rule 41 (Stmt)
+    $default  reduce usando la regla 43 (Stmt)
 
 
-State 94
+Estado 92
 
-   42 Stmt: WhileStmt .
+   44 Stmt: WhileStmt .
 
-    $default  reduce using rule 42 (Stmt)
+    $default  reduce usando la regla 44 (Stmt)
 
 
-State 95
+Estado 93
 
-   43 Stmt: ForStmt .
+   45 Stmt: ForStmt .
 
-    $default  reduce using rule 43 (Stmt)
+    $default  reduce usando la regla 45 (Stmt)
 
 
-State 96
+Estado 94
 
-   45 Stmt: ReturnStmt .
+   47 Stmt: ReturnStmt .
 
-    $default  reduce using rule 45 (Stmt)
+    $default  reduce usando la regla 47 (Stmt)
 
 
-State 97
+Estado 95
 
-   44 Stmt: BreakStmt .
+   46 Stmt: BreakStmt .
 
-    $default  reduce using rule 44 (Stmt)
+    $default  reduce usando la regla 46 (Stmt)
 
 
-State 98
+Estado 96
 
-   46 Stmt: PrintStmt .
+   48 Stmt: PrintStmt .
 
-    $default  reduce using rule 46 (Stmt)
+    $default  reduce usando la regla 48 (Stmt)
 
 
-State 99
+Estado 97
 
-   48 Stmt: Expr .
-   67 Expr: Expr . SUM Expr
-   68     | Expr . SUB Expr
-   69     | Expr . MULT Expr
-   70     | Expr . DIV Expr
-   71     | Expr . MOD Expr
-   73     | Expr . LESSTHN Expr
-   74     | Expr . LESSEQL Expr
-   75     | Expr . GREATERTHN Expr
-   76     | Expr . GREATEREQL Expr
-   77     | Expr . SAME Expr
-   78     | Expr . DIFF Expr
-   79     | Expr . AND Expr
-   80     | Expr . OR Expr
-   87 LValue: Expr . POINT ID
-   88       | Expr . LFTBRCKT Expr RGHBRCKT
-   90 Call: Expr . POINT ID LFTPARTH Actuals RGHPARTH
+   50 Stmt: Expr .
+   69 Expr: Expr . SUM Expr
+   70     | Expr . SUB Expr
+   71     | Expr . MULT Expr
+   72     | Expr . DIV Expr
+   73     | Expr . MOD Expr
+   75     | Expr . LESSTHN Expr
+   76     | Expr . LESSEQL Expr
+   77     | Expr . GREATERTHN Expr
+   78     | Expr . GREATEREQL Expr
+   79     | Expr . SAME Expr
+   80     | Expr . DIFF Expr
+   81     | Expr . AND Expr
+   82     | Expr . OR Expr
+   89 LValue: Expr . POINT ID
+   90       | Expr . LFTBRCKT Expr RGHBRCKT
+   92 Call: Expr . POINT ID LFTPARTH Actuals RGHPARTH
 
-    POINT       shift, and go to state 121
-    LFTBRCKT    shift, and go to state 122
-    OR          shift, and go to state 123
-    LESSEQL     shift, and go to state 124
-    SUM         shift, and go to state 125
-    SUB         shift, and go to state 126
-    MULT        shift, and go to state 127
-    DIV         shift, and go to state 128
-    LESSTHN     shift, and go to state 129
-    GREATERTHN  shift, and go to state 130
-    MOD         shift, and go to state 131
-    GREATEREQL  shift, and go to state 132
-    SAME        shift, and go to state 133
-    DIFF        shift, and go to state 134
-    AND         shift, and go to state 135
+    POINT       desplazar e ir al estado 119
+    LFTBRCKT    desplazar e ir al estado 120
+    OR          desplazar e ir al estado 121
+    LESSEQL     desplazar e ir al estado 122
+    SUM         desplazar e ir al estado 123
+    SUB         desplazar e ir al estado 124
+    MULT        desplazar e ir al estado 125
+    DIV         desplazar e ir al estado 126
+    LESSTHN     desplazar e ir al estado 127
+    GREATERTHN  desplazar e ir al estado 128
+    MOD         desplazar e ir al estado 129
+    GREATEREQL  desplazar e ir al estado 130
+    SAME        desplazar e ir al estado 131
+    DIFF        desplazar e ir al estado 132
+    AND         desplazar e ir al estado 133
 
-    SUB       [reduce using rule 48 (Stmt)]
-    $default  reduce using rule 48 (Stmt)
+    SUB       [reduce usando la regla 50 (Stmt)]
+    $default  reduce usando la regla 50 (Stmt)
 
 
-State 100
+Estado 98
 
-   61 Expr: LValue . EQUAL Expr
-   63     | LValue .
+   63 Expr: LValue . EQUAL Expr
+   65     | LValue .
 
-    EQUAL  shift, and go to state 136
+    EQUAL  desplazar e ir al estado 134
 
-    $default  reduce using rule 63 (Expr)
+    $default  reduce usando la regla 65 (Expr)
 
 
-State 101
+Estado 99
 
-   65 Expr: Call .
+   67 Expr: Call .
 
-    $default  reduce using rule 65 (Expr)
+    $default  reduce usando la regla 67 (Expr)
 
 
-State 102
+Estado 100
 
-   62 Expr: Constant .
+   64 Expr: Constant .
 
-    $default  reduce using rule 62 (Expr)
+    $default  reduce usando la regla 64 (Expr)
 
 
-State 103
+Estado 101
 
-   37 Prototype: VOID ID LFTPARTH Formals . RGHPARTH SEMICLN
+   39 Prototype: VOID ID LFTPARTH Formals . RGHPARTH SEMICLN
 
-    RGHPARTH  shift, and go to state 137
+    RGHPARTH  desplazar e ir al estado 135
 
 
-State 104
+Estado 102
 
-   36 Prototype: Type ID LFTPARTH Formals . RGHPARTH SEMICLN
+   38 Prototype: Type ID LFTPARTH Formals . RGHPARTH SEMICLN
 
-    RGHPARTH  shift, and go to state 138
+    RGHPARTH  desplazar e ir al estado 136
 
 
-State 105
+Estado 103
 
-   55 ForStmt: FOR LFTPARTH . PossibleExpr SEMICLN PossibleExpr SEMICLN PossibleExpr RGHPARTH Stmt
+   57 ForStmt: FOR LFTPARTH . PossibleExpr SEMICLN PossibleExpr SEMICLN PossibleExpr RGHPARTH Stmt
 
-    THIS         shift, and go to state 68
-    NEW          shift, and go to state 74
-    NEWARRAY     shift, and go to state 75
-    READINTEGER  shift, and go to state 77
-    READLINE     shift, and go to state 78
-    TRUE         shift, and go to state 79
-    FALSE        shift, and go to state 80
-    LFTPARTH     shift, and go to state 81
-    INTVAL       shift, and go to state 83
-    DOUBLEVAL    shift, and go to state 84
-    STRINGVAL    shift, and go to state 85
-    NULLVAL      shift, and go to state 86
-    ID           shift, and go to state 108
-    SUB          shift, and go to state 88
-    NOT          shift, and go to state 89
+    THIS         desplazar e ir al estado 66
+    NEW          desplazar e ir al estado 72
+    NEWARRAY     desplazar e ir al estado 73
+    READINTEGER  desplazar e ir al estado 75
+    READLINE     desplazar e ir al estado 76
+    TRUE         desplazar e ir al estado 77
+    FALSE        desplazar e ir al estado 78
+    LFTPARTH     desplazar e ir al estado 79
+    INTVAL       desplazar e ir al estado 81
+    DOUBLEVAL    desplazar e ir al estado 82
+    STRINGVAL    desplazar e ir al estado 83
+    NULLVAL      desplazar e ir al estado 84
+    ID           desplazar e ir al estado 106
+    SUB          desplazar e ir al estado 86
+    NOT          desplazar e ir al estado 87
 
-    $default  reduce using rule 51 (PossibleExpr)
+    $default  reduce usando la regla 53 (PossibleExpr)
 
-    PossibleExpr  go to state 139
-    Expr          go to state 110
-    LValue        go to state 100
-    Call          go to state 101
-    Constant      go to state 102
+    PossibleExpr  ir al estado 137
+    Expr          ir al estado 108
+    LValue        ir al estado 98
+    Call          ir al estado 99
+    Constant      ir al estado 100
 
 
-State 106
+Estado 104
 
-   54 WhileStmt: WHILE LFTPARTH . Expr RGHPARTH Stmt
+   56 WhileStmt: WHILE LFTPARTH . Expr RGHPARTH Stmt
 
-    THIS         shift, and go to state 68
-    NEW          shift, and go to state 74
-    NEWARRAY     shift, and go to state 75
-    READINTEGER  shift, and go to state 77
-    READLINE     shift, and go to state 78
-    TRUE         shift, and go to state 79
-    FALSE        shift, and go to state 80
-    LFTPARTH     shift, and go to state 81
-    INTVAL       shift, and go to state 83
-    DOUBLEVAL    shift, and go to state 84
-    STRINGVAL    shift, and go to state 85
-    NULLVAL      shift, and go to state 86
-    ID           shift, and go to state 108
-    SUB          shift, and go to state 88
-    NOT          shift, and go to state 89
+    THIS         desplazar e ir al estado 66
+    NEW          desplazar e ir al estado 72
+    NEWARRAY     desplazar e ir al estado 73
+    READINTEGER  desplazar e ir al estado 75
+    READLINE     desplazar e ir al estado 76
+    TRUE         desplazar e ir al estado 77
+    FALSE        desplazar e ir al estado 78
+    LFTPARTH     desplazar e ir al estado 79
+    INTVAL       desplazar e ir al estado 81
+    DOUBLEVAL    desplazar e ir al estado 82
+    STRINGVAL    desplazar e ir al estado 83
+    NULLVAL      desplazar e ir al estado 84
+    ID           desplazar e ir al estado 106
+    SUB          desplazar e ir al estado 86
+    NOT          desplazar e ir al estado 87
 
-    Expr      go to state 140
-    LValue    go to state 100
-    Call      go to state 101
-    Constant  go to state 102
+    Expr      ir al estado 138
+    LValue    ir al estado 98
+    Call      ir al estado 99
+    Constant  ir al estado 100
 
 
-State 107
+Estado 105
 
-   52 IfStmt: IF LFTPARTH . Expr RGHPARTH Stmt PossibleElse
+   54 IfStmt: IF LFTPARTH . Expr RGHPARTH Stmt PossibleElse
 
-    THIS         shift, and go to state 68
-    NEW          shift, and go to state 74
-    NEWARRAY     shift, and go to state 75
-    READINTEGER  shift, and go to state 77
-    READLINE     shift, and go to state 78
-    TRUE         shift, and go to state 79
-    FALSE        shift, and go to state 80
-    LFTPARTH     shift, and go to state 81
-    INTVAL       shift, and go to state 83
-    DOUBLEVAL    shift, and go to state 84
-    STRINGVAL    shift, and go to state 85
-    NULLVAL      shift, and go to state 86
-    ID           shift, and go to state 108
-    SUB          shift, and go to state 88
-    NOT          shift, and go to state 89
+    THIS         desplazar e ir al estado 66
+    NEW          desplazar e ir al estado 72
+    NEWARRAY     desplazar e ir al estado 73
+    READINTEGER  desplazar e ir al estado 75
+    READLINE     desplazar e ir al estado 76
+    TRUE         desplazar e ir al estado 77
+    FALSE        desplazar e ir al estado 78
+    LFTPARTH     desplazar e ir al estado 79
+    INTVAL       desplazar e ir al estado 81
+    DOUBLEVAL    desplazar e ir al estado 82
+    STRINGVAL    desplazar e ir al estado 83
+    NULLVAL      desplazar e ir al estado 84
+    ID           desplazar e ir al estado 106
+    SUB          desplazar e ir al estado 86
+    NOT          desplazar e ir al estado 87
 
-    Expr      go to state 141
-    LValue    go to state 100
-    Call      go to state 101
-    Constant  go to state 102
+    Expr      ir al estado 139
+    LValue    ir al estado 98
+    Call      ir al estado 99
+    Constant  ir al estado 100
 
 
-State 108
+Estado 106
 
-   86 LValue: ID .
-   89 Call: ID . LFTPARTH Actuals RGHPARTH
+   88 LValue: ID .
+   91 Call: ID . LFTPARTH Actuals RGHPARTH
 
-    LFTPARTH  shift, and go to state 118
+    LFTPARTH  desplazar e ir al estado 116
 
-    LFTPARTH  [reduce using rule 86 (LValue)]
-    $default  reduce using rule 86 (LValue)
+    LFTPARTH  [reduce usando la regla 88 (LValue)]
+    $default  reduce usando la regla 88 (LValue)
 
 
-State 109
+Estado 107
 
-   56 ReturnStmt: RETURN PossibleExpr . SEMICLN
+   58 ReturnStmt: RETURN PossibleExpr . SEMICLN
 
-    SEMICLN  shift, and go to state 142
+    SEMICLN  desplazar e ir al estado 140
 
 
-State 110
+Estado 108
 
-   50 PossibleExpr: Expr .
-   67 Expr: Expr . SUM Expr
-   68     | Expr . SUB Expr
-   69     | Expr . MULT Expr
-   70     | Expr . DIV Expr
-   71     | Expr . MOD Expr
-   73     | Expr . LESSTHN Expr
-   74     | Expr . LESSEQL Expr
-   75     | Expr . GREATERTHN Expr
-   76     | Expr . GREATEREQL Expr
-   77     | Expr . SAME Expr
-   78     | Expr . DIFF Expr
-   79     | Expr . AND Expr
-   80     | Expr . OR Expr
-   87 LValue: Expr . POINT ID
-   88       | Expr . LFTBRCKT Expr RGHBRCKT
-   90 Call: Expr . POINT ID LFTPARTH Actuals RGHPARTH
+   52 PossibleExpr: Expr .
+   69 Expr: Expr . SUM Expr
+   70     | Expr . SUB Expr
+   71     | Expr . MULT Expr
+   72     | Expr . DIV Expr
+   73     | Expr . MOD Expr
+   75     | Expr . LESSTHN Expr
+   76     | Expr . LESSEQL Expr
+   77     | Expr . GREATERTHN Expr
+   78     | Expr . GREATEREQL Expr
+   79     | Expr . SAME Expr
+   80     | Expr . DIFF Expr
+   81     | Expr . AND Expr
+   82     | Expr . OR Expr
+   89 LValue: Expr . POINT ID
+   90       | Expr . LFTBRCKT Expr RGHBRCKT
+   92 Call: Expr . POINT ID LFTPARTH Actuals RGHPARTH
 
-    POINT       shift, and go to state 121
-    LFTBRCKT    shift, and go to state 122
-    OR          shift, and go to state 123
-    LESSEQL     shift, and go to state 124
-    SUM         shift, and go to state 125
-    SUB         shift, and go to state 126
-    MULT        shift, and go to state 127
-    DIV         shift, and go to state 128
-    LESSTHN     shift, and go to state 129
-    GREATERTHN  shift, and go to state 130
-    MOD         shift, and go to state 131
-    GREATEREQL  shift, and go to state 132
-    SAME        shift, and go to state 133
-    DIFF        shift, and go to state 134
-    AND         shift, and go to state 135
+    POINT       desplazar e ir al estado 119
+    LFTBRCKT    desplazar e ir al estado 120
+    OR          desplazar e ir al estado 121
+    LESSEQL     desplazar e ir al estado 122
+    SUM         desplazar e ir al estado 123
+    SUB         desplazar e ir al estado 124
+    MULT        desplazar e ir al estado 125
+    DIV         desplazar e ir al estado 126
+    LESSTHN     desplazar e ir al estado 127
+    GREATERTHN  desplazar e ir al estado 128
+    MOD         desplazar e ir al estado 129
+    GREATEREQL  desplazar e ir al estado 130
+    SAME        desplazar e ir al estado 131
+    DIFF        desplazar e ir al estado 132
+    AND         desplazar e ir al estado 133
 
-    $default  reduce using rule 50 (PossibleExpr)
+    $default  reduce usando la regla 52 (PossibleExpr)
 
 
-State 111
+Estado 109
 
-   57 BreakStmt: BREAK SEMICLN .
+   59 BreakStmt: BREAK SEMICLN .
 
-    $default  reduce using rule 57 (BreakStmt)
+    $default  reduce usando la regla 59 (BreakStmt)
 
 
-State 112
+Estado 110
 
-   84 Expr: NEW LFTPARTH . ID RGHPARTH
+   86 Expr: NEW LFTPARTH . ID RGHPARTH
 
-    ID  shift, and go to state 143
+    ID  desplazar e ir al estado 141
 
 
-State 113
+Estado 111
 
-   85 Expr: NEWARRAY LFTPARTH . Expr COMMA Type RGHPARTH
+   87 Expr: NEWARRAY LFTPARTH . Expr COMMA Type RGHPARTH
 
-    THIS         shift, and go to state 68
-    NEW          shift, and go to state 74
-    NEWARRAY     shift, and go to state 75
-    READINTEGER  shift, and go to state 77
-    READLINE     shift, and go to state 78
-    TRUE         shift, and go to state 79
-    FALSE        shift, and go to state 80
-    LFTPARTH     shift, and go to state 81
-    INTVAL       shift, and go to state 83
-    DOUBLEVAL    shift, and go to state 84
-    STRINGVAL    shift, and go to state 85
-    NULLVAL      shift, and go to state 86
-    ID           shift, and go to state 108
-    SUB          shift, and go to state 88
-    NOT          shift, and go to state 89
+    THIS         desplazar e ir al estado 66
+    NEW          desplazar e ir al estado 72
+    NEWARRAY     desplazar e ir al estado 73
+    READINTEGER  desplazar e ir al estado 75
+    READLINE     desplazar e ir al estado 76
+    TRUE         desplazar e ir al estado 77
+    FALSE        desplazar e ir al estado 78
+    LFTPARTH     desplazar e ir al estado 79
+    INTVAL       desplazar e ir al estado 81
+    DOUBLEVAL    desplazar e ir al estado 82
+    STRINGVAL    desplazar e ir al estado 83
+    NULLVAL      desplazar e ir al estado 84
+    ID           desplazar e ir al estado 106
+    SUB          desplazar e ir al estado 86
+    NOT          desplazar e ir al estado 87
 
-    Expr      go to state 144
-    LValue    go to state 100
-    Call      go to state 101
-    Constant  go to state 102
+    Expr      ir al estado 142
+    LValue    ir al estado 98
+    Call      ir al estado 99
+    Constant  ir al estado 100
 
 
-State 114
+Estado 112
 
-   58 PrintStmt: PRINT LFTPARTH . ListExpr RGHPARTH SEMICLN
+   60 PrintStmt: PRINT LFTPARTH . ListExpr RGHPARTH SEMICLN
 
-    THIS         shift, and go to state 68
-    NEW          shift, and go to state 74
-    NEWARRAY     shift, and go to state 75
-    READINTEGER  shift, and go to state 77
-    READLINE     shift, and go to state 78
-    TRUE         shift, and go to state 79
-    FALSE        shift, and go to state 80
-    LFTPARTH     shift, and go to state 81
-    INTVAL       shift, and go to state 83
-    DOUBLEVAL    shift, and go to state 84
-    STRINGVAL    shift, and go to state 85
-    NULLVAL      shift, and go to state 86
-    ID           shift, and go to state 108
-    SUB          shift, and go to state 88
-    NOT          shift, and go to state 89
+    THIS         desplazar e ir al estado 66
+    NEW          desplazar e ir al estado 72
+    NEWARRAY     desplazar e ir al estado 73
+    READINTEGER  desplazar e ir al estado 75
+    READLINE     desplazar e ir al estado 76
+    TRUE         desplazar e ir al estado 77
+    FALSE        desplazar e ir al estado 78
+    LFTPARTH     desplazar e ir al estado 79
+    INTVAL       desplazar e ir al estado 81
+    DOUBLEVAL    desplazar e ir al estado 82
+    STRINGVAL    desplazar e ir al estado 83
+    NULLVAL      desplazar e ir al estado 84
+    ID           desplazar e ir al estado 106
+    SUB          desplazar e ir al estado 86
+    NOT          desplazar e ir al estado 87
 
-    ListExpr  go to state 145
-    Expr      go to state 146
-    LValue    go to state 100
-    Call      go to state 101
-    Constant  go to state 102
+    ListExpr  ir al estado 143
+    Expr      ir al estado 144
+    LValue    ir al estado 98
+    Call      ir al estado 99
+    Constant  ir al estado 100
 
 
-State 115
+Estado 113
 
-   82 Expr: READINTEGER LFTPARTH . RGHPARTH
+   84 Expr: READINTEGER LFTPARTH . RGHPARTH
 
-    RGHPARTH  shift, and go to state 147
+    RGHPARTH  desplazar e ir al estado 145
 
 
-State 116
+Estado 114
 
-   83 Expr: READLINE LFTPARTH . RGHPARTH
+   85 Expr: READLINE LFTPARTH . RGHPARTH
 
-    RGHPARTH  shift, and go to state 148
+    RGHPARTH  desplazar e ir al estado 146
 
 
-State 117
+Estado 115
 
-   66 Expr: LFTPARTH Expr . RGHPARTH
-   67     | Expr . SUM Expr
-   68     | Expr . SUB Expr
-   69     | Expr . MULT Expr
-   70     | Expr . DIV Expr
-   71     | Expr . MOD Expr
-   73     | Expr . LESSTHN Expr
-   74     | Expr . LESSEQL Expr
-   75     | Expr . GREATERTHN Expr
-   76     | Expr . GREATEREQL Expr
-   77     | Expr . SAME Expr
-   78     | Expr . DIFF Expr
-   79     | Expr . AND Expr
-   80     | Expr . OR Expr
-   87 LValue: Expr . POINT ID
-   88       | Expr . LFTBRCKT Expr RGHBRCKT
-   90 Call: Expr . POINT ID LFTPARTH Actuals RGHPARTH
+   68 Expr: LFTPARTH Expr . RGHPARTH
+   69     | Expr . SUM Expr
+   70     | Expr . SUB Expr
+   71     | Expr . MULT Expr
+   72     | Expr . DIV Expr
+   73     | Expr . MOD Expr
+   75     | Expr . LESSTHN Expr
+   76     | Expr . LESSEQL Expr
+   77     | Expr . GREATERTHN Expr
+   78     | Expr . GREATEREQL Expr
+   79     | Expr . SAME Expr
+   80     | Expr . DIFF Expr
+   81     | Expr . AND Expr
+   82     | Expr . OR Expr
+   89 LValue: Expr . POINT ID
+   90       | Expr . LFTBRCKT Expr RGHBRCKT
+   92 Call: Expr . POINT ID LFTPARTH Actuals RGHPARTH
 
-    POINT       shift, and go to state 121
-    LFTBRCKT    shift, and go to state 122
-    RGHPARTH    shift, and go to state 149
-    OR          shift, and go to state 123
-    LESSEQL     shift, and go to state 124
-    SUM         shift, and go to state 125
-    SUB         shift, and go to state 126
-    MULT        shift, and go to state 127
-    DIV         shift, and go to state 128
-    LESSTHN     shift, and go to state 129
-    GREATERTHN  shift, and go to state 130
-    MOD         shift, and go to state 131
-    GREATEREQL  shift, and go to state 132
-    SAME        shift, and go to state 133
-    DIFF        shift, and go to state 134
-    AND         shift, and go to state 135
+    POINT       desplazar e ir al estado 119
+    LFTBRCKT    desplazar e ir al estado 120
+    RGHPARTH    desplazar e ir al estado 147
+    OR          desplazar e ir al estado 121
+    LESSEQL     desplazar e ir al estado 122
+    SUM         desplazar e ir al estado 123
+    SUB         desplazar e ir al estado 124
+    MULT        desplazar e ir al estado 125
+    DIV         desplazar e ir al estado 126
+    LESSTHN     desplazar e ir al estado 127
+    GREATERTHN  desplazar e ir al estado 128
+    MOD         desplazar e ir al estado 129
+    GREATEREQL  desplazar e ir al estado 130
+    SAME        desplazar e ir al estado 131
+    DIFF        desplazar e ir al estado 132
+    AND         desplazar e ir al estado 133
 
 
-State 118
+Estado 116
 
-   89 Call: ID LFTPARTH . Actuals RGHPARTH
+   91 Call: ID LFTPARTH . Actuals RGHPARTH
 
-    THIS         shift, and go to state 68
-    NEW          shift, and go to state 74
-    NEWARRAY     shift, and go to state 75
-    READINTEGER  shift, and go to state 77
-    READLINE     shift, and go to state 78
-    TRUE         shift, and go to state 79
-    FALSE        shift, and go to state 80
-    LFTPARTH     shift, and go to state 81
-    INTVAL       shift, and go to state 83
-    DOUBLEVAL    shift, and go to state 84
-    STRINGVAL    shift, and go to state 85
-    NULLVAL      shift, and go to state 86
-    ID           shift, and go to state 108
-    SUB          shift, and go to state 88
-    NOT          shift, and go to state 89
+    THIS         desplazar e ir al estado 66
+    NEW          desplazar e ir al estado 72
+    NEWARRAY     desplazar e ir al estado 73
+    READINTEGER  desplazar e ir al estado 75
+    READLINE     desplazar e ir al estado 76
+    TRUE         desplazar e ir al estado 77
+    FALSE        desplazar e ir al estado 78
+    LFTPARTH     desplazar e ir al estado 79
+    INTVAL       desplazar e ir al estado 81
+    DOUBLEVAL    desplazar e ir al estado 82
+    STRINGVAL    desplazar e ir al estado 83
+    NULLVAL      desplazar e ir al estado 84
+    ID           desplazar e ir al estado 106
+    SUB          desplazar e ir al estado 86
+    NOT          desplazar e ir al estado 87
 
-    $default  reduce using rule 92 (Actuals)
+    $default  reduce usando la regla 94 (Actuals)
 
-    ListExpr  go to state 150
-    Expr      go to state 146
-    LValue    go to state 100
-    Call      go to state 101
-    Actuals   go to state 151
-    Constant  go to state 102
+    ListExpr  ir al estado 148
+    Expr      ir al estado 144
+    LValue    ir al estado 98
+    Call      ir al estado 99
+    Actuals   ir al estado 149
+    Constant  ir al estado 100
 
 
-State 119
+Estado 117
 
-   67 Expr: Expr . SUM Expr
-   68     | Expr . SUB Expr
-   69     | Expr . MULT Expr
-   70     | Expr . DIV Expr
-   71     | Expr . MOD Expr
-   72     | SUB Expr .
-   73     | Expr . LESSTHN Expr
-   74     | Expr . LESSEQL Expr
-   75     | Expr . GREATERTHN Expr
-   76     | Expr . GREATEREQL Expr
-   77     | Expr . SAME Expr
-   78     | Expr . DIFF Expr
-   79     | Expr . AND Expr
-   80     | Expr . OR Expr
-   87 LValue: Expr . POINT ID
-   88       | Expr . LFTBRCKT Expr RGHBRCKT
-   90 Call: Expr . POINT ID LFTPARTH Actuals RGHPARTH
+   69 Expr: Expr . SUM Expr
+   70     | Expr . SUB Expr
+   71     | Expr . MULT Expr
+   72     | Expr . DIV Expr
+   73     | Expr . MOD Expr
+   74     | SUB Expr .
+   75     | Expr . LESSTHN Expr
+   76     | Expr . LESSEQL Expr
+   77     | Expr . GREATERTHN Expr
+   78     | Expr . GREATEREQL Expr
+   79     | Expr . SAME Expr
+   80     | Expr . DIFF Expr
+   81     | Expr . AND Expr
+   82     | Expr . OR Expr
+   89 LValue: Expr . POINT ID
+   90       | Expr . LFTBRCKT Expr RGHBRCKT
+   92 Call: Expr . POINT ID LFTPARTH Actuals RGHPARTH
 
-    POINT     shift, and go to state 121
-    LFTBRCKT  shift, and go to state 122
-    OR        shift, and go to state 123
-    SAME      shift, and go to state 133
-    DIFF      shift, and go to state 134
-    AND       shift, and go to state 135
+    POINT     desplazar e ir al estado 119
+    LFTBRCKT  desplazar e ir al estado 120
+    OR        desplazar e ir al estado 121
+    SAME      desplazar e ir al estado 131
+    DIFF      desplazar e ir al estado 132
+    AND       desplazar e ir al estado 133
 
-    POINT     [reduce using rule 72 (Expr)]
-    LFTBRCKT  [reduce using rule 72 (Expr)]
-    $default  reduce using rule 72 (Expr)
+    POINT     [reduce usando la regla 74 (Expr)]
+    LFTBRCKT  [reduce usando la regla 74 (Expr)]
+    $default  reduce usando la regla 74 (Expr)
 
 
-State 120
+Estado 118
 
-   67 Expr: Expr . SUM Expr
-   68     | Expr . SUB Expr
-   69     | Expr . MULT Expr
-   70     | Expr . DIV Expr
-   71     | Expr . MOD Expr
-   73     | Expr . LESSTHN Expr
-   74     | Expr . LESSEQL Expr
-   75     | Expr . GREATERTHN Expr
-   76     | Expr . GREATEREQL Expr
-   77     | Expr . SAME Expr
-   78     | Expr . DIFF Expr
-   79     | Expr . AND Expr
-   80     | Expr . OR Expr
-   81     | NOT Expr .
-   87 LValue: Expr . POINT ID
-   88       | Expr . LFTBRCKT Expr RGHBRCKT
-   90 Call: Expr . POINT ID LFTPARTH Actuals RGHPARTH
+   69 Expr: Expr . SUM Expr
+   70     | Expr . SUB Expr
+   71     | Expr . MULT Expr
+   72     | Expr . DIV Expr
+   73     | Expr . MOD Expr
+   75     | Expr . LESSTHN Expr
+   76     | Expr . LESSEQL Expr
+   77     | Expr . GREATERTHN Expr
+   78     | Expr . GREATEREQL Expr
+   79     | Expr . SAME Expr
+   80     | Expr . DIFF Expr
+   81     | Expr . AND Expr
+   82     | Expr . OR Expr
+   83     | NOT Expr .
+   89 LValue: Expr . POINT ID
+   90       | Expr . LFTBRCKT Expr RGHBRCKT
+   92 Call: Expr . POINT ID LFTPARTH Actuals RGHPARTH
 
-    POINT     shift, and go to state 121
-    LFTBRCKT  shift, and go to state 122
+    POINT     desplazar e ir al estado 119
+    LFTBRCKT  desplazar e ir al estado 120
 
-    POINT     [reduce using rule 81 (Expr)]
-    LFTBRCKT  [reduce using rule 81 (Expr)]
-    $default  reduce using rule 81 (Expr)
+    POINT     [reduce usando la regla 83 (Expr)]
+    LFTBRCKT  [reduce usando la regla 83 (Expr)]
+    $default  reduce usando la regla 83 (Expr)
 
 
-State 121
+Estado 119
 
-   87 LValue: Expr POINT . ID
-   90 Call: Expr POINT . ID LFTPARTH Actuals RGHPARTH
-
-    ID  shift, and go to state 152
+   89 LValue: Expr POINT . ID
+   92 Call: Expr POINT . ID LFTPARTH Actuals RGHPARTH
+
+    ID  desplazar e ir al estado 150
 
 
-State 122
-
-   88 LValue: Expr LFTBRCKT . Expr RGHBRCKT
+Estado 120
+
+   90 LValue: Expr LFTBRCKT . Expr RGHBRCKT
 
-    THIS         shift, and go to state 68
-    NEW          shift, and go to state 74
-    NEWARRAY     shift, and go to state 75
-    READINTEGER  shift, and go to state 77
-    READLINE     shift, and go to state 78
-    TRUE         shift, and go to state 79
-    FALSE        shift, and go to state 80
-    LFTPARTH     shift, and go to state 81
-    INTVAL       shift, and go to state 83
-    DOUBLEVAL    shift, and go to state 84
-    STRINGVAL    shift, and go to state 85
-    NULLVAL      shift, and go to state 86
-    ID           shift, and go to state 108
-    SUB          shift, and go to state 88
-    NOT          shift, and go to state 89
-
-    Expr      go to state 153
-    LValue    go to state 100
-    Call      go to state 101
-    Constant  go to state 102
-
-
-State 123
-
-   80 Expr: Expr OR . Expr
-
-    THIS         shift, and go to state 68
-    NEW          shift, and go to state 74
-    NEWARRAY     shift, and go to state 75
-    READINTEGER  shift, and go to state 77
-    READLINE     shift, and go to state 78
-    TRUE         shift, and go to state 79
-    FALSE        shift, and go to state 80
-    LFTPARTH     shift, and go to state 81
-    INTVAL       shift, and go to state 83
-    DOUBLEVAL    shift, and go to state 84
-    STRINGVAL    shift, and go to state 85
-    NULLVAL      shift, and go to state 86
-    ID           shift, and go to state 108
-    SUB          shift, and go to state 88
-    NOT          shift, and go to state 89
-
-    Expr      go to state 154
-    LValue    go to state 100
-    Call      go to state 101
-    Constant  go to state 102
-
-
-State 124
-
-   74 Expr: Expr LESSEQL . Expr
-
-    THIS         shift, and go to state 68
-    NEW          shift, and go to state 74
-    NEWARRAY     shift, and go to state 75
-    READINTEGER  shift, and go to state 77
-    READLINE     shift, and go to state 78
-    TRUE         shift, and go to state 79
-    FALSE        shift, and go to state 80
-    LFTPARTH     shift, and go to state 81
-    INTVAL       shift, and go to state 83
-    DOUBLEVAL    shift, and go to state 84
-    STRINGVAL    shift, and go to state 85
-    NULLVAL      shift, and go to state 86
-    ID           shift, and go to state 108
-    SUB          shift, and go to state 88
-    NOT          shift, and go to state 89
-
-    Expr      go to state 155
-    LValue    go to state 100
-    Call      go to state 101
-    Constant  go to state 102
-
-
-State 125
-
-   67 Expr: Expr SUM . Expr
-
-    THIS         shift, and go to state 68
-    NEW          shift, and go to state 74
-    NEWARRAY     shift, and go to state 75
-    READINTEGER  shift, and go to state 77
-    READLINE     shift, and go to state 78
-    TRUE         shift, and go to state 79
-    FALSE        shift, and go to state 80
-    LFTPARTH     shift, and go to state 81
-    INTVAL       shift, and go to state 83
-    DOUBLEVAL    shift, and go to state 84
-    STRINGVAL    shift, and go to state 85
-    NULLVAL      shift, and go to state 86
-    ID           shift, and go to state 108
-    SUB          shift, and go to state 88
-    NOT          shift, and go to state 89
-
-    Expr      go to state 156
-    LValue    go to state 100
-    Call      go to state 101
-    Constant  go to state 102
-
-
-State 126
-
-   68 Expr: Expr SUB . Expr
-
-    THIS         shift, and go to state 68
-    NEW          shift, and go to state 74
-    NEWARRAY     shift, and go to state 75
-    READINTEGER  shift, and go to state 77
-    READLINE     shift, and go to state 78
-    TRUE         shift, and go to state 79
-    FALSE        shift, and go to state 80
-    LFTPARTH     shift, and go to state 81
-    INTVAL       shift, and go to state 83
-    DOUBLEVAL    shift, and go to state 84
-    STRINGVAL    shift, and go to state 85
-    NULLVAL      shift, and go to state 86
-    ID           shift, and go to state 108
-    SUB          shift, and go to state 88
-    NOT          shift, and go to state 89
-
-    Expr      go to state 157
-    LValue    go to state 100
-    Call      go to state 101
-    Constant  go to state 102
-
-
-State 127
-
-   69 Expr: Expr MULT . Expr
-
-    THIS         shift, and go to state 68
-    NEW          shift, and go to state 74
-    NEWARRAY     shift, and go to state 75
-    READINTEGER  shift, and go to state 77
-    READLINE     shift, and go to state 78
-    TRUE         shift, and go to state 79
-    FALSE        shift, and go to state 80
-    LFTPARTH     shift, and go to state 81
-    INTVAL       shift, and go to state 83
-    DOUBLEVAL    shift, and go to state 84
-    STRINGVAL    shift, and go to state 85
-    NULLVAL      shift, and go to state 86
-    ID           shift, and go to state 108
-    SUB          shift, and go to state 88
-    NOT          shift, and go to state 89
-
-    Expr      go to state 158
-    LValue    go to state 100
-    Call      go to state 101
-    Constant  go to state 102
-
-
-State 128
-
-   70 Expr: Expr DIV . Expr
-
-    THIS         shift, and go to state 68
-    NEW          shift, and go to state 74
-    NEWARRAY     shift, and go to state 75
-    READINTEGER  shift, and go to state 77
-    READLINE     shift, and go to state 78
-    TRUE         shift, and go to state 79
-    FALSE        shift, and go to state 80
-    LFTPARTH     shift, and go to state 81
-    INTVAL       shift, and go to state 83
-    DOUBLEVAL    shift, and go to state 84
-    STRINGVAL    shift, and go to state 85
-    NULLVAL      shift, and go to state 86
-    ID           shift, and go to state 108
-    SUB          shift, and go to state 88
-    NOT          shift, and go to state 89
-
-    Expr      go to state 159
-    LValue    go to state 100
-    Call      go to state 101
-    Constant  go to state 102
-
-
-State 129
-
-   73 Expr: Expr LESSTHN . Expr
-
-    THIS         shift, and go to state 68
-    NEW          shift, and go to state 74
-    NEWARRAY     shift, and go to state 75
-    READINTEGER  shift, and go to state 77
-    READLINE     shift, and go to state 78
-    TRUE         shift, and go to state 79
-    FALSE        shift, and go to state 80
-    LFTPARTH     shift, and go to state 81
-    INTVAL       shift, and go to state 83
-    DOUBLEVAL    shift, and go to state 84
-    STRINGVAL    shift, and go to state 85
-    NULLVAL      shift, and go to state 86
-    ID           shift, and go to state 108
-    SUB          shift, and go to state 88
-    NOT          shift, and go to state 89
-
-    Expr      go to state 160
-    LValue    go to state 100
-    Call      go to state 101
-    Constant  go to state 102
-
-
-State 130
-
-   75 Expr: Expr GREATERTHN . Expr
-
-    THIS         shift, and go to state 68
-    NEW          shift, and go to state 74
-    NEWARRAY     shift, and go to state 75
-    READINTEGER  shift, and go to state 77
-    READLINE     shift, and go to state 78
-    TRUE         shift, and go to state 79
-    FALSE        shift, and go to state 80
-    LFTPARTH     shift, and go to state 81
-    INTVAL       shift, and go to state 83
-    DOUBLEVAL    shift, and go to state 84
-    STRINGVAL    shift, and go to state 85
-    NULLVAL      shift, and go to state 86
-    ID           shift, and go to state 108
-    SUB          shift, and go to state 88
-    NOT          shift, and go to state 89
-
-    Expr      go to state 161
-    LValue    go to state 100
-    Call      go to state 101
-    Constant  go to state 102
-
-
-State 131
-
-   71 Expr: Expr MOD . Expr
-
-    THIS         shift, and go to state 68
-    NEW          shift, and go to state 74
-    NEWARRAY     shift, and go to state 75
-    READINTEGER  shift, and go to state 77
-    READLINE     shift, and go to state 78
-    TRUE         shift, and go to state 79
-    FALSE        shift, and go to state 80
-    LFTPARTH     shift, and go to state 81
-    INTVAL       shift, and go to state 83
-    DOUBLEVAL    shift, and go to state 84
-    STRINGVAL    shift, and go to state 85
-    NULLVAL      shift, and go to state 86
-    ID           shift, and go to state 108
-    SUB          shift, and go to state 88
-    NOT          shift, and go to state 89
-
-    Expr      go to state 162
-    LValue    go to state 100
-    Call      go to state 101
-    Constant  go to state 102
-
-
-State 132
-
-   76 Expr: Expr GREATEREQL . Expr
-
-    THIS         shift, and go to state 68
-    NEW          shift, and go to state 74
-    NEWARRAY     shift, and go to state 75
-    READINTEGER  shift, and go to state 77
-    READLINE     shift, and go to state 78
-    TRUE         shift, and go to state 79
-    FALSE        shift, and go to state 80
-    LFTPARTH     shift, and go to state 81
-    INTVAL       shift, and go to state 83
-    DOUBLEVAL    shift, and go to state 84
-    STRINGVAL    shift, and go to state 85
-    NULLVAL      shift, and go to state 86
-    ID           shift, and go to state 108
-    SUB          shift, and go to state 88
-    NOT          shift, and go to state 89
-
-    Expr      go to state 163
-    LValue    go to state 100
-    Call      go to state 101
-    Constant  go to state 102
-
-
-State 133
-
-   77 Expr: Expr SAME . Expr
-
-    THIS         shift, and go to state 68
-    NEW          shift, and go to state 74
-    NEWARRAY     shift, and go to state 75
-    READINTEGER  shift, and go to state 77
-    READLINE     shift, and go to state 78
-    TRUE         shift, and go to state 79
-    FALSE        shift, and go to state 80
-    LFTPARTH     shift, and go to state 81
-    INTVAL       shift, and go to state 83
-    DOUBLEVAL    shift, and go to state 84
-    STRINGVAL    shift, and go to state 85
-    NULLVAL      shift, and go to state 86
-    ID           shift, and go to state 108
-    SUB          shift, and go to state 88
-    NOT          shift, and go to state 89
-
-    Expr      go to state 164
-    LValue    go to state 100
-    Call      go to state 101
-    Constant  go to state 102
-
-
-State 134
-
-   78 Expr: Expr DIFF . Expr
-
-    THIS         shift, and go to state 68
-    NEW          shift, and go to state 74
-    NEWARRAY     shift, and go to state 75
-    READINTEGER  shift, and go to state 77
-    READLINE     shift, and go to state 78
-    TRUE         shift, and go to state 79
-    FALSE        shift, and go to state 80
-    LFTPARTH     shift, and go to state 81
-    INTVAL       shift, and go to state 83
-    DOUBLEVAL    shift, and go to state 84
-    STRINGVAL    shift, and go to state 85
-    NULLVAL      shift, and go to state 86
-    ID           shift, and go to state 108
-    SUB          shift, and go to state 88
-    NOT          shift, and go to state 89
-
-    Expr      go to state 165
-    LValue    go to state 100
-    Call      go to state 101
-    Constant  go to state 102
-
-
-State 135
-
-   79 Expr: Expr AND . Expr
-
-    THIS         shift, and go to state 68
-    NEW          shift, and go to state 74
-    NEWARRAY     shift, and go to state 75
-    READINTEGER  shift, and go to state 77
-    READLINE     shift, and go to state 78
-    TRUE         shift, and go to state 79
-    FALSE        shift, and go to state 80
-    LFTPARTH     shift, and go to state 81
-    INTVAL       shift, and go to state 83
-    DOUBLEVAL    shift, and go to state 84
-    STRINGVAL    shift, and go to state 85
-    NULLVAL      shift, and go to state 86
-    ID           shift, and go to state 108
-    SUB          shift, and go to state 88
-    NOT          shift, and go to state 89
-
-    Expr      go to state 166
-    LValue    go to state 100
-    Call      go to state 101
-    Constant  go to state 102
-
-
-State 136
-
-   61 Expr: LValue EQUAL . Expr
-
-    THIS         shift, and go to state 68
-    NEW          shift, and go to state 74
-    NEWARRAY     shift, and go to state 75
-    READINTEGER  shift, and go to state 77
-    READLINE     shift, and go to state 78
-    TRUE         shift, and go to state 79
-    FALSE        shift, and go to state 80
-    LFTPARTH     shift, and go to state 81
-    INTVAL       shift, and go to state 83
-    DOUBLEVAL    shift, and go to state 84
-    STRINGVAL    shift, and go to state 85
-    NULLVAL      shift, and go to state 86
-    ID           shift, and go to state 108
-    SUB          shift, and go to state 88
-    NOT          shift, and go to state 89
-
-    Expr      go to state 167
-    LValue    go to state 100
-    Call      go to state 101
-    Constant  go to state 102
-
-
-State 137
-
-   37 Prototype: VOID ID LFTPARTH Formals RGHPARTH . SEMICLN
-
-    SEMICLN  shift, and go to state 168
-
-
-State 138
-
-   36 Prototype: Type ID LFTPARTH Formals RGHPARTH . SEMICLN
-
-    SEMICLN  shift, and go to state 169
-
-
-State 139
-
-   55 ForStmt: FOR LFTPARTH PossibleExpr . SEMICLN PossibleExpr SEMICLN PossibleExpr RGHPARTH Stmt
-
-    SEMICLN  shift, and go to state 170
-
-
-State 140
-
-   54 WhileStmt: WHILE LFTPARTH Expr . RGHPARTH Stmt
-   67 Expr: Expr . SUM Expr
-   68     | Expr . SUB Expr
-   69     | Expr . MULT Expr
-   70     | Expr . DIV Expr
-   71     | Expr . MOD Expr
-   73     | Expr . LESSTHN Expr
-   74     | Expr . LESSEQL Expr
-   75     | Expr . GREATERTHN Expr
-   76     | Expr . GREATEREQL Expr
-   77     | Expr . SAME Expr
-   78     | Expr . DIFF Expr
-   79     | Expr . AND Expr
-   80     | Expr . OR Expr
-   87 LValue: Expr . POINT ID
-   88       | Expr . LFTBRCKT Expr RGHBRCKT
-   90 Call: Expr . POINT ID LFTPARTH Actuals RGHPARTH
-
-    POINT       shift, and go to state 121
-    LFTBRCKT    shift, and go to state 122
-    RGHPARTH    shift, and go to state 171
-    OR          shift, and go to state 123
-    LESSEQL     shift, and go to state 124
-    SUM         shift, and go to state 125
-    SUB         shift, and go to state 126
-    MULT        shift, and go to state 127
-    DIV         shift, and go to state 128
-    LESSTHN     shift, and go to state 129
-    GREATERTHN  shift, and go to state 130
-    MOD         shift, and go to state 131
-    GREATEREQL  shift, and go to state 132
-    SAME        shift, and go to state 133
-    DIFF        shift, and go to state 134
-    AND         shift, and go to state 135
-
-
-State 141
-
-   52 IfStmt: IF LFTPARTH Expr . RGHPARTH Stmt PossibleElse
-   67 Expr: Expr . SUM Expr
-   68     | Expr . SUB Expr
-   69     | Expr . MULT Expr
-   70     | Expr . DIV Expr
-   71     | Expr . MOD Expr
-   73     | Expr . LESSTHN Expr
-   74     | Expr . LESSEQL Expr
-   75     | Expr . GREATERTHN Expr
-   76     | Expr . GREATEREQL Expr
-   77     | Expr . SAME Expr
-   78     | Expr . DIFF Expr
-   79     | Expr . AND Expr
-   80     | Expr . OR Expr
-   87 LValue: Expr . POINT ID
-   88       | Expr . LFTBRCKT Expr RGHBRCKT
-   90 Call: Expr . POINT ID LFTPARTH Actuals RGHPARTH
-
-    POINT       shift, and go to state 121
-    LFTBRCKT    shift, and go to state 122
-    RGHPARTH    shift, and go to state 172
-    OR          shift, and go to state 123
-    LESSEQL     shift, and go to state 124
-    SUM         shift, and go to state 125
-    SUB         shift, and go to state 126
-    MULT        shift, and go to state 127
-    DIV         shift, and go to state 128
-    LESSTHN     shift, and go to state 129
-    GREATERTHN  shift, and go to state 130
-    MOD         shift, and go to state 131
-    GREATEREQL  shift, and go to state 132
-    SAME        shift, and go to state 133
-    DIFF        shift, and go to state 134
-    AND         shift, and go to state 135
-
-
-State 142
-
-   56 ReturnStmt: RETURN PossibleExpr SEMICLN .
-
-    $default  reduce using rule 56 (ReturnStmt)
-
-
-State 143
-
-   84 Expr: NEW LFTPARTH ID . RGHPARTH
-
-    RGHPARTH  shift, and go to state 173
-
-
-State 144
-
-   67 Expr: Expr . SUM Expr
-   68     | Expr . SUB Expr
-   69     | Expr . MULT Expr
-   70     | Expr . DIV Expr
-   71     | Expr . MOD Expr
-   73     | Expr . LESSTHN Expr
-   74     | Expr . LESSEQL Expr
-   75     | Expr . GREATERTHN Expr
-   76     | Expr . GREATEREQL Expr
-   77     | Expr . SAME Expr
-   78     | Expr . DIFF Expr
-   79     | Expr . AND Expr
-   80     | Expr . OR Expr
-   85     | NEWARRAY LFTPARTH Expr . COMMA Type RGHPARTH
-   87 LValue: Expr . POINT ID
-   88       | Expr . LFTBRCKT Expr RGHBRCKT
-   90 Call: Expr . POINT ID LFTPARTH Actuals RGHPARTH
-
-    COMMA       shift, and go to state 174
-    POINT       shift, and go to state 121
-    LFTBRCKT    shift, and go to state 122
-    OR          shift, and go to state 123
-    LESSEQL     shift, and go to state 124
-    SUM         shift, and go to state 125
-    SUB         shift, and go to state 126
-    MULT        shift, and go to state 127
-    DIV         shift, and go to state 128
-    LESSTHN     shift, and go to state 129
-    GREATERTHN  shift, and go to state 130
-    MOD         shift, and go to state 131
-    GREATEREQL  shift, and go to state 132
-    SAME        shift, and go to state 133
-    DIFF        shift, and go to state 134
-    AND         shift, and go to state 135
-
-
-State 145
-
-   58 PrintStmt: PRINT LFTPARTH ListExpr . RGHPARTH SEMICLN
-   60 ListExpr: ListExpr . COMMA Expr
-
-    COMMA     shift, and go to state 175
-    RGHPARTH  shift, and go to state 176
-
-
-State 146
-
-   59 ListExpr: Expr .
-   67 Expr: Expr . SUM Expr
-   68     | Expr . SUB Expr
-   69     | Expr . MULT Expr
-   70     | Expr . DIV Expr
-   71     | Expr . MOD Expr
-   73     | Expr . LESSTHN Expr
-   74     | Expr . LESSEQL Expr
-   75     | Expr . GREATERTHN Expr
-   76     | Expr . GREATEREQL Expr
-   77     | Expr . SAME Expr
-   78     | Expr . DIFF Expr
-   79     | Expr . AND Expr
-   80     | Expr . OR Expr
-   87 LValue: Expr . POINT ID
-   88       | Expr . LFTBRCKT Expr RGHBRCKT
-   90 Call: Expr . POINT ID LFTPARTH Actuals RGHPARTH
-
-    POINT       shift, and go to state 121
-    LFTBRCKT    shift, and go to state 122
-    OR          shift, and go to state 123
-    LESSEQL     shift, and go to state 124
-    SUM         shift, and go to state 125
-    SUB         shift, and go to state 126
-    MULT        shift, and go to state 127
-    DIV         shift, and go to state 128
-    LESSTHN     shift, and go to state 129
-    GREATERTHN  shift, and go to state 130
-    MOD         shift, and go to state 131
-    GREATEREQL  shift, and go to state 132
-    SAME        shift, and go to state 133
-    DIFF        shift, and go to state 134
-    AND         shift, and go to state 135
-
-    $default  reduce using rule 59 (ListExpr)
-
-
-State 147
-
-   82 Expr: READINTEGER LFTPARTH RGHPARTH .
-
-    $default  reduce using rule 82 (Expr)
-
-
-State 148
-
-   83 Expr: READLINE LFTPARTH RGHPARTH .
-
-    $default  reduce using rule 83 (Expr)
-
-
-State 149
-
-   66 Expr: LFTPARTH Expr RGHPARTH .
-
-    $default  reduce using rule 66 (Expr)
-
-
-State 150
-
-   60 ListExpr: ListExpr . COMMA Expr
-   91 Actuals: ListExpr .
-
-    COMMA  shift, and go to state 175
-
-    $default  reduce using rule 91 (Actuals)
-
-
-State 151
-
-   89 Call: ID LFTPARTH Actuals . RGHPARTH
-
-    RGHPARTH  shift, and go to state 177
-
-
-State 152
-
-   87 LValue: Expr POINT ID .
-   90 Call: Expr POINT ID . LFTPARTH Actuals RGHPARTH
-
-    LFTPARTH  shift, and go to state 178
-
-    LFTPARTH  [reduce using rule 87 (LValue)]
-    $default  reduce using rule 87 (LValue)
-
-
-State 153
-
-   67 Expr: Expr . SUM Expr
-   68     | Expr . SUB Expr
-   69     | Expr . MULT Expr
-   70     | Expr . DIV Expr
-   71     | Expr . MOD Expr
-   73     | Expr . LESSTHN Expr
-   74     | Expr . LESSEQL Expr
-   75     | Expr . GREATERTHN Expr
-   76     | Expr . GREATEREQL Expr
-   77     | Expr . SAME Expr
-   78     | Expr . DIFF Expr
-   79     | Expr . AND Expr
-   80     | Expr . OR Expr
-   87 LValue: Expr . POINT ID
-   88       | Expr . LFTBRCKT Expr RGHBRCKT
-   88       | Expr LFTBRCKT Expr . RGHBRCKT
-   90 Call: Expr . POINT ID LFTPARTH Actuals RGHPARTH
-
-    POINT       shift, and go to state 121
-    LFTBRCKT    shift, and go to state 122
-    RGHBRCKT    shift, and go to state 179
-    OR          shift, and go to state 123
-    LESSEQL     shift, and go to state 124
-    SUM         shift, and go to state 125
-    SUB         shift, and go to state 126
-    MULT        shift, and go to state 127
-    DIV         shift, and go to state 128
-    LESSTHN     shift, and go to state 129
-    GREATERTHN  shift, and go to state 130
-    MOD         shift, and go to state 131
-    GREATEREQL  shift, and go to state 132
-    SAME        shift, and go to state 133
-    DIFF        shift, and go to state 134
-    AND         shift, and go to state 135
-
-
-State 154
-
-   67 Expr: Expr . SUM Expr
-   68     | Expr . SUB Expr
-   69     | Expr . MULT Expr
-   70     | Expr . DIV Expr
-   71     | Expr . MOD Expr
-   73     | Expr . LESSTHN Expr
-   74     | Expr . LESSEQL Expr
-   75     | Expr . GREATERTHN Expr
-   76     | Expr . GREATEREQL Expr
-   77     | Expr . SAME Expr
-   78     | Expr . DIFF Expr
-   79     | Expr . AND Expr
-   80     | Expr . OR Expr
-   80     | Expr OR Expr .
-   87 LValue: Expr . POINT ID
-   88       | Expr . LFTBRCKT Expr RGHBRCKT
-   90 Call: Expr . POINT ID LFTPARTH Actuals RGHPARTH
-
-    POINT     shift, and go to state 121
-    LFTBRCKT  shift, and go to state 122
-
-    POINT     [reduce using rule 80 (Expr)]
-    LFTBRCKT  [reduce using rule 80 (Expr)]
-    $default  reduce using rule 80 (Expr)
-
-
-State 155
-
-   67 Expr: Expr . SUM Expr
-   68     | Expr . SUB Expr
-   69     | Expr . MULT Expr
-   70     | Expr . DIV Expr
-   71     | Expr . MOD Expr
-   73     | Expr . LESSTHN Expr
-   74     | Expr . LESSEQL Expr
-   74     | Expr LESSEQL Expr .
-   75     | Expr . GREATERTHN Expr
-   76     | Expr . GREATEREQL Expr
-   77     | Expr . SAME Expr
-   78     | Expr . DIFF Expr
-   79     | Expr . AND Expr
-   80     | Expr . OR Expr
-   87 LValue: Expr . POINT ID
-   88       | Expr . LFTBRCKT Expr RGHBRCKT
-   90 Call: Expr . POINT ID LFTPARTH Actuals RGHPARTH
-
-    POINT     shift, and go to state 121
-    LFTBRCKT  shift, and go to state 122
-    OR        shift, and go to state 123
-    SAME      shift, and go to state 133
-    DIFF      shift, and go to state 134
-    AND       shift, and go to state 135
-
-    POINT     [reduce using rule 74 (Expr)]
-    LFTBRCKT  [reduce using rule 74 (Expr)]
-    $default  reduce using rule 74 (Expr)
-
-
-State 156
-
-   67 Expr: Expr . SUM Expr
-   67     | Expr SUM Expr .
-   68     | Expr . SUB Expr
-   69     | Expr . MULT Expr
-   70     | Expr . DIV Expr
-   71     | Expr . MOD Expr
-   73     | Expr . LESSTHN Expr
-   74     | Expr . LESSEQL Expr
-   75     | Expr . GREATERTHN Expr
-   76     | Expr . GREATEREQL Expr
-   77     | Expr . SAME Expr
-   78     | Expr . DIFF Expr
-   79     | Expr . AND Expr
-   80     | Expr . OR Expr
-   87 LValue: Expr . POINT ID
-   88       | Expr . LFTBRCKT Expr RGHBRCKT
-   90 Call: Expr . POINT ID LFTPARTH Actuals RGHPARTH
-
-    POINT     shift, and go to state 121
-    LFTBRCKT  shift, and go to state 122
-    OR        shift, and go to state 123
-    SAME      shift, and go to state 133
-    DIFF      shift, and go to state 134
-    AND       shift, and go to state 135
-
-    POINT     [reduce using rule 67 (Expr)]
-    LFTBRCKT  [reduce using rule 67 (Expr)]
-    $default  reduce using rule 67 (Expr)
-
-
-State 157
-
-   67 Expr: Expr . SUM Expr
-   68     | Expr . SUB Expr
-   68     | Expr SUB Expr .
-   69     | Expr . MULT Expr
-   70     | Expr . DIV Expr
-   71     | Expr . MOD Expr
-   73     | Expr . LESSTHN Expr
-   74     | Expr . LESSEQL Expr
-   75     | Expr . GREATERTHN Expr
-   76     | Expr . GREATEREQL Expr
-   77     | Expr . SAME Expr
-   78     | Expr . DIFF Expr
-   79     | Expr . AND Expr
-   80     | Expr . OR Expr
-   87 LValue: Expr . POINT ID
-   88       | Expr . LFTBRCKT Expr RGHBRCKT
-   90 Call: Expr . POINT ID LFTPARTH Actuals RGHPARTH
-
-    POINT     shift, and go to state 121
-    LFTBRCKT  shift, and go to state 122
-    OR        shift, and go to state 123
-    SAME      shift, and go to state 133
-    DIFF      shift, and go to state 134
-    AND       shift, and go to state 135
-
-    POINT     [reduce using rule 68 (Expr)]
-    LFTBRCKT  [reduce using rule 68 (Expr)]
-    $default  reduce using rule 68 (Expr)
-
-
-State 158
-
-   67 Expr: Expr . SUM Expr
-   68     | Expr . SUB Expr
-   69     | Expr . MULT Expr
-   69     | Expr MULT Expr .
-   70     | Expr . DIV Expr
-   71     | Expr . MOD Expr
-   73     | Expr . LESSTHN Expr
-   74     | Expr . LESSEQL Expr
-   75     | Expr . GREATERTHN Expr
-   76     | Expr . GREATEREQL Expr
-   77     | Expr . SAME Expr
-   78     | Expr . DIFF Expr
-   79     | Expr . AND Expr
-   80     | Expr . OR Expr
-   87 LValue: Expr . POINT ID
-   88       | Expr . LFTBRCKT Expr RGHBRCKT
-   90 Call: Expr . POINT ID LFTPARTH Actuals RGHPARTH
-
-    POINT     shift, and go to state 121
-    LFTBRCKT  shift, and go to state 122
-    OR        shift, and go to state 123
-    SAME      shift, and go to state 133
-    DIFF      shift, and go to state 134
-    AND       shift, and go to state 135
-
-    POINT     [reduce using rule 69 (Expr)]
-    LFTBRCKT  [reduce using rule 69 (Expr)]
-    $default  reduce using rule 69 (Expr)
-
-
-State 159
-
-   67 Expr: Expr . SUM Expr
-   68     | Expr . SUB Expr
-   69     | Expr . MULT Expr
-   70     | Expr . DIV Expr
-   70     | Expr DIV Expr .
-   71     | Expr . MOD Expr
-   73     | Expr . LESSTHN Expr
-   74     | Expr . LESSEQL Expr
-   75     | Expr . GREATERTHN Expr
-   76     | Expr . GREATEREQL Expr
-   77     | Expr . SAME Expr
-   78     | Expr . DIFF Expr
-   79     | Expr . AND Expr
-   80     | Expr . OR Expr
-   87 LValue: Expr . POINT ID
-   88       | Expr . LFTBRCKT Expr RGHBRCKT
-   90 Call: Expr . POINT ID LFTPARTH Actuals RGHPARTH
-
-    POINT     shift, and go to state 121
-    LFTBRCKT  shift, and go to state 122
-    OR        shift, and go to state 123
-    SAME      shift, and go to state 133
-    DIFF      shift, and go to state 134
-    AND       shift, and go to state 135
-
-    POINT     [reduce using rule 70 (Expr)]
-    LFTBRCKT  [reduce using rule 70 (Expr)]
-    $default  reduce using rule 70 (Expr)
-
-
-State 160
-
-   67 Expr: Expr . SUM Expr
-   68     | Expr . SUB Expr
-   69     | Expr . MULT Expr
-   70     | Expr . DIV Expr
-   71     | Expr . MOD Expr
-   73     | Expr . LESSTHN Expr
-   73     | Expr LESSTHN Expr .
-   74     | Expr . LESSEQL Expr
-   75     | Expr . GREATERTHN Expr
-   76     | Expr . GREATEREQL Expr
-   77     | Expr . SAME Expr
-   78     | Expr . DIFF Expr
-   79     | Expr . AND Expr
-   80     | Expr . OR Expr
-   87 LValue: Expr . POINT ID
-   88       | Expr . LFTBRCKT Expr RGHBRCKT
-   90 Call: Expr . POINT ID LFTPARTH Actuals RGHPARTH
-
-    POINT     shift, and go to state 121
-    LFTBRCKT  shift, and go to state 122
-    OR        shift, and go to state 123
-    SAME      shift, and go to state 133
-    DIFF      shift, and go to state 134
-    AND       shift, and go to state 135
-
-    POINT     [reduce using rule 73 (Expr)]
-    LFTBRCKT  [reduce using rule 73 (Expr)]
-    $default  reduce using rule 73 (Expr)
-
-
-State 161
-
-   67 Expr: Expr . SUM Expr
-   68     | Expr . SUB Expr
-   69     | Expr . MULT Expr
-   70     | Expr . DIV Expr
-   71     | Expr . MOD Expr
-   73     | Expr . LESSTHN Expr
-   74     | Expr . LESSEQL Expr
-   75     | Expr . GREATERTHN Expr
-   75     | Expr GREATERTHN Expr .
-   76     | Expr . GREATEREQL Expr
-   77     | Expr . SAME Expr
-   78     | Expr . DIFF Expr
-   79     | Expr . AND Expr
-   80     | Expr . OR Expr
-   87 LValue: Expr . POINT ID
-   88       | Expr . LFTBRCKT Expr RGHBRCKT
-   90 Call: Expr . POINT ID LFTPARTH Actuals RGHPARTH
-
-    POINT     shift, and go to state 121
-    LFTBRCKT  shift, and go to state 122
-    OR        shift, and go to state 123
-    SAME      shift, and go to state 133
-    DIFF      shift, and go to state 134
-    AND       shift, and go to state 135
-
-    POINT     [reduce using rule 75 (Expr)]
-    LFTBRCKT  [reduce using rule 75 (Expr)]
-    $default  reduce using rule 75 (Expr)
-
-
-State 162
-
-   67 Expr: Expr . SUM Expr
-   68     | Expr . SUB Expr
-   69     | Expr . MULT Expr
-   70     | Expr . DIV Expr
-   71     | Expr . MOD Expr
-   71     | Expr MOD Expr .
-   73     | Expr . LESSTHN Expr
-   74     | Expr . LESSEQL Expr
-   75     | Expr . GREATERTHN Expr
-   76     | Expr . GREATEREQL Expr
-   77     | Expr . SAME Expr
-   78     | Expr . DIFF Expr
-   79     | Expr . AND Expr
-   80     | Expr . OR Expr
-   87 LValue: Expr . POINT ID
-   88       | Expr . LFTBRCKT Expr RGHBRCKT
-   90 Call: Expr . POINT ID LFTPARTH Actuals RGHPARTH
-
-    POINT     shift, and go to state 121
-    LFTBRCKT  shift, and go to state 122
-    OR        shift, and go to state 123
-    SAME      shift, and go to state 133
-    DIFF      shift, and go to state 134
-    AND       shift, and go to state 135
-
-    POINT     [reduce using rule 71 (Expr)]
-    LFTBRCKT  [reduce using rule 71 (Expr)]
-    $default  reduce using rule 71 (Expr)
-
-
-State 163
-
-   67 Expr: Expr . SUM Expr
-   68     | Expr . SUB Expr
-   69     | Expr . MULT Expr
-   70     | Expr . DIV Expr
-   71     | Expr . MOD Expr
-   73     | Expr . LESSTHN Expr
-   74     | Expr . LESSEQL Expr
-   75     | Expr . GREATERTHN Expr
-   76     | Expr . GREATEREQL Expr
-   76     | Expr GREATEREQL Expr .
-   77     | Expr . SAME Expr
-   78     | Expr . DIFF Expr
-   79     | Expr . AND Expr
-   80     | Expr . OR Expr
-   87 LValue: Expr . POINT ID
-   88       | Expr . LFTBRCKT Expr RGHBRCKT
-   90 Call: Expr . POINT ID LFTPARTH Actuals RGHPARTH
-
-    POINT     shift, and go to state 121
-    LFTBRCKT  shift, and go to state 122
-    OR        shift, and go to state 123
-    SAME      shift, and go to state 133
-    DIFF      shift, and go to state 134
-    AND       shift, and go to state 135
-
-    POINT     [reduce using rule 76 (Expr)]
-    LFTBRCKT  [reduce using rule 76 (Expr)]
-    $default  reduce using rule 76 (Expr)
-
-
-State 164
-
-   67 Expr: Expr . SUM Expr
-   68     | Expr . SUB Expr
-   69     | Expr . MULT Expr
-   70     | Expr . DIV Expr
-   71     | Expr . MOD Expr
-   73     | Expr . LESSTHN Expr
-   74     | Expr . LESSEQL Expr
-   75     | Expr . GREATERTHN Expr
-   76     | Expr . GREATEREQL Expr
-   77     | Expr . SAME Expr
-   77     | Expr SAME Expr .
-   78     | Expr . DIFF Expr
-   79     | Expr . AND Expr
-   80     | Expr . OR Expr
-   87 LValue: Expr . POINT ID
-   88       | Expr . LFTBRCKT Expr RGHBRCKT
-   90 Call: Expr . POINT ID LFTPARTH Actuals RGHPARTH
-
-    POINT     shift, and go to state 121
-    LFTBRCKT  shift, and go to state 122
-
-    POINT     [reduce using rule 77 (Expr)]
-    LFTBRCKT  [reduce using rule 77 (Expr)]
-    $default  reduce using rule 77 (Expr)
-
-
-State 165
-
-   67 Expr: Expr . SUM Expr
-   68     | Expr . SUB Expr
-   69     | Expr . MULT Expr
-   70     | Expr . DIV Expr
-   71     | Expr . MOD Expr
-   73     | Expr . LESSTHN Expr
-   74     | Expr . LESSEQL Expr
-   75     | Expr . GREATERTHN Expr
-   76     | Expr . GREATEREQL Expr
-   77     | Expr . SAME Expr
-   78     | Expr . DIFF Expr
-   78     | Expr DIFF Expr .
-   79     | Expr . AND Expr
-   80     | Expr . OR Expr
-   87 LValue: Expr . POINT ID
-   88       | Expr . LFTBRCKT Expr RGHBRCKT
-   90 Call: Expr . POINT ID LFTPARTH Actuals RGHPARTH
-
-    POINT     shift, and go to state 121
-    LFTBRCKT  shift, and go to state 122
-
-    POINT     [reduce using rule 78 (Expr)]
-    LFTBRCKT  [reduce using rule 78 (Expr)]
-    $default  reduce using rule 78 (Expr)
-
-
-State 166
-
-   67 Expr: Expr . SUM Expr
-   68     | Expr . SUB Expr
-   69     | Expr . MULT Expr
-   70     | Expr . DIV Expr
-   71     | Expr . MOD Expr
-   73     | Expr . LESSTHN Expr
-   74     | Expr . LESSEQL Expr
-   75     | Expr . GREATERTHN Expr
-   76     | Expr . GREATEREQL Expr
-   77     | Expr . SAME Expr
-   78     | Expr . DIFF Expr
-   79     | Expr . AND Expr
-   79     | Expr AND Expr .
-   80     | Expr . OR Expr
-   87 LValue: Expr . POINT ID
-   88       | Expr . LFTBRCKT Expr RGHBRCKT
-   90 Call: Expr . POINT ID LFTPARTH Actuals RGHPARTH
-
-    POINT     shift, and go to state 121
-    LFTBRCKT  shift, and go to state 122
-
-    POINT     [reduce using rule 79 (Expr)]
-    LFTBRCKT  [reduce using rule 79 (Expr)]
-    $default  reduce using rule 79 (Expr)
-
-
-State 167
-
-   61 Expr: LValue EQUAL Expr .
-   67     | Expr . SUM Expr
-   68     | Expr . SUB Expr
-   69     | Expr . MULT Expr
-   70     | Expr . DIV Expr
-   71     | Expr . MOD Expr
-   73     | Expr . LESSTHN Expr
-   74     | Expr . LESSEQL Expr
-   75     | Expr . GREATERTHN Expr
-   76     | Expr . GREATEREQL Expr
-   77     | Expr . SAME Expr
-   78     | Expr . DIFF Expr
-   79     | Expr . AND Expr
-   80     | Expr . OR Expr
-   87 LValue: Expr . POINT ID
-   88       | Expr . LFTBRCKT Expr RGHBRCKT
-   90 Call: Expr . POINT ID LFTPARTH Actuals RGHPARTH
-
-    POINT     shift, and go to state 121
-    LFTBRCKT  shift, and go to state 122
-
-    POINT     [reduce using rule 61 (Expr)]
-    LFTBRCKT  [reduce using rule 61 (Expr)]
-    $default  reduce using rule 61 (Expr)
-
-
-State 168
-
-   37 Prototype: VOID ID LFTPARTH Formals RGHPARTH SEMICLN .
-
-    $default  reduce using rule 37 (Prototype)
-
-
-State 169
-
-   36 Prototype: Type ID LFTPARTH Formals RGHPARTH SEMICLN .
-
-    $default  reduce using rule 36 (Prototype)
-
-
-State 170
-
-   55 ForStmt: FOR LFTPARTH PossibleExpr SEMICLN . PossibleExpr SEMICLN PossibleExpr RGHPARTH Stmt
-
-    THIS         shift, and go to state 68
-    NEW          shift, and go to state 74
-    NEWARRAY     shift, and go to state 75
-    READINTEGER  shift, and go to state 77
-    READLINE     shift, and go to state 78
-    TRUE         shift, and go to state 79
-    FALSE        shift, and go to state 80
-    LFTPARTH     shift, and go to state 81
-    INTVAL       shift, and go to state 83
-    DOUBLEVAL    shift, and go to state 84
-    STRINGVAL    shift, and go to state 85
-    NULLVAL      shift, and go to state 86
-    ID           shift, and go to state 108
-    SUB          shift, and go to state 88
-    NOT          shift, and go to state 89
-
-    $default  reduce using rule 51 (PossibleExpr)
-
-    PossibleExpr  go to state 180
-    Expr          go to state 110
-    LValue        go to state 100
-    Call          go to state 101
-    Constant      go to state 102
-
-
-State 171
-
-   54 WhileStmt: WHILE LFTPARTH Expr RGHPARTH . Stmt
-
-    INTEGER      shift, and go to state 2
-    DOUBLE       shift, and go to state 3
-    BOOL         shift, and go to state 4
-    STRING       shift, and go to state 5
-    THIS         shift, and go to state 68
-    FOR          shift, and go to state 69
-    WHILE        shift, and go to state 70
-    IF           shift, and go to state 71
-    RETURN       shift, and go to state 72
-    BREAK        shift, and go to state 73
-    NEW          shift, and go to state 74
-    NEWARRAY     shift, and go to state 75
-    PRINT        shift, and go to state 76
-    READINTEGER  shift, and go to state 77
-    READLINE     shift, and go to state 78
-    TRUE         shift, and go to state 79
-    FALSE        shift, and go to state 80
-    LFTPARTH     shift, and go to state 81
-    LFTGATE      shift, and go to state 52
-    INTVAL       shift, and go to state 83
-    DOUBLEVAL    shift, and go to state 84
-    STRINGVAL    shift, and go to state 85
-    NULLVAL      shift, and go to state 86
-    ID           shift, and go to state 87
-    SUB          shift, and go to state 88
-    NOT          shift, and go to state 89
-
-    VariableDecl  go to state 90
-    Variable      go to state 13
-    Type          go to state 33
-    StmtBlock     go to state 91
-    Stmt          go to state 181
-    IfStmt        go to state 93
-    WhileStmt     go to state 94
-    ForStmt       go to state 95
-    ReturnStmt    go to state 96
-    BreakStmt     go to state 97
-    PrintStmt     go to state 98
-    Expr          go to state 99
-    LValue        go to state 100
-    Call          go to state 101
-    Constant      go to state 102
-
-
-State 172
-
-   52 IfStmt: IF LFTPARTH Expr RGHPARTH . Stmt PossibleElse
-
-    INTEGER      shift, and go to state 2
-    DOUBLE       shift, and go to state 3
-    BOOL         shift, and go to state 4
-    STRING       shift, and go to state 5
-    THIS         shift, and go to state 68
-    FOR          shift, and go to state 69
-    WHILE        shift, and go to state 70
-    IF           shift, and go to state 71
-    RETURN       shift, and go to state 72
-    BREAK        shift, and go to state 73
-    NEW          shift, and go to state 74
-    NEWARRAY     shift, and go to state 75
-    PRINT        shift, and go to state 76
-    READINTEGER  shift, and go to state 77
-    READLINE     shift, and go to state 78
-    TRUE         shift, and go to state 79
-    FALSE        shift, and go to state 80
-    LFTPARTH     shift, and go to state 81
-    LFTGATE      shift, and go to state 52
-    INTVAL       shift, and go to state 83
-    DOUBLEVAL    shift, and go to state 84
-    STRINGVAL    shift, and go to state 85
-    NULLVAL      shift, and go to state 86
-    ID           shift, and go to state 87
-    SUB          shift, and go to state 88
-    NOT          shift, and go to state 89
-
-    VariableDecl  go to state 90
-    Variable      go to state 13
-    Type          go to state 33
-    StmtBlock     go to state 91
-    Stmt          go to state 182
-    IfStmt        go to state 93
-    WhileStmt     go to state 94
-    ForStmt       go to state 95
-    ReturnStmt    go to state 96
-    BreakStmt     go to state 97
-    PrintStmt     go to state 98
-    Expr          go to state 99
-    LValue        go to state 100
-    Call          go to state 101
-    Constant      go to state 102
-
-
-State 173
-
-   84 Expr: NEW LFTPARTH ID RGHPARTH .
-
-    $default  reduce using rule 84 (Expr)
-
-
-State 174
-
-   85 Expr: NEWARRAY LFTPARTH Expr COMMA . Type RGHPARTH
-
-    INTEGER  shift, and go to state 2
-    DOUBLE   shift, and go to state 3
-    BOOL     shift, and go to state 4
-    STRING   shift, and go to state 5
-    ID       shift, and go to state 8
-
-    Type  go to state 183
-
-
-State 175
-
-   60 ListExpr: ListExpr COMMA . Expr
-
-    THIS         shift, and go to state 68
-    NEW          shift, and go to state 74
-    NEWARRAY     shift, and go to state 75
-    READINTEGER  shift, and go to state 77
-    READLINE     shift, and go to state 78
-    TRUE         shift, and go to state 79
-    FALSE        shift, and go to state 80
-    LFTPARTH     shift, and go to state 81
-    INTVAL       shift, and go to state 83
-    DOUBLEVAL    shift, and go to state 84
-    STRINGVAL    shift, and go to state 85
-    NULLVAL      shift, and go to state 86
-    ID           shift, and go to state 108
-    SUB          shift, and go to state 88
-    NOT          shift, and go to state 89
-
-    Expr      go to state 184
-    LValue    go to state 100
-    Call      go to state 101
-    Constant  go to state 102
-
-
-State 176
-
-   58 PrintStmt: PRINT LFTPARTH ListExpr RGHPARTH . SEMICLN
-
-    SEMICLN  shift, and go to state 185
-
-
-State 177
-
-   89 Call: ID LFTPARTH Actuals RGHPARTH .
-
-    $default  reduce using rule 89 (Call)
-
-
-State 178
-
-   90 Call: Expr POINT ID LFTPARTH . Actuals RGHPARTH
-
-    THIS         shift, and go to state 68
-    NEW          shift, and go to state 74
-    NEWARRAY     shift, and go to state 75
-    READINTEGER  shift, and go to state 77
-    READLINE     shift, and go to state 78
-    TRUE         shift, and go to state 79
-    FALSE        shift, and go to state 80
-    LFTPARTH     shift, and go to state 81
-    INTVAL       shift, and go to state 83
-    DOUBLEVAL    shift, and go to state 84
-    STRINGVAL    shift, and go to state 85
-    NULLVAL      shift, and go to state 86
-    ID           shift, and go to state 108
-    SUB          shift, and go to state 88
-    NOT          shift, and go to state 89
-
-    $default  reduce using rule 92 (Actuals)
-
-    ListExpr  go to state 150
-    Expr      go to state 146
-    LValue    go to state 100
-    Call      go to state 101
-    Actuals   go to state 186
-    Constant  go to state 102
-
-
-State 179
-
-   88 LValue: Expr LFTBRCKT Expr RGHBRCKT .
-
-    $default  reduce using rule 88 (LValue)
-
-
-State 180
-
-   55 ForStmt: FOR LFTPARTH PossibleExpr SEMICLN PossibleExpr . SEMICLN PossibleExpr RGHPARTH Stmt
-
-    SEMICLN  shift, and go to state 187
-
-
-State 181
-
-   54 WhileStmt: WHILE LFTPARTH Expr RGHPARTH Stmt .
-
-    $default  reduce using rule 54 (WhileStmt)
-
-
-State 182
-
-   52 IfStmt: IF LFTPARTH Expr RGHPARTH Stmt . PossibleElse
-
-    ELSE  shift, and go to state 188
-
-    PossibleElse  go to state 189
-
-
-State 183
+    THIS         desplazar e ir al estado 66
+    NEW          desplazar e ir al estado 72
+    NEWARRAY     desplazar e ir al estado 73
+    READINTEGER  desplazar e ir al estado 75
+    READLINE     desplazar e ir al estado 76
+    TRUE         desplazar e ir al estado 77
+    FALSE        desplazar e ir al estado 78
+    LFTPARTH     desplazar e ir al estado 79
+    INTVAL       desplazar e ir al estado 81
+    DOUBLEVAL    desplazar e ir al estado 82
+    STRINGVAL    desplazar e ir al estado 83
+    NULLVAL      desplazar e ir al estado 84
+    ID           desplazar e ir al estado 106
+    SUB          desplazar e ir al estado 86
+    NOT          desplazar e ir al estado 87
+
+    Expr      ir al estado 151
+    LValue    ir al estado 98
+    Call      ir al estado 99
+    Constant  ir al estado 100
+
+
+Estado 121
+
+   82 Expr: Expr OR . Expr
+
+    THIS         desplazar e ir al estado 66
+    NEW          desplazar e ir al estado 72
+    NEWARRAY     desplazar e ir al estado 73
+    READINTEGER  desplazar e ir al estado 75
+    READLINE     desplazar e ir al estado 76
+    TRUE         desplazar e ir al estado 77
+    FALSE        desplazar e ir al estado 78
+    LFTPARTH     desplazar e ir al estado 79
+    INTVAL       desplazar e ir al estado 81
+    DOUBLEVAL    desplazar e ir al estado 82
+    STRINGVAL    desplazar e ir al estado 83
+    NULLVAL      desplazar e ir al estado 84
+    ID           desplazar e ir al estado 106
+    SUB          desplazar e ir al estado 86
+    NOT          desplazar e ir al estado 87
+
+    Expr      ir al estado 152
+    LValue    ir al estado 98
+    Call      ir al estado 99
+    Constant  ir al estado 100
+
+
+Estado 122
+
+   76 Expr: Expr LESSEQL . Expr
+
+    THIS         desplazar e ir al estado 66
+    NEW          desplazar e ir al estado 72
+    NEWARRAY     desplazar e ir al estado 73
+    READINTEGER  desplazar e ir al estado 75
+    READLINE     desplazar e ir al estado 76
+    TRUE         desplazar e ir al estado 77
+    FALSE        desplazar e ir al estado 78
+    LFTPARTH     desplazar e ir al estado 79
+    INTVAL       desplazar e ir al estado 81
+    DOUBLEVAL    desplazar e ir al estado 82
+    STRINGVAL    desplazar e ir al estado 83
+    NULLVAL      desplazar e ir al estado 84
+    ID           desplazar e ir al estado 106
+    SUB          desplazar e ir al estado 86
+    NOT          desplazar e ir al estado 87
+
+    Expr      ir al estado 153
+    LValue    ir al estado 98
+    Call      ir al estado 99
+    Constant  ir al estado 100
+
+
+Estado 123
+
+   69 Expr: Expr SUM . Expr
+
+    THIS         desplazar e ir al estado 66
+    NEW          desplazar e ir al estado 72
+    NEWARRAY     desplazar e ir al estado 73
+    READINTEGER  desplazar e ir al estado 75
+    READLINE     desplazar e ir al estado 76
+    TRUE         desplazar e ir al estado 77
+    FALSE        desplazar e ir al estado 78
+    LFTPARTH     desplazar e ir al estado 79
+    INTVAL       desplazar e ir al estado 81
+    DOUBLEVAL    desplazar e ir al estado 82
+    STRINGVAL    desplazar e ir al estado 83
+    NULLVAL      desplazar e ir al estado 84
+    ID           desplazar e ir al estado 106
+    SUB          desplazar e ir al estado 86
+    NOT          desplazar e ir al estado 87
+
+    Expr      ir al estado 154
+    LValue    ir al estado 98
+    Call      ir al estado 99
+    Constant  ir al estado 100
+
+
+Estado 124
+
+   70 Expr: Expr SUB . Expr
+
+    THIS         desplazar e ir al estado 66
+    NEW          desplazar e ir al estado 72
+    NEWARRAY     desplazar e ir al estado 73
+    READINTEGER  desplazar e ir al estado 75
+    READLINE     desplazar e ir al estado 76
+    TRUE         desplazar e ir al estado 77
+    FALSE        desplazar e ir al estado 78
+    LFTPARTH     desplazar e ir al estado 79
+    INTVAL       desplazar e ir al estado 81
+    DOUBLEVAL    desplazar e ir al estado 82
+    STRINGVAL    desplazar e ir al estado 83
+    NULLVAL      desplazar e ir al estado 84
+    ID           desplazar e ir al estado 106
+    SUB          desplazar e ir al estado 86
+    NOT          desplazar e ir al estado 87
+
+    Expr      ir al estado 155
+    LValue    ir al estado 98
+    Call      ir al estado 99
+    Constant  ir al estado 100
+
+
+Estado 125
+
+   71 Expr: Expr MULT . Expr
+
+    THIS         desplazar e ir al estado 66
+    NEW          desplazar e ir al estado 72
+    NEWARRAY     desplazar e ir al estado 73
+    READINTEGER  desplazar e ir al estado 75
+    READLINE     desplazar e ir al estado 76
+    TRUE         desplazar e ir al estado 77
+    FALSE        desplazar e ir al estado 78
+    LFTPARTH     desplazar e ir al estado 79
+    INTVAL       desplazar e ir al estado 81
+    DOUBLEVAL    desplazar e ir al estado 82
+    STRINGVAL    desplazar e ir al estado 83
+    NULLVAL      desplazar e ir al estado 84
+    ID           desplazar e ir al estado 106
+    SUB          desplazar e ir al estado 86
+    NOT          desplazar e ir al estado 87
+
+    Expr      ir al estado 156
+    LValue    ir al estado 98
+    Call      ir al estado 99
+    Constant  ir al estado 100
+
+
+Estado 126
+
+   72 Expr: Expr DIV . Expr
+
+    THIS         desplazar e ir al estado 66
+    NEW          desplazar e ir al estado 72
+    NEWARRAY     desplazar e ir al estado 73
+    READINTEGER  desplazar e ir al estado 75
+    READLINE     desplazar e ir al estado 76
+    TRUE         desplazar e ir al estado 77
+    FALSE        desplazar e ir al estado 78
+    LFTPARTH     desplazar e ir al estado 79
+    INTVAL       desplazar e ir al estado 81
+    DOUBLEVAL    desplazar e ir al estado 82
+    STRINGVAL    desplazar e ir al estado 83
+    NULLVAL      desplazar e ir al estado 84
+    ID           desplazar e ir al estado 106
+    SUB          desplazar e ir al estado 86
+    NOT          desplazar e ir al estado 87
+
+    Expr      ir al estado 157
+    LValue    ir al estado 98
+    Call      ir al estado 99
+    Constant  ir al estado 100
+
+
+Estado 127
+
+   75 Expr: Expr LESSTHN . Expr
+
+    THIS         desplazar e ir al estado 66
+    NEW          desplazar e ir al estado 72
+    NEWARRAY     desplazar e ir al estado 73
+    READINTEGER  desplazar e ir al estado 75
+    READLINE     desplazar e ir al estado 76
+    TRUE         desplazar e ir al estado 77
+    FALSE        desplazar e ir al estado 78
+    LFTPARTH     desplazar e ir al estado 79
+    INTVAL       desplazar e ir al estado 81
+    DOUBLEVAL    desplazar e ir al estado 82
+    STRINGVAL    desplazar e ir al estado 83
+    NULLVAL      desplazar e ir al estado 84
+    ID           desplazar e ir al estado 106
+    SUB          desplazar e ir al estado 86
+    NOT          desplazar e ir al estado 87
+
+    Expr      ir al estado 158
+    LValue    ir al estado 98
+    Call      ir al estado 99
+    Constant  ir al estado 100
+
+
+Estado 128
+
+   77 Expr: Expr GREATERTHN . Expr
+
+    THIS         desplazar e ir al estado 66
+    NEW          desplazar e ir al estado 72
+    NEWARRAY     desplazar e ir al estado 73
+    READINTEGER  desplazar e ir al estado 75
+    READLINE     desplazar e ir al estado 76
+    TRUE         desplazar e ir al estado 77
+    FALSE        desplazar e ir al estado 78
+    LFTPARTH     desplazar e ir al estado 79
+    INTVAL       desplazar e ir al estado 81
+    DOUBLEVAL    desplazar e ir al estado 82
+    STRINGVAL    desplazar e ir al estado 83
+    NULLVAL      desplazar e ir al estado 84
+    ID           desplazar e ir al estado 106
+    SUB          desplazar e ir al estado 86
+    NOT          desplazar e ir al estado 87
+
+    Expr      ir al estado 159
+    LValue    ir al estado 98
+    Call      ir al estado 99
+    Constant  ir al estado 100
+
+
+Estado 129
+
+   73 Expr: Expr MOD . Expr
+
+    THIS         desplazar e ir al estado 66
+    NEW          desplazar e ir al estado 72
+    NEWARRAY     desplazar e ir al estado 73
+    READINTEGER  desplazar e ir al estado 75
+    READLINE     desplazar e ir al estado 76
+    TRUE         desplazar e ir al estado 77
+    FALSE        desplazar e ir al estado 78
+    LFTPARTH     desplazar e ir al estado 79
+    INTVAL       desplazar e ir al estado 81
+    DOUBLEVAL    desplazar e ir al estado 82
+    STRINGVAL    desplazar e ir al estado 83
+    NULLVAL      desplazar e ir al estado 84
+    ID           desplazar e ir al estado 106
+    SUB          desplazar e ir al estado 86
+    NOT          desplazar e ir al estado 87
+
+    Expr      ir al estado 160
+    LValue    ir al estado 98
+    Call      ir al estado 99
+    Constant  ir al estado 100
+
+
+Estado 130
+
+   78 Expr: Expr GREATEREQL . Expr
+
+    THIS         desplazar e ir al estado 66
+    NEW          desplazar e ir al estado 72
+    NEWARRAY     desplazar e ir al estado 73
+    READINTEGER  desplazar e ir al estado 75
+    READLINE     desplazar e ir al estado 76
+    TRUE         desplazar e ir al estado 77
+    FALSE        desplazar e ir al estado 78
+    LFTPARTH     desplazar e ir al estado 79
+    INTVAL       desplazar e ir al estado 81
+    DOUBLEVAL    desplazar e ir al estado 82
+    STRINGVAL    desplazar e ir al estado 83
+    NULLVAL      desplazar e ir al estado 84
+    ID           desplazar e ir al estado 106
+    SUB          desplazar e ir al estado 86
+    NOT          desplazar e ir al estado 87
+
+    Expr      ir al estado 161
+    LValue    ir al estado 98
+    Call      ir al estado 99
+    Constant  ir al estado 100
+
+
+Estado 131
+
+   79 Expr: Expr SAME . Expr
+
+    THIS         desplazar e ir al estado 66
+    NEW          desplazar e ir al estado 72
+    NEWARRAY     desplazar e ir al estado 73
+    READINTEGER  desplazar e ir al estado 75
+    READLINE     desplazar e ir al estado 76
+    TRUE         desplazar e ir al estado 77
+    FALSE        desplazar e ir al estado 78
+    LFTPARTH     desplazar e ir al estado 79
+    INTVAL       desplazar e ir al estado 81
+    DOUBLEVAL    desplazar e ir al estado 82
+    STRINGVAL    desplazar e ir al estado 83
+    NULLVAL      desplazar e ir al estado 84
+    ID           desplazar e ir al estado 106
+    SUB          desplazar e ir al estado 86
+    NOT          desplazar e ir al estado 87
+
+    Expr      ir al estado 162
+    LValue    ir al estado 98
+    Call      ir al estado 99
+    Constant  ir al estado 100
+
+
+Estado 132
+
+   80 Expr: Expr DIFF . Expr
+
+    THIS         desplazar e ir al estado 66
+    NEW          desplazar e ir al estado 72
+    NEWARRAY     desplazar e ir al estado 73
+    READINTEGER  desplazar e ir al estado 75
+    READLINE     desplazar e ir al estado 76
+    TRUE         desplazar e ir al estado 77
+    FALSE        desplazar e ir al estado 78
+    LFTPARTH     desplazar e ir al estado 79
+    INTVAL       desplazar e ir al estado 81
+    DOUBLEVAL    desplazar e ir al estado 82
+    STRINGVAL    desplazar e ir al estado 83
+    NULLVAL      desplazar e ir al estado 84
+    ID           desplazar e ir al estado 106
+    SUB          desplazar e ir al estado 86
+    NOT          desplazar e ir al estado 87
+
+    Expr      ir al estado 163
+    LValue    ir al estado 98
+    Call      ir al estado 99
+    Constant  ir al estado 100
+
+
+Estado 133
+
+   81 Expr: Expr AND . Expr
+
+    THIS         desplazar e ir al estado 66
+    NEW          desplazar e ir al estado 72
+    NEWARRAY     desplazar e ir al estado 73
+    READINTEGER  desplazar e ir al estado 75
+    READLINE     desplazar e ir al estado 76
+    TRUE         desplazar e ir al estado 77
+    FALSE        desplazar e ir al estado 78
+    LFTPARTH     desplazar e ir al estado 79
+    INTVAL       desplazar e ir al estado 81
+    DOUBLEVAL    desplazar e ir al estado 82
+    STRINGVAL    desplazar e ir al estado 83
+    NULLVAL      desplazar e ir al estado 84
+    ID           desplazar e ir al estado 106
+    SUB          desplazar e ir al estado 86
+    NOT          desplazar e ir al estado 87
+
+    Expr      ir al estado 164
+    LValue    ir al estado 98
+    Call      ir al estado 99
+    Constant  ir al estado 100
+
+
+Estado 134
+
+   63 Expr: LValue EQUAL . Expr
+
+    THIS         desplazar e ir al estado 66
+    NEW          desplazar e ir al estado 72
+    NEWARRAY     desplazar e ir al estado 73
+    READINTEGER  desplazar e ir al estado 75
+    READLINE     desplazar e ir al estado 76
+    TRUE         desplazar e ir al estado 77
+    FALSE        desplazar e ir al estado 78
+    LFTPARTH     desplazar e ir al estado 79
+    INTVAL       desplazar e ir al estado 81
+    DOUBLEVAL    desplazar e ir al estado 82
+    STRINGVAL    desplazar e ir al estado 83
+    NULLVAL      desplazar e ir al estado 84
+    ID           desplazar e ir al estado 106
+    SUB          desplazar e ir al estado 86
+    NOT          desplazar e ir al estado 87
+
+    Expr      ir al estado 165
+    LValue    ir al estado 98
+    Call      ir al estado 99
+    Constant  ir al estado 100
+
+
+Estado 135
+
+   39 Prototype: VOID ID LFTPARTH Formals RGHPARTH . SEMICLN
+
+    SEMICLN  desplazar e ir al estado 166
+
+
+Estado 136
+
+   38 Prototype: Type ID LFTPARTH Formals RGHPARTH . SEMICLN
+
+    SEMICLN  desplazar e ir al estado 167
+
+
+Estado 137
+
+   57 ForStmt: FOR LFTPARTH PossibleExpr . SEMICLN PossibleExpr SEMICLN PossibleExpr RGHPARTH Stmt
+
+    SEMICLN  desplazar e ir al estado 168
+
+
+Estado 138
+
+   56 WhileStmt: WHILE LFTPARTH Expr . RGHPARTH Stmt
+   69 Expr: Expr . SUM Expr
+   70     | Expr . SUB Expr
+   71     | Expr . MULT Expr
+   72     | Expr . DIV Expr
+   73     | Expr . MOD Expr
+   75     | Expr . LESSTHN Expr
+   76     | Expr . LESSEQL Expr
+   77     | Expr . GREATERTHN Expr
+   78     | Expr . GREATEREQL Expr
+   79     | Expr . SAME Expr
+   80     | Expr . DIFF Expr
+   81     | Expr . AND Expr
+   82     | Expr . OR Expr
+   89 LValue: Expr . POINT ID
+   90       | Expr . LFTBRCKT Expr RGHBRCKT
+   92 Call: Expr . POINT ID LFTPARTH Actuals RGHPARTH
+
+    POINT       desplazar e ir al estado 119
+    LFTBRCKT    desplazar e ir al estado 120
+    RGHPARTH    desplazar e ir al estado 169
+    OR          desplazar e ir al estado 121
+    LESSEQL     desplazar e ir al estado 122
+    SUM         desplazar e ir al estado 123
+    SUB         desplazar e ir al estado 124
+    MULT        desplazar e ir al estado 125
+    DIV         desplazar e ir al estado 126
+    LESSTHN     desplazar e ir al estado 127
+    GREATERTHN  desplazar e ir al estado 128
+    MOD         desplazar e ir al estado 129
+    GREATEREQL  desplazar e ir al estado 130
+    SAME        desplazar e ir al estado 131
+    DIFF        desplazar e ir al estado 132
+    AND         desplazar e ir al estado 133
+
+
+Estado 139
+
+   54 IfStmt: IF LFTPARTH Expr . RGHPARTH Stmt PossibleElse
+   69 Expr: Expr . SUM Expr
+   70     | Expr . SUB Expr
+   71     | Expr . MULT Expr
+   72     | Expr . DIV Expr
+   73     | Expr . MOD Expr
+   75     | Expr . LESSTHN Expr
+   76     | Expr . LESSEQL Expr
+   77     | Expr . GREATERTHN Expr
+   78     | Expr . GREATEREQL Expr
+   79     | Expr . SAME Expr
+   80     | Expr . DIFF Expr
+   81     | Expr . AND Expr
+   82     | Expr . OR Expr
+   89 LValue: Expr . POINT ID
+   90       | Expr . LFTBRCKT Expr RGHBRCKT
+   92 Call: Expr . POINT ID LFTPARTH Actuals RGHPARTH
+
+    POINT       desplazar e ir al estado 119
+    LFTBRCKT    desplazar e ir al estado 120
+    RGHPARTH    desplazar e ir al estado 170
+    OR          desplazar e ir al estado 121
+    LESSEQL     desplazar e ir al estado 122
+    SUM         desplazar e ir al estado 123
+    SUB         desplazar e ir al estado 124
+    MULT        desplazar e ir al estado 125
+    DIV         desplazar e ir al estado 126
+    LESSTHN     desplazar e ir al estado 127
+    GREATERTHN  desplazar e ir al estado 128
+    MOD         desplazar e ir al estado 129
+    GREATEREQL  desplazar e ir al estado 130
+    SAME        desplazar e ir al estado 131
+    DIFF        desplazar e ir al estado 132
+    AND         desplazar e ir al estado 133
+
+
+Estado 140
+
+   58 ReturnStmt: RETURN PossibleExpr SEMICLN .
+
+    $default  reduce usando la regla 58 (ReturnStmt)
+
+
+Estado 141
+
+   86 Expr: NEW LFTPARTH ID . RGHPARTH
+
+    RGHPARTH  desplazar e ir al estado 171
+
+
+Estado 142
+
+   69 Expr: Expr . SUM Expr
+   70     | Expr . SUB Expr
+   71     | Expr . MULT Expr
+   72     | Expr . DIV Expr
+   73     | Expr . MOD Expr
+   75     | Expr . LESSTHN Expr
+   76     | Expr . LESSEQL Expr
+   77     | Expr . GREATERTHN Expr
+   78     | Expr . GREATEREQL Expr
+   79     | Expr . SAME Expr
+   80     | Expr . DIFF Expr
+   81     | Expr . AND Expr
+   82     | Expr . OR Expr
+   87     | NEWARRAY LFTPARTH Expr . COMMA Type RGHPARTH
+   89 LValue: Expr . POINT ID
+   90       | Expr . LFTBRCKT Expr RGHBRCKT
+   92 Call: Expr . POINT ID LFTPARTH Actuals RGHPARTH
+
+    COMMA       desplazar e ir al estado 172
+    POINT       desplazar e ir al estado 119
+    LFTBRCKT    desplazar e ir al estado 120
+    OR          desplazar e ir al estado 121
+    LESSEQL     desplazar e ir al estado 122
+    SUM         desplazar e ir al estado 123
+    SUB         desplazar e ir al estado 124
+    MULT        desplazar e ir al estado 125
+    DIV         desplazar e ir al estado 126
+    LESSTHN     desplazar e ir al estado 127
+    GREATERTHN  desplazar e ir al estado 128
+    MOD         desplazar e ir al estado 129
+    GREATEREQL  desplazar e ir al estado 130
+    SAME        desplazar e ir al estado 131
+    DIFF        desplazar e ir al estado 132
+    AND         desplazar e ir al estado 133
+
+
+Estado 143
+
+   60 PrintStmt: PRINT LFTPARTH ListExpr . RGHPARTH SEMICLN
+   62 ListExpr: ListExpr . COMMA Expr
+
+    COMMA     desplazar e ir al estado 173
+    RGHPARTH  desplazar e ir al estado 174
+
+
+Estado 144
+
+   61 ListExpr: Expr .
+   69 Expr: Expr . SUM Expr
+   70     | Expr . SUB Expr
+   71     | Expr . MULT Expr
+   72     | Expr . DIV Expr
+   73     | Expr . MOD Expr
+   75     | Expr . LESSTHN Expr
+   76     | Expr . LESSEQL Expr
+   77     | Expr . GREATERTHN Expr
+   78     | Expr . GREATEREQL Expr
+   79     | Expr . SAME Expr
+   80     | Expr . DIFF Expr
+   81     | Expr . AND Expr
+   82     | Expr . OR Expr
+   89 LValue: Expr . POINT ID
+   90       | Expr . LFTBRCKT Expr RGHBRCKT
+   92 Call: Expr . POINT ID LFTPARTH Actuals RGHPARTH
+
+    POINT       desplazar e ir al estado 119
+    LFTBRCKT    desplazar e ir al estado 120
+    OR          desplazar e ir al estado 121
+    LESSEQL     desplazar e ir al estado 122
+    SUM         desplazar e ir al estado 123
+    SUB         desplazar e ir al estado 124
+    MULT        desplazar e ir al estado 125
+    DIV         desplazar e ir al estado 126
+    LESSTHN     desplazar e ir al estado 127
+    GREATERTHN  desplazar e ir al estado 128
+    MOD         desplazar e ir al estado 129
+    GREATEREQL  desplazar e ir al estado 130
+    SAME        desplazar e ir al estado 131
+    DIFF        desplazar e ir al estado 132
+    AND         desplazar e ir al estado 133
+
+    $default  reduce usando la regla 61 (ListExpr)
+
+
+Estado 145
+
+   84 Expr: READINTEGER LFTPARTH RGHPARTH .
+
+    $default  reduce usando la regla 84 (Expr)
+
+
+Estado 146
+
+   85 Expr: READLINE LFTPARTH RGHPARTH .
+
+    $default  reduce usando la regla 85 (Expr)
+
+
+Estado 147
+
+   68 Expr: LFTPARTH Expr RGHPARTH .
+
+    $default  reduce usando la regla 68 (Expr)
+
+
+Estado 148
+
+   62 ListExpr: ListExpr . COMMA Expr
+   93 Actuals: ListExpr .
+
+    COMMA  desplazar e ir al estado 173
+
+    $default  reduce usando la regla 93 (Actuals)
+
+
+Estado 149
+
+   91 Call: ID LFTPARTH Actuals . RGHPARTH
+
+    RGHPARTH  desplazar e ir al estado 175
+
+
+Estado 150
+
+   89 LValue: Expr POINT ID .
+   92 Call: Expr POINT ID . LFTPARTH Actuals RGHPARTH
+
+    LFTPARTH  desplazar e ir al estado 176
+
+    LFTPARTH  [reduce usando la regla 89 (LValue)]
+    $default  reduce usando la regla 89 (LValue)
+
+
+Estado 151
+
+   69 Expr: Expr . SUM Expr
+   70     | Expr . SUB Expr
+   71     | Expr . MULT Expr
+   72     | Expr . DIV Expr
+   73     | Expr . MOD Expr
+   75     | Expr . LESSTHN Expr
+   76     | Expr . LESSEQL Expr
+   77     | Expr . GREATERTHN Expr
+   78     | Expr . GREATEREQL Expr
+   79     | Expr . SAME Expr
+   80     | Expr . DIFF Expr
+   81     | Expr . AND Expr
+   82     | Expr . OR Expr
+   89 LValue: Expr . POINT ID
+   90       | Expr . LFTBRCKT Expr RGHBRCKT
+   90       | Expr LFTBRCKT Expr . RGHBRCKT
+   92 Call: Expr . POINT ID LFTPARTH Actuals RGHPARTH
+
+    POINT       desplazar e ir al estado 119
+    LFTBRCKT    desplazar e ir al estado 120
+    RGHBRCKT    desplazar e ir al estado 177
+    OR          desplazar e ir al estado 121
+    LESSEQL     desplazar e ir al estado 122
+    SUM         desplazar e ir al estado 123
+    SUB         desplazar e ir al estado 124
+    MULT        desplazar e ir al estado 125
+    DIV         desplazar e ir al estado 126
+    LESSTHN     desplazar e ir al estado 127
+    GREATERTHN  desplazar e ir al estado 128
+    MOD         desplazar e ir al estado 129
+    GREATEREQL  desplazar e ir al estado 130
+    SAME        desplazar e ir al estado 131
+    DIFF        desplazar e ir al estado 132
+    AND         desplazar e ir al estado 133
+
+
+Estado 152
+
+   69 Expr: Expr . SUM Expr
+   70     | Expr . SUB Expr
+   71     | Expr . MULT Expr
+   72     | Expr . DIV Expr
+   73     | Expr . MOD Expr
+   75     | Expr . LESSTHN Expr
+   76     | Expr . LESSEQL Expr
+   77     | Expr . GREATERTHN Expr
+   78     | Expr . GREATEREQL Expr
+   79     | Expr . SAME Expr
+   80     | Expr . DIFF Expr
+   81     | Expr . AND Expr
+   82     | Expr . OR Expr
+   82     | Expr OR Expr .
+   89 LValue: Expr . POINT ID
+   90       | Expr . LFTBRCKT Expr RGHBRCKT
+   92 Call: Expr . POINT ID LFTPARTH Actuals RGHPARTH
+
+    POINT     desplazar e ir al estado 119
+    LFTBRCKT  desplazar e ir al estado 120
+
+    POINT     [reduce usando la regla 82 (Expr)]
+    LFTBRCKT  [reduce usando la regla 82 (Expr)]
+    $default  reduce usando la regla 82 (Expr)
+
+
+Estado 153
+
+   69 Expr: Expr . SUM Expr
+   70     | Expr . SUB Expr
+   71     | Expr . MULT Expr
+   72     | Expr . DIV Expr
+   73     | Expr . MOD Expr
+   75     | Expr . LESSTHN Expr
+   76     | Expr . LESSEQL Expr
+   76     | Expr LESSEQL Expr .
+   77     | Expr . GREATERTHN Expr
+   78     | Expr . GREATEREQL Expr
+   79     | Expr . SAME Expr
+   80     | Expr . DIFF Expr
+   81     | Expr . AND Expr
+   82     | Expr . OR Expr
+   89 LValue: Expr . POINT ID
+   90       | Expr . LFTBRCKT Expr RGHBRCKT
+   92 Call: Expr . POINT ID LFTPARTH Actuals RGHPARTH
+
+    POINT     desplazar e ir al estado 119
+    LFTBRCKT  desplazar e ir al estado 120
+    OR        desplazar e ir al estado 121
+    SAME      desplazar e ir al estado 131
+    DIFF      desplazar e ir al estado 132
+    AND       desplazar e ir al estado 133
+
+    POINT     [reduce usando la regla 76 (Expr)]
+    LFTBRCKT  [reduce usando la regla 76 (Expr)]
+    $default  reduce usando la regla 76 (Expr)
+
+
+Estado 154
+
+   69 Expr: Expr . SUM Expr
+   69     | Expr SUM Expr .
+   70     | Expr . SUB Expr
+   71     | Expr . MULT Expr
+   72     | Expr . DIV Expr
+   73     | Expr . MOD Expr
+   75     | Expr . LESSTHN Expr
+   76     | Expr . LESSEQL Expr
+   77     | Expr . GREATERTHN Expr
+   78     | Expr . GREATEREQL Expr
+   79     | Expr . SAME Expr
+   80     | Expr . DIFF Expr
+   81     | Expr . AND Expr
+   82     | Expr . OR Expr
+   89 LValue: Expr . POINT ID
+   90       | Expr . LFTBRCKT Expr RGHBRCKT
+   92 Call: Expr . POINT ID LFTPARTH Actuals RGHPARTH
+
+    POINT     desplazar e ir al estado 119
+    LFTBRCKT  desplazar e ir al estado 120
+    OR        desplazar e ir al estado 121
+    SAME      desplazar e ir al estado 131
+    DIFF      desplazar e ir al estado 132
+    AND       desplazar e ir al estado 133
+
+    POINT     [reduce usando la regla 69 (Expr)]
+    LFTBRCKT  [reduce usando la regla 69 (Expr)]
+    $default  reduce usando la regla 69 (Expr)
+
+
+Estado 155
+
+   69 Expr: Expr . SUM Expr
+   70     | Expr . SUB Expr
+   70     | Expr SUB Expr .
+   71     | Expr . MULT Expr
+   72     | Expr . DIV Expr
+   73     | Expr . MOD Expr
+   75     | Expr . LESSTHN Expr
+   76     | Expr . LESSEQL Expr
+   77     | Expr . GREATERTHN Expr
+   78     | Expr . GREATEREQL Expr
+   79     | Expr . SAME Expr
+   80     | Expr . DIFF Expr
+   81     | Expr . AND Expr
+   82     | Expr . OR Expr
+   89 LValue: Expr . POINT ID
+   90       | Expr . LFTBRCKT Expr RGHBRCKT
+   92 Call: Expr . POINT ID LFTPARTH Actuals RGHPARTH
+
+    POINT     desplazar e ir al estado 119
+    LFTBRCKT  desplazar e ir al estado 120
+    OR        desplazar e ir al estado 121
+    SAME      desplazar e ir al estado 131
+    DIFF      desplazar e ir al estado 132
+    AND       desplazar e ir al estado 133
+
+    POINT     [reduce usando la regla 70 (Expr)]
+    LFTBRCKT  [reduce usando la regla 70 (Expr)]
+    $default  reduce usando la regla 70 (Expr)
+
+
+Estado 156
+
+   69 Expr: Expr . SUM Expr
+   70     | Expr . SUB Expr
+   71     | Expr . MULT Expr
+   71     | Expr MULT Expr .
+   72     | Expr . DIV Expr
+   73     | Expr . MOD Expr
+   75     | Expr . LESSTHN Expr
+   76     | Expr . LESSEQL Expr
+   77     | Expr . GREATERTHN Expr
+   78     | Expr . GREATEREQL Expr
+   79     | Expr . SAME Expr
+   80     | Expr . DIFF Expr
+   81     | Expr . AND Expr
+   82     | Expr . OR Expr
+   89 LValue: Expr . POINT ID
+   90       | Expr . LFTBRCKT Expr RGHBRCKT
+   92 Call: Expr . POINT ID LFTPARTH Actuals RGHPARTH
+
+    POINT     desplazar e ir al estado 119
+    LFTBRCKT  desplazar e ir al estado 120
+    OR        desplazar e ir al estado 121
+    SAME      desplazar e ir al estado 131
+    DIFF      desplazar e ir al estado 132
+    AND       desplazar e ir al estado 133
+
+    POINT     [reduce usando la regla 71 (Expr)]
+    LFTBRCKT  [reduce usando la regla 71 (Expr)]
+    $default  reduce usando la regla 71 (Expr)
+
+
+Estado 157
+
+   69 Expr: Expr . SUM Expr
+   70     | Expr . SUB Expr
+   71     | Expr . MULT Expr
+   72     | Expr . DIV Expr
+   72     | Expr DIV Expr .
+   73     | Expr . MOD Expr
+   75     | Expr . LESSTHN Expr
+   76     | Expr . LESSEQL Expr
+   77     | Expr . GREATERTHN Expr
+   78     | Expr . GREATEREQL Expr
+   79     | Expr . SAME Expr
+   80     | Expr . DIFF Expr
+   81     | Expr . AND Expr
+   82     | Expr . OR Expr
+   89 LValue: Expr . POINT ID
+   90       | Expr . LFTBRCKT Expr RGHBRCKT
+   92 Call: Expr . POINT ID LFTPARTH Actuals RGHPARTH
+
+    POINT     desplazar e ir al estado 119
+    LFTBRCKT  desplazar e ir al estado 120
+    OR        desplazar e ir al estado 121
+    SAME      desplazar e ir al estado 131
+    DIFF      desplazar e ir al estado 132
+    AND       desplazar e ir al estado 133
+
+    POINT     [reduce usando la regla 72 (Expr)]
+    LFTBRCKT  [reduce usando la regla 72 (Expr)]
+    $default  reduce usando la regla 72 (Expr)
+
+
+Estado 158
+
+   69 Expr: Expr . SUM Expr
+   70     | Expr . SUB Expr
+   71     | Expr . MULT Expr
+   72     | Expr . DIV Expr
+   73     | Expr . MOD Expr
+   75     | Expr . LESSTHN Expr
+   75     | Expr LESSTHN Expr .
+   76     | Expr . LESSEQL Expr
+   77     | Expr . GREATERTHN Expr
+   78     | Expr . GREATEREQL Expr
+   79     | Expr . SAME Expr
+   80     | Expr . DIFF Expr
+   81     | Expr . AND Expr
+   82     | Expr . OR Expr
+   89 LValue: Expr . POINT ID
+   90       | Expr . LFTBRCKT Expr RGHBRCKT
+   92 Call: Expr . POINT ID LFTPARTH Actuals RGHPARTH
+
+    POINT     desplazar e ir al estado 119
+    LFTBRCKT  desplazar e ir al estado 120
+    OR        desplazar e ir al estado 121
+    SAME      desplazar e ir al estado 131
+    DIFF      desplazar e ir al estado 132
+    AND       desplazar e ir al estado 133
+
+    POINT     [reduce usando la regla 75 (Expr)]
+    LFTBRCKT  [reduce usando la regla 75 (Expr)]
+    $default  reduce usando la regla 75 (Expr)
+
+
+Estado 159
+
+   69 Expr: Expr . SUM Expr
+   70     | Expr . SUB Expr
+   71     | Expr . MULT Expr
+   72     | Expr . DIV Expr
+   73     | Expr . MOD Expr
+   75     | Expr . LESSTHN Expr
+   76     | Expr . LESSEQL Expr
+   77     | Expr . GREATERTHN Expr
+   77     | Expr GREATERTHN Expr .
+   78     | Expr . GREATEREQL Expr
+   79     | Expr . SAME Expr
+   80     | Expr . DIFF Expr
+   81     | Expr . AND Expr
+   82     | Expr . OR Expr
+   89 LValue: Expr . POINT ID
+   90       | Expr . LFTBRCKT Expr RGHBRCKT
+   92 Call: Expr . POINT ID LFTPARTH Actuals RGHPARTH
+
+    POINT     desplazar e ir al estado 119
+    LFTBRCKT  desplazar e ir al estado 120
+    OR        desplazar e ir al estado 121
+    SAME      desplazar e ir al estado 131
+    DIFF      desplazar e ir al estado 132
+    AND       desplazar e ir al estado 133
+
+    POINT     [reduce usando la regla 77 (Expr)]
+    LFTBRCKT  [reduce usando la regla 77 (Expr)]
+    $default  reduce usando la regla 77 (Expr)
+
+
+Estado 160
+
+   69 Expr: Expr . SUM Expr
+   70     | Expr . SUB Expr
+   71     | Expr . MULT Expr
+   72     | Expr . DIV Expr
+   73     | Expr . MOD Expr
+   73     | Expr MOD Expr .
+   75     | Expr . LESSTHN Expr
+   76     | Expr . LESSEQL Expr
+   77     | Expr . GREATERTHN Expr
+   78     | Expr . GREATEREQL Expr
+   79     | Expr . SAME Expr
+   80     | Expr . DIFF Expr
+   81     | Expr . AND Expr
+   82     | Expr . OR Expr
+   89 LValue: Expr . POINT ID
+   90       | Expr . LFTBRCKT Expr RGHBRCKT
+   92 Call: Expr . POINT ID LFTPARTH Actuals RGHPARTH
+
+    POINT     desplazar e ir al estado 119
+    LFTBRCKT  desplazar e ir al estado 120
+    OR        desplazar e ir al estado 121
+    SAME      desplazar e ir al estado 131
+    DIFF      desplazar e ir al estado 132
+    AND       desplazar e ir al estado 133
+
+    POINT     [reduce usando la regla 73 (Expr)]
+    LFTBRCKT  [reduce usando la regla 73 (Expr)]
+    $default  reduce usando la regla 73 (Expr)
+
+
+Estado 161
+
+   69 Expr: Expr . SUM Expr
+   70     | Expr . SUB Expr
+   71     | Expr . MULT Expr
+   72     | Expr . DIV Expr
+   73     | Expr . MOD Expr
+   75     | Expr . LESSTHN Expr
+   76     | Expr . LESSEQL Expr
+   77     | Expr . GREATERTHN Expr
+   78     | Expr . GREATEREQL Expr
+   78     | Expr GREATEREQL Expr .
+   79     | Expr . SAME Expr
+   80     | Expr . DIFF Expr
+   81     | Expr . AND Expr
+   82     | Expr . OR Expr
+   89 LValue: Expr . POINT ID
+   90       | Expr . LFTBRCKT Expr RGHBRCKT
+   92 Call: Expr . POINT ID LFTPARTH Actuals RGHPARTH
+
+    POINT     desplazar e ir al estado 119
+    LFTBRCKT  desplazar e ir al estado 120
+    OR        desplazar e ir al estado 121
+    SAME      desplazar e ir al estado 131
+    DIFF      desplazar e ir al estado 132
+    AND       desplazar e ir al estado 133
+
+    POINT     [reduce usando la regla 78 (Expr)]
+    LFTBRCKT  [reduce usando la regla 78 (Expr)]
+    $default  reduce usando la regla 78 (Expr)
+
+
+Estado 162
+
+   69 Expr: Expr . SUM Expr
+   70     | Expr . SUB Expr
+   71     | Expr . MULT Expr
+   72     | Expr . DIV Expr
+   73     | Expr . MOD Expr
+   75     | Expr . LESSTHN Expr
+   76     | Expr . LESSEQL Expr
+   77     | Expr . GREATERTHN Expr
+   78     | Expr . GREATEREQL Expr
+   79     | Expr . SAME Expr
+   79     | Expr SAME Expr .
+   80     | Expr . DIFF Expr
+   81     | Expr . AND Expr
+   82     | Expr . OR Expr
+   89 LValue: Expr . POINT ID
+   90       | Expr . LFTBRCKT Expr RGHBRCKT
+   92 Call: Expr . POINT ID LFTPARTH Actuals RGHPARTH
+
+    POINT     desplazar e ir al estado 119
+    LFTBRCKT  desplazar e ir al estado 120
+
+    POINT     [reduce usando la regla 79 (Expr)]
+    LFTBRCKT  [reduce usando la regla 79 (Expr)]
+    $default  reduce usando la regla 79 (Expr)
+
+
+Estado 163
+
+   69 Expr: Expr . SUM Expr
+   70     | Expr . SUB Expr
+   71     | Expr . MULT Expr
+   72     | Expr . DIV Expr
+   73     | Expr . MOD Expr
+   75     | Expr . LESSTHN Expr
+   76     | Expr . LESSEQL Expr
+   77     | Expr . GREATERTHN Expr
+   78     | Expr . GREATEREQL Expr
+   79     | Expr . SAME Expr
+   80     | Expr . DIFF Expr
+   80     | Expr DIFF Expr .
+   81     | Expr . AND Expr
+   82     | Expr . OR Expr
+   89 LValue: Expr . POINT ID
+   90       | Expr . LFTBRCKT Expr RGHBRCKT
+   92 Call: Expr . POINT ID LFTPARTH Actuals RGHPARTH
+
+    POINT     desplazar e ir al estado 119
+    LFTBRCKT  desplazar e ir al estado 120
+
+    POINT     [reduce usando la regla 80 (Expr)]
+    LFTBRCKT  [reduce usando la regla 80 (Expr)]
+    $default  reduce usando la regla 80 (Expr)
+
+
+Estado 164
+
+   69 Expr: Expr . SUM Expr
+   70     | Expr . SUB Expr
+   71     | Expr . MULT Expr
+   72     | Expr . DIV Expr
+   73     | Expr . MOD Expr
+   75     | Expr . LESSTHN Expr
+   76     | Expr . LESSEQL Expr
+   77     | Expr . GREATERTHN Expr
+   78     | Expr . GREATEREQL Expr
+   79     | Expr . SAME Expr
+   80     | Expr . DIFF Expr
+   81     | Expr . AND Expr
+   81     | Expr AND Expr .
+   82     | Expr . OR Expr
+   89 LValue: Expr . POINT ID
+   90       | Expr . LFTBRCKT Expr RGHBRCKT
+   92 Call: Expr . POINT ID LFTPARTH Actuals RGHPARTH
+
+    POINT     desplazar e ir al estado 119
+    LFTBRCKT  desplazar e ir al estado 120
+
+    POINT     [reduce usando la regla 81 (Expr)]
+    LFTBRCKT  [reduce usando la regla 81 (Expr)]
+    $default  reduce usando la regla 81 (Expr)
+
+
+Estado 165
+
+   63 Expr: LValue EQUAL Expr .
+   69     | Expr . SUM Expr
+   70     | Expr . SUB Expr
+   71     | Expr . MULT Expr
+   72     | Expr . DIV Expr
+   73     | Expr . MOD Expr
+   75     | Expr . LESSTHN Expr
+   76     | Expr . LESSEQL Expr
+   77     | Expr . GREATERTHN Expr
+   78     | Expr . GREATEREQL Expr
+   79     | Expr . SAME Expr
+   80     | Expr . DIFF Expr
+   81     | Expr . AND Expr
+   82     | Expr . OR Expr
+   89 LValue: Expr . POINT ID
+   90       | Expr . LFTBRCKT Expr RGHBRCKT
+   92 Call: Expr . POINT ID LFTPARTH Actuals RGHPARTH
+
+    POINT     desplazar e ir al estado 119
+    LFTBRCKT  desplazar e ir al estado 120
+
+    POINT     [reduce usando la regla 63 (Expr)]
+    LFTBRCKT  [reduce usando la regla 63 (Expr)]
+    $default  reduce usando la regla 63 (Expr)
+
+
+Estado 166
+
+   39 Prototype: VOID ID LFTPARTH Formals RGHPARTH SEMICLN .
+
+    $default  reduce usando la regla 39 (Prototype)
+
+
+Estado 167
+
+   38 Prototype: Type ID LFTPARTH Formals RGHPARTH SEMICLN .
+
+    $default  reduce usando la regla 38 (Prototype)
+
+
+Estado 168
+
+   57 ForStmt: FOR LFTPARTH PossibleExpr SEMICLN . PossibleExpr SEMICLN PossibleExpr RGHPARTH Stmt
+
+    THIS         desplazar e ir al estado 66
+    NEW          desplazar e ir al estado 72
+    NEWARRAY     desplazar e ir al estado 73
+    READINTEGER  desplazar e ir al estado 75
+    READLINE     desplazar e ir al estado 76
+    TRUE         desplazar e ir al estado 77
+    FALSE        desplazar e ir al estado 78
+    LFTPARTH     desplazar e ir al estado 79
+    INTVAL       desplazar e ir al estado 81
+    DOUBLEVAL    desplazar e ir al estado 82
+    STRINGVAL    desplazar e ir al estado 83
+    NULLVAL      desplazar e ir al estado 84
+    ID           desplazar e ir al estado 106
+    SUB          desplazar e ir al estado 86
+    NOT          desplazar e ir al estado 87
+
+    $default  reduce usando la regla 53 (PossibleExpr)
+
+    PossibleExpr  ir al estado 178
+    Expr          ir al estado 108
+    LValue        ir al estado 98
+    Call          ir al estado 99
+    Constant      ir al estado 100
+
+
+Estado 169
+
+   56 WhileStmt: WHILE LFTPARTH Expr RGHPARTH . Stmt
+
+    INTEGER      desplazar e ir al estado 2
+    DOUBLE       desplazar e ir al estado 3
+    BOOL         desplazar e ir al estado 4
+    STRING       desplazar e ir al estado 5
+    THIS         desplazar e ir al estado 66
+    FOR          desplazar e ir al estado 67
+    WHILE        desplazar e ir al estado 68
+    IF           desplazar e ir al estado 69
+    RETURN       desplazar e ir al estado 70
+    BREAK        desplazar e ir al estado 71
+    NEW          desplazar e ir al estado 72
+    NEWARRAY     desplazar e ir al estado 73
+    PRINT        desplazar e ir al estado 74
+    READINTEGER  desplazar e ir al estado 75
+    READLINE     desplazar e ir al estado 76
+    TRUE         desplazar e ir al estado 77
+    FALSE        desplazar e ir al estado 78
+    LFTPARTH     desplazar e ir al estado 79
+    LFTGATE      desplazar e ir al estado 51
+    INTVAL       desplazar e ir al estado 81
+    DOUBLEVAL    desplazar e ir al estado 82
+    STRINGVAL    desplazar e ir al estado 83
+    NULLVAL      desplazar e ir al estado 84
+    ID           desplazar e ir al estado 85
+    SUB          desplazar e ir al estado 86
+    NOT          desplazar e ir al estado 87
+
+    VariableDecl  ir al estado 88
+    Variable      ir al estado 13
+    Type          ir al estado 34
+    StmtBlock     ir al estado 89
+    Stmt          ir al estado 179
+    IfStmt        ir al estado 91
+    WhileStmt     ir al estado 92
+    ForStmt       ir al estado 93
+    ReturnStmt    ir al estado 94
+    BreakStmt     ir al estado 95
+    PrintStmt     ir al estado 96
+    Expr          ir al estado 97
+    LValue        ir al estado 98
+    Call          ir al estado 99
+    Constant      ir al estado 100
+
+
+Estado 170
+
+   54 IfStmt: IF LFTPARTH Expr RGHPARTH . Stmt PossibleElse
+
+    INTEGER      desplazar e ir al estado 2
+    DOUBLE       desplazar e ir al estado 3
+    BOOL         desplazar e ir al estado 4
+    STRING       desplazar e ir al estado 5
+    THIS         desplazar e ir al estado 66
+    FOR          desplazar e ir al estado 67
+    WHILE        desplazar e ir al estado 68
+    IF           desplazar e ir al estado 69
+    RETURN       desplazar e ir al estado 70
+    BREAK        desplazar e ir al estado 71
+    NEW          desplazar e ir al estado 72
+    NEWARRAY     desplazar e ir al estado 73
+    PRINT        desplazar e ir al estado 74
+    READINTEGER  desplazar e ir al estado 75
+    READLINE     desplazar e ir al estado 76
+    TRUE         desplazar e ir al estado 77
+    FALSE        desplazar e ir al estado 78
+    LFTPARTH     desplazar e ir al estado 79
+    LFTGATE      desplazar e ir al estado 51
+    INTVAL       desplazar e ir al estado 81
+    DOUBLEVAL    desplazar e ir al estado 82
+    STRINGVAL    desplazar e ir al estado 83
+    NULLVAL      desplazar e ir al estado 84
+    ID           desplazar e ir al estado 85
+    SUB          desplazar e ir al estado 86
+    NOT          desplazar e ir al estado 87
+
+    VariableDecl  ir al estado 88
+    Variable      ir al estado 13
+    Type          ir al estado 34
+    StmtBlock     ir al estado 89
+    Stmt          ir al estado 180
+    IfStmt        ir al estado 91
+    WhileStmt     ir al estado 92
+    ForStmt       ir al estado 93
+    ReturnStmt    ir al estado 94
+    BreakStmt     ir al estado 95
+    PrintStmt     ir al estado 96
+    Expr          ir al estado 97
+    LValue        ir al estado 98
+    Call          ir al estado 99
+    Constant      ir al estado 100
+
+
+Estado 171
+
+   86 Expr: NEW LFTPARTH ID RGHPARTH .
+
+    $default  reduce usando la regla 86 (Expr)
+
+
+Estado 172
+
+   87 Expr: NEWARRAY LFTPARTH Expr COMMA . Type RGHPARTH
+
+    INTEGER  desplazar e ir al estado 2
+    DOUBLE   desplazar e ir al estado 3
+    BOOL     desplazar e ir al estado 4
+    STRING   desplazar e ir al estado 5
+    ID       desplazar e ir al estado 8
+
+    Type  ir al estado 181
+
+
+Estado 173
+
+   62 ListExpr: ListExpr COMMA . Expr
+
+    THIS         desplazar e ir al estado 66
+    NEW          desplazar e ir al estado 72
+    NEWARRAY     desplazar e ir al estado 73
+    READINTEGER  desplazar e ir al estado 75
+    READLINE     desplazar e ir al estado 76
+    TRUE         desplazar e ir al estado 77
+    FALSE        desplazar e ir al estado 78
+    LFTPARTH     desplazar e ir al estado 79
+    INTVAL       desplazar e ir al estado 81
+    DOUBLEVAL    desplazar e ir al estado 82
+    STRINGVAL    desplazar e ir al estado 83
+    NULLVAL      desplazar e ir al estado 84
+    ID           desplazar e ir al estado 106
+    SUB          desplazar e ir al estado 86
+    NOT          desplazar e ir al estado 87
+
+    Expr      ir al estado 182
+    LValue    ir al estado 98
+    Call      ir al estado 99
+    Constant  ir al estado 100
+
+
+Estado 174
+
+   60 PrintStmt: PRINT LFTPARTH ListExpr RGHPARTH . SEMICLN
+
+    SEMICLN  desplazar e ir al estado 183
+
+
+Estado 175
+
+   91 Call: ID LFTPARTH Actuals RGHPARTH .
+
+    $default  reduce usando la regla 91 (Call)
+
+
+Estado 176
+
+   92 Call: Expr POINT ID LFTPARTH . Actuals RGHPARTH
+
+    THIS         desplazar e ir al estado 66
+    NEW          desplazar e ir al estado 72
+    NEWARRAY     desplazar e ir al estado 73
+    READINTEGER  desplazar e ir al estado 75
+    READLINE     desplazar e ir al estado 76
+    TRUE         desplazar e ir al estado 77
+    FALSE        desplazar e ir al estado 78
+    LFTPARTH     desplazar e ir al estado 79
+    INTVAL       desplazar e ir al estado 81
+    DOUBLEVAL    desplazar e ir al estado 82
+    STRINGVAL    desplazar e ir al estado 83
+    NULLVAL      desplazar e ir al estado 84
+    ID           desplazar e ir al estado 106
+    SUB          desplazar e ir al estado 86
+    NOT          desplazar e ir al estado 87
+
+    $default  reduce usando la regla 94 (Actuals)
+
+    ListExpr  ir al estado 148
+    Expr      ir al estado 144
+    LValue    ir al estado 98
+    Call      ir al estado 99
+    Actuals   ir al estado 184
+    Constant  ir al estado 100
+
+
+Estado 177
+
+   90 LValue: Expr LFTBRCKT Expr RGHBRCKT .
+
+    $default  reduce usando la regla 90 (LValue)
+
+
+Estado 178
+
+   57 ForStmt: FOR LFTPARTH PossibleExpr SEMICLN PossibleExpr . SEMICLN PossibleExpr RGHPARTH Stmt
+
+    SEMICLN  desplazar e ir al estado 185
+
+
+Estado 179
+
+   56 WhileStmt: WHILE LFTPARTH Expr RGHPARTH Stmt .
+
+    $default  reduce usando la regla 56 (WhileStmt)
+
+
+Estado 180
+
+   54 IfStmt: IF LFTPARTH Expr RGHPARTH Stmt . PossibleElse
+
+    ELSE  desplazar e ir al estado 186
+
+    PossibleElse  ir al estado 187
+
+
+Estado 181
 
    15 Type: Type . LFTBRCKT RGHBRCKT
-   85 Expr: NEWARRAY LFTPARTH Expr COMMA Type . RGHPARTH
+   87 Expr: NEWARRAY LFTPARTH Expr COMMA Type . RGHPARTH
 
-    LFTBRCKT  shift, and go to state 24
-    RGHPARTH  shift, and go to state 190
-
-
-State 184
-
-   60 ListExpr: ListExpr COMMA Expr .
-   67 Expr: Expr . SUM Expr
-   68     | Expr . SUB Expr
-   69     | Expr . MULT Expr
-   70     | Expr . DIV Expr
-   71     | Expr . MOD Expr
-   73     | Expr . LESSTHN Expr
-   74     | Expr . LESSEQL Expr
-   75     | Expr . GREATERTHN Expr
-   76     | Expr . GREATEREQL Expr
-   77     | Expr . SAME Expr
-   78     | Expr . DIFF Expr
-   79     | Expr . AND Expr
-   80     | Expr . OR Expr
-   87 LValue: Expr . POINT ID
-   88       | Expr . LFTBRCKT Expr RGHBRCKT
-   90 Call: Expr . POINT ID LFTPARTH Actuals RGHPARTH
-
-    POINT       shift, and go to state 121
-    LFTBRCKT    shift, and go to state 122
-    OR          shift, and go to state 123
-    LESSEQL     shift, and go to state 124
-    SUM         shift, and go to state 125
-    SUB         shift, and go to state 126
-    MULT        shift, and go to state 127
-    DIV         shift, and go to state 128
-    LESSTHN     shift, and go to state 129
-    GREATERTHN  shift, and go to state 130
-    MOD         shift, and go to state 131
-    GREATEREQL  shift, and go to state 132
-    SAME        shift, and go to state 133
-    DIFF        shift, and go to state 134
-    AND         shift, and go to state 135
-
-    $default  reduce using rule 60 (ListExpr)
+    LFTBRCKT  desplazar e ir al estado 26
+    RGHPARTH  desplazar e ir al estado 188
 
 
-State 185
+Estado 182
 
-   58 PrintStmt: PRINT LFTPARTH ListExpr RGHPARTH SEMICLN .
+   62 ListExpr: ListExpr COMMA Expr .
+   69 Expr: Expr . SUM Expr
+   70     | Expr . SUB Expr
+   71     | Expr . MULT Expr
+   72     | Expr . DIV Expr
+   73     | Expr . MOD Expr
+   75     | Expr . LESSTHN Expr
+   76     | Expr . LESSEQL Expr
+   77     | Expr . GREATERTHN Expr
+   78     | Expr . GREATEREQL Expr
+   79     | Expr . SAME Expr
+   80     | Expr . DIFF Expr
+   81     | Expr . AND Expr
+   82     | Expr . OR Expr
+   89 LValue: Expr . POINT ID
+   90       | Expr . LFTBRCKT Expr RGHBRCKT
+   92 Call: Expr . POINT ID LFTPARTH Actuals RGHPARTH
 
-    $default  reduce using rule 58 (PrintStmt)
+    POINT       desplazar e ir al estado 119
+    LFTBRCKT    desplazar e ir al estado 120
+    OR          desplazar e ir al estado 121
+    LESSEQL     desplazar e ir al estado 122
+    SUM         desplazar e ir al estado 123
+    SUB         desplazar e ir al estado 124
+    MULT        desplazar e ir al estado 125
+    DIV         desplazar e ir al estado 126
+    LESSTHN     desplazar e ir al estado 127
+    GREATERTHN  desplazar e ir al estado 128
+    MOD         desplazar e ir al estado 129
+    GREATEREQL  desplazar e ir al estado 130
+    SAME        desplazar e ir al estado 131
+    DIFF        desplazar e ir al estado 132
+    AND         desplazar e ir al estado 133
 
-
-State 186
-
-   90 Call: Expr POINT ID LFTPARTH Actuals . RGHPARTH
-
-    RGHPARTH  shift, and go to state 191
-
-
-State 187
-
-   55 ForStmt: FOR LFTPARTH PossibleExpr SEMICLN PossibleExpr SEMICLN . PossibleExpr RGHPARTH Stmt
-
-    THIS         shift, and go to state 68
-    NEW          shift, and go to state 74
-    NEWARRAY     shift, and go to state 75
-    READINTEGER  shift, and go to state 77
-    READLINE     shift, and go to state 78
-    TRUE         shift, and go to state 79
-    FALSE        shift, and go to state 80
-    LFTPARTH     shift, and go to state 81
-    INTVAL       shift, and go to state 83
-    DOUBLEVAL    shift, and go to state 84
-    STRINGVAL    shift, and go to state 85
-    NULLVAL      shift, and go to state 86
-    ID           shift, and go to state 108
-    SUB          shift, and go to state 88
-    NOT          shift, and go to state 89
-
-    $default  reduce using rule 51 (PossibleExpr)
-
-    PossibleExpr  go to state 192
-    Expr          go to state 110
-    LValue        go to state 100
-    Call          go to state 101
-    Constant      go to state 102
+    $default  reduce usando la regla 62 (ListExpr)
 
 
-State 188
+Estado 183
 
-   53 PossibleElse: ELSE . Stmt
+   60 PrintStmt: PRINT LFTPARTH ListExpr RGHPARTH SEMICLN .
 
-    INTEGER      shift, and go to state 2
-    DOUBLE       shift, and go to state 3
-    BOOL         shift, and go to state 4
-    STRING       shift, and go to state 5
-    THIS         shift, and go to state 68
-    FOR          shift, and go to state 69
-    WHILE        shift, and go to state 70
-    IF           shift, and go to state 71
-    RETURN       shift, and go to state 72
-    BREAK        shift, and go to state 73
-    NEW          shift, and go to state 74
-    NEWARRAY     shift, and go to state 75
-    PRINT        shift, and go to state 76
-    READINTEGER  shift, and go to state 77
-    READLINE     shift, and go to state 78
-    TRUE         shift, and go to state 79
-    FALSE        shift, and go to state 80
-    LFTPARTH     shift, and go to state 81
-    LFTGATE      shift, and go to state 52
-    INTVAL       shift, and go to state 83
-    DOUBLEVAL    shift, and go to state 84
-    STRINGVAL    shift, and go to state 85
-    NULLVAL      shift, and go to state 86
-    ID           shift, and go to state 87
-    SUB          shift, and go to state 88
-    NOT          shift, and go to state 89
-
-    VariableDecl  go to state 90
-    Variable      go to state 13
-    Type          go to state 33
-    StmtBlock     go to state 91
-    Stmt          go to state 193
-    IfStmt        go to state 93
-    WhileStmt     go to state 94
-    ForStmt       go to state 95
-    ReturnStmt    go to state 96
-    BreakStmt     go to state 97
-    PrintStmt     go to state 98
-    Expr          go to state 99
-    LValue        go to state 100
-    Call          go to state 101
-    Constant      go to state 102
+    $default  reduce usando la regla 60 (PrintStmt)
 
 
-State 189
+Estado 184
 
-   52 IfStmt: IF LFTPARTH Expr RGHPARTH Stmt PossibleElse .
+   92 Call: Expr POINT ID LFTPARTH Actuals . RGHPARTH
 
-    $default  reduce using rule 52 (IfStmt)
-
-
-State 190
-
-   85 Expr: NEWARRAY LFTPARTH Expr COMMA Type RGHPARTH .
-
-    $default  reduce using rule 85 (Expr)
+    RGHPARTH  desplazar e ir al estado 189
 
 
-State 191
+Estado 185
 
-   90 Call: Expr POINT ID LFTPARTH Actuals RGHPARTH .
+   57 ForStmt: FOR LFTPARTH PossibleExpr SEMICLN PossibleExpr SEMICLN . PossibleExpr RGHPARTH Stmt
 
-    $default  reduce using rule 90 (Call)
+    THIS         desplazar e ir al estado 66
+    NEW          desplazar e ir al estado 72
+    NEWARRAY     desplazar e ir al estado 73
+    READINTEGER  desplazar e ir al estado 75
+    READLINE     desplazar e ir al estado 76
+    TRUE         desplazar e ir al estado 77
+    FALSE        desplazar e ir al estado 78
+    LFTPARTH     desplazar e ir al estado 79
+    INTVAL       desplazar e ir al estado 81
+    DOUBLEVAL    desplazar e ir al estado 82
+    STRINGVAL    desplazar e ir al estado 83
+    NULLVAL      desplazar e ir al estado 84
+    ID           desplazar e ir al estado 106
+    SUB          desplazar e ir al estado 86
+    NOT          desplazar e ir al estado 87
 
+    $default  reduce usando la regla 53 (PossibleExpr)
 
-State 192
-
-   55 ForStmt: FOR LFTPARTH PossibleExpr SEMICLN PossibleExpr SEMICLN PossibleExpr . RGHPARTH Stmt
-
-    RGHPARTH  shift, and go to state 194
-
-
-State 193
-
-   53 PossibleElse: ELSE Stmt .
-
-    $default  reduce using rule 53 (PossibleElse)
-
-
-State 194
-
-   55 ForStmt: FOR LFTPARTH PossibleExpr SEMICLN PossibleExpr SEMICLN PossibleExpr RGHPARTH . Stmt
-
-    INTEGER      shift, and go to state 2
-    DOUBLE       shift, and go to state 3
-    BOOL         shift, and go to state 4
-    STRING       shift, and go to state 5
-    THIS         shift, and go to state 68
-    FOR          shift, and go to state 69
-    WHILE        shift, and go to state 70
-    IF           shift, and go to state 71
-    RETURN       shift, and go to state 72
-    BREAK        shift, and go to state 73
-    NEW          shift, and go to state 74
-    NEWARRAY     shift, and go to state 75
-    PRINT        shift, and go to state 76
-    READINTEGER  shift, and go to state 77
-    READLINE     shift, and go to state 78
-    TRUE         shift, and go to state 79
-    FALSE        shift, and go to state 80
-    LFTPARTH     shift, and go to state 81
-    LFTGATE      shift, and go to state 52
-    INTVAL       shift, and go to state 83
-    DOUBLEVAL    shift, and go to state 84
-    STRINGVAL    shift, and go to state 85
-    NULLVAL      shift, and go to state 86
-    ID           shift, and go to state 87
-    SUB          shift, and go to state 88
-    NOT          shift, and go to state 89
-
-    VariableDecl  go to state 90
-    Variable      go to state 13
-    Type          go to state 33
-    StmtBlock     go to state 91
-    Stmt          go to state 195
-    IfStmt        go to state 93
-    WhileStmt     go to state 94
-    ForStmt       go to state 95
-    ReturnStmt    go to state 96
-    BreakStmt     go to state 97
-    PrintStmt     go to state 98
-    Expr          go to state 99
-    LValue        go to state 100
-    Call          go to state 101
-    Constant      go to state 102
+    PossibleExpr  ir al estado 190
+    Expr          ir al estado 108
+    LValue        ir al estado 98
+    Call          ir al estado 99
+    Constant      ir al estado 100
 
 
-State 195
+Estado 186
 
-   55 ForStmt: FOR LFTPARTH PossibleExpr SEMICLN PossibleExpr SEMICLN PossibleExpr RGHPARTH Stmt .
+   55 PossibleElse: ELSE . Stmt
 
-    $default  reduce using rule 55 (ForStmt)
+    INTEGER      desplazar e ir al estado 2
+    DOUBLE       desplazar e ir al estado 3
+    BOOL         desplazar e ir al estado 4
+    STRING       desplazar e ir al estado 5
+    THIS         desplazar e ir al estado 66
+    FOR          desplazar e ir al estado 67
+    WHILE        desplazar e ir al estado 68
+    IF           desplazar e ir al estado 69
+    RETURN       desplazar e ir al estado 70
+    BREAK        desplazar e ir al estado 71
+    NEW          desplazar e ir al estado 72
+    NEWARRAY     desplazar e ir al estado 73
+    PRINT        desplazar e ir al estado 74
+    READINTEGER  desplazar e ir al estado 75
+    READLINE     desplazar e ir al estado 76
+    TRUE         desplazar e ir al estado 77
+    FALSE        desplazar e ir al estado 78
+    LFTPARTH     desplazar e ir al estado 79
+    LFTGATE      desplazar e ir al estado 51
+    INTVAL       desplazar e ir al estado 81
+    DOUBLEVAL    desplazar e ir al estado 82
+    STRINGVAL    desplazar e ir al estado 83
+    NULLVAL      desplazar e ir al estado 84
+    ID           desplazar e ir al estado 85
+    SUB          desplazar e ir al estado 86
+    NOT          desplazar e ir al estado 87
+
+    VariableDecl  ir al estado 88
+    Variable      ir al estado 13
+    Type          ir al estado 34
+    StmtBlock     ir al estado 89
+    Stmt          ir al estado 191
+    IfStmt        ir al estado 91
+    WhileStmt     ir al estado 92
+    ForStmt       ir al estado 93
+    ReturnStmt    ir al estado 94
+    BreakStmt     ir al estado 95
+    PrintStmt     ir al estado 96
+    Expr          ir al estado 97
+    LValue        ir al estado 98
+    Call          ir al estado 99
+    Constant      ir al estado 100
+
+
+Estado 187
+
+   54 IfStmt: IF LFTPARTH Expr RGHPARTH Stmt PossibleElse .
+
+    $default  reduce usando la regla 54 (IfStmt)
+
+
+Estado 188
+
+   87 Expr: NEWARRAY LFTPARTH Expr COMMA Type RGHPARTH .
+
+    $default  reduce usando la regla 87 (Expr)
+
+
+Estado 189
+
+   92 Call: Expr POINT ID LFTPARTH Actuals RGHPARTH .
+
+    $default  reduce usando la regla 92 (Call)
+
+
+Estado 190
+
+   57 ForStmt: FOR LFTPARTH PossibleExpr SEMICLN PossibleExpr SEMICLN PossibleExpr . RGHPARTH Stmt
+
+    RGHPARTH  desplazar e ir al estado 192
+
+
+Estado 191
+
+   55 PossibleElse: ELSE Stmt .
+
+    $default  reduce usando la regla 55 (PossibleElse)
+
+
+Estado 192
+
+   57 ForStmt: FOR LFTPARTH PossibleExpr SEMICLN PossibleExpr SEMICLN PossibleExpr RGHPARTH . Stmt
+
+    INTEGER      desplazar e ir al estado 2
+    DOUBLE       desplazar e ir al estado 3
+    BOOL         desplazar e ir al estado 4
+    STRING       desplazar e ir al estado 5
+    THIS         desplazar e ir al estado 66
+    FOR          desplazar e ir al estado 67
+    WHILE        desplazar e ir al estado 68
+    IF           desplazar e ir al estado 69
+    RETURN       desplazar e ir al estado 70
+    BREAK        desplazar e ir al estado 71
+    NEW          desplazar e ir al estado 72
+    NEWARRAY     desplazar e ir al estado 73
+    PRINT        desplazar e ir al estado 74
+    READINTEGER  desplazar e ir al estado 75
+    READLINE     desplazar e ir al estado 76
+    TRUE         desplazar e ir al estado 77
+    FALSE        desplazar e ir al estado 78
+    LFTPARTH     desplazar e ir al estado 79
+    LFTGATE      desplazar e ir al estado 51
+    INTVAL       desplazar e ir al estado 81
+    DOUBLEVAL    desplazar e ir al estado 82
+    STRINGVAL    desplazar e ir al estado 83
+    NULLVAL      desplazar e ir al estado 84
+    ID           desplazar e ir al estado 85
+    SUB          desplazar e ir al estado 86
+    NOT          desplazar e ir al estado 87
+
+    VariableDecl  ir al estado 88
+    Variable      ir al estado 13
+    Type          ir al estado 34
+    StmtBlock     ir al estado 89
+    Stmt          ir al estado 193
+    IfStmt        ir al estado 91
+    WhileStmt     ir al estado 92
+    ForStmt       ir al estado 93
+    ReturnStmt    ir al estado 94
+    BreakStmt     ir al estado 95
+    PrintStmt     ir al estado 96
+    Expr          ir al estado 97
+    LValue        ir al estado 98
+    Call          ir al estado 99
+    Constant      ir al estado 100
+
+
+Estado 193
+
+   57 ForStmt: FOR LFTPARTH PossibleExpr SEMICLN PossibleExpr SEMICLN PossibleExpr RGHPARTH Stmt .
+
+    $default  reduce usando la regla 57 (ForStmt)

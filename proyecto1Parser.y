@@ -6,12 +6,19 @@
 #include <string.h>
 #include <stdarg.h>
 #include "tree.c"
+#include "scopeList.c"
 
 extern FILE* yyin;
 extern int yylineno;
 extern int yyparse();
 void yyerror (char *s);
 int yylex();
+char* symbols[50][3]; 
+int fila = 0;
+struct TreeNode * parent;
+struct SymbolNode * rootSymbol;
+struct Scope * scopeActual;
+struct ScopeNode * listScopes;
 
 %}
 
@@ -21,6 +28,8 @@ int yylex();
   char* str;
 	struct TreeNode * treeNode;
   int intval;
+  struct SymbolNode * symbolNode;
+  struct Scope * scope;
 }
 
 %start Program
@@ -45,11 +54,11 @@ int yylex();
 %type<treeNode> ListIdents Fields Field InterfaceDecl Prototypes Prototype
 %type<treeNode> StmtBlock Stmts Stmt PossibleExpr IfStmt
 %type<treeNode> PossibleElse WhileStmt ForStmt ReturnStmt BreakStmt PrintStmt
-%type<treeNode> ListExpr Expr LValue Call Actuals Constant
+%type<treeNode> ListExpr Expr LValue Call Actuals Constant FunctionName ClassName
 
 %%
 
-Program:        Declarations { $$ = createTreeNode(yylineno, "Program", 1, $1); printTree($$); freeTree($$); }
+Program:        Declarations { $$ = createTreeNode(yylineno, "Program", 1, $1); parent = $$; }
 ;
 
 Declarations:   Declaration               { $$ = createTreeNode(yylineno, "Declarations", 1, $1); }
@@ -65,7 +74,10 @@ Declaration:    VariableDecl  { $$ = createTreeNode(yylineno, "Declaration", 1, 
 VariableDecl:   Variable SEMICLN { $$ = createTreeNode(yylineno, "VariableDecl", 2, $1, tN(";")); }
 ;
 
-Variable:       Type ID { $$ = createTreeNode(yylineno, "Variable", 2, $1, tT(yylval.str, "ID")); }
+Variable:       Type ID { $$ = createTreeNode(yylineno, "Variable", 2, $1, tT(yylval.str, "ID"));
+                          struct SymbolNode * newSymbol = createSymbolNode($1->value,yylval.str);
+                          rootSymbol = insertSymbolNode(rootSymbol,newSymbol);
+                        }
 ;
 
 Type:           INTEGER                 { $$ = createTreeNode(yylineno, "Type", 1, tN("integer")); }
@@ -76,8 +88,19 @@ Type:           INTEGER                 { $$ = createTreeNode(yylineno, "Type", 
               | Type LFTBRCKT RGHBRCKT  { $$ = createTreeNode(yylineno, "Type", 3, $1, tN("["), tN("]")); }
 ;
 
-FunctionDecl:   Type ID LFTPARTH Formals RGHPARTH StmtBlock { $$ = createTreeNode(yylineno, "FunctionDecl", 6, $1, tT(yylval.str, "ID"), tN("("), $4, tN(")"), $6); }
-              | VOID ID LFTPARTH Formals RGHPARTH StmtBlock { $$ = createTreeNode(yylineno, "FunctionDecl", 6, tN("void"), tT(yylval.str, "ID"), tN("("), $4, tN(")"), $6); }
+FunctionDecl:   FunctionName LFTPARTH Formals RGHPARTH StmtBlock {  $$ = createTreeNode(yylineno, "FunctionDecl", 5, $1, tN("("), $3, tN(")"), $5); 
+                                                                    scopeActual = createScope($1->root->next->node->value);
+                                                                    insertSymbol(scopeActual,rootSymbol);
+                                                                    struct ScopeNode * scopeNode = createScopeNode(scopeActual);
+                                                                    listScopes = insertScopeNode(listScopes, scopeNode);
+                                                                    free(rootSymbol);
+                                                                    rootSymbol = 0;
+                                                                  }
+                
+;
+
+FunctionName:   Type ID { $$ = createTreeNode(yylineno, "FunctionName", 2, $1, tT(yylval.str, "ID"));}
+              | VOID ID { $$ = createTreeNode(yylineno, "FunctionName", 2, tN("void"), tT(yylval.str, "ID")); }
 ;
 
 Formals:        Variables   { $$ = createTreeNode(yylineno, "Formals", 1, $1); }
@@ -88,7 +111,10 @@ Variables:      Variable                  { $$ = createTreeNode(yylineno, "Varia
               | Variables COMMA Variable  { $$ = createTreeNode(yylineno, "Variables", 3, $1, tN(","), $3); }
 ;
 
-ClassDecl:      CLASS ID Extend Implement LFTGATE Fields RGHGATE { $$ = createTreeNode(yylineno, "ClassDecl", 7, tN("class"), tT(yylval.str, "ID"), $3, $4, tN("{"), $6, tN("}")); }
+ClassDecl:      ClassName Extend Implement LFTGATE Fields RGHGATE { $$ = createTreeNode(yylineno, "ClassDecl", 6, $1, $2, $3, tN("{"), $5, tN("}")); }
+;
+
+ClassName:     CLASS ID {$$ = createTreeNode(yylineno, "ClassName", 2, tN("Class"), tT(yylval.str, "ID"));}
 ;
 
 Extend:         EXTENDS ID  { $$ = createTreeNode(yylineno, "Extend", 2, tN("extends"), tT(yylval.str, "ID")); }
@@ -221,11 +247,15 @@ Constant:       INTVAL    { $$ = createTreeNode(yylineno, "Constant", 1, tT(yylv
 %%
 
 int main() {
+  rootSymbol = 0;
+  listScopes = 0;
   yyin = stdin;
   do {
     yyparse();
 	} while(!feof(yyin));
+  printNode(parent,1);
 	return 0;
+
 }
 
 void yyerror(char *s) {

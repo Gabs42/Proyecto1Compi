@@ -115,13 +115,15 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 20 "proyecto1Parser.y"
+#line 27 "proyecto1Parser.y"
 
   char* str;
 	struct TreeNode * treeNode;
   int intval;
+  struct SymbolNode * symbolNode;
+  struct Scope * scope;
 
-#line 125 "proyecto1Parser.tab.h"
+#line 127 "proyecto1Parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

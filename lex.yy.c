@@ -1650,7 +1650,7 @@ addListVal(24,columnNumber,yylineno,yytext);columnNumber= columnNumber+yyleng-1;
 case 25:
 YY_RULE_SETUP
 #line 48 "proyecto1Scanner.l"
-{addList(25,columnNumber,yylineno);yylval.intval =columnNumber;columnNumber= columnNumber+yyleng-1;yylval.str = strdup(yytext);return ID;}
+{addList(25,columnNumber,yylineno);columnNumber= columnNumber+yyleng-1;yylval.str = strdup(yytext);return ID;}
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
@@ -1844,7 +1844,7 @@ columnNumber= columnNumber+1;
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
 #line 86 "proyecto1Scanner.l"
-printInt(lineStart, columnStart, tokenStart, valueStart); return 0;
+return 0;
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
