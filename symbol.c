@@ -8,6 +8,7 @@
 struct SymbolNode {
     char * type;
     char * id;
+    int parameter;
     struct SymbolNode * next;
 };
 
@@ -39,6 +40,7 @@ struct SymbolNode * createSymbolNode(char * type, char * id) {
     newNode->type = type;
     newNode->id = id;
     newNode->next = 0;
+    newNode->parameter = 0;
     return newNode;
 };
 

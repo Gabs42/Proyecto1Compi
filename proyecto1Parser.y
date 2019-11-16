@@ -7,6 +7,7 @@
 #include <stdarg.h>
 #include "tree.c"
 #include "scopeList.c"
+#include "validations.c"
 
 extern FILE* yyin;
 extern int yylineno;
@@ -117,6 +118,7 @@ Formals:        Variables   { $$ = createTreeNode(yylineno, "Formals", 1, $1); }
 Variables:      Variable                  { $$ = createTreeNode(yylineno, "Variables", 1, $1);
                                             struct TreeNode * variable = $1;
                                             struct SymbolNode * newSymbol = createSymbolNode(variable->root->node->root->node->value, variable->root->next->node->value);
+                                            newSymbol->parameter = 1;
                                             symbolList = insertSymbolNode(symbolList, newSymbol);
                                           }
               | Variables COMMA Variable  { $$ = createTreeNode(yylineno, "Variables", 3, $1, tN(","), $3); }

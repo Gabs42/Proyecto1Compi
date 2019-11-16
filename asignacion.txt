@@ -2,6 +2,22 @@
     Creador: Jean Pierre Monterrey
     Tecnologico de Costa Rica
 */
+
+interface Humano {
+
+  //Funciones
+  int calcularTrayecto(int tiempo);
+
+}
+
+class Deportista {
+
+  //Variables
+  string apellido;
+  int estatura;
+
+}
+
 class Nadador extends Deportista implements Humano {
 
     //Variables
