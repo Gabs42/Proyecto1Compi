@@ -1,7 +1,0 @@
-class p{
-  int clase;
-  int nadar(){
-    int x;
-    int y;
-  }
-}

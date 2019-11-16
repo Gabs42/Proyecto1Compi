@@ -1,6 +1,0 @@
-class Hello {
- void main() {
-    int 2a;
-    int y;
- }
-}

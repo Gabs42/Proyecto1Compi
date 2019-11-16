@@ -113,8 +113,7 @@ struct TreeNode * tN(char * value) {
 struct TreeNode * tT(char * value, char * type) {
   struct TreeNode * treeNode = malloc(sizeof(struct TreeNode));
   treeNode->value = malloc(sizeof(char *));
-  memcpy(treeNode->value,value,sizeof(char *));
-  //treeNode->value = value;
+  treeNode->value = value;
   treeNode->type = type;
   treeNode->columnNumber = 0;
   treeNode->root = 0;
