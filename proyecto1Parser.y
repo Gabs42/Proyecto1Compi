@@ -66,7 +66,7 @@ struct ScopeNode * scopeExtends;
 
 %%
 
-Program:        Declarations  { $$ = createTreeNode(yylineno, "Program", 1, $1); parent = $$;
+Program:        Declarations  { $$ = createTreeNode(yylineno, "Program", 1, $1);
                                 globalScope = createScope("global", "Global");
                                 globalScope = setFScope(globalScope, classList);
                                 globalScope = setPScope(globalScope, classList);
@@ -116,7 +116,7 @@ Formals:        Variables   { $$ = createTreeNode(yylineno, "Formals", 1, $1); }
 
 Variables:      Variable                  { $$ = createTreeNode(yylineno, "Variables", 1, $1);
                                             struct TreeNode * variable = $1;
-                                            struct SymbolNode * newSymbol = createSymbolNode(variable->root->node->root->value, variable->root->next->node->value);
+                                            struct SymbolNode * newSymbol = createSymbolNode(variable->root->node->root->node->value, variable->root->next->node->value);
                                             symbolList = insertSymbolNode(symbolList, newSymbol);
                                           }
               | Variables COMMA Variable  { $$ = createTreeNode(yylineno, "Variables", 3, $1, tN(","), $3); }
@@ -134,7 +134,7 @@ ClassDecl:      ClassName Extend Implement LFTGATE Fields RGHGATE { $$ = createT
                                                                     struct Scope * newScopeExtend = createScope($1->root->next->node->value, "Class");
                                                                     newScopeExtend = insertSymbol(newScopeExtend, symbolExtends);
                                                                     struct ScopeNode * newNodeExtend = createScopeNode(newScopeExtend);
-                                                                    scopeExtends = insertScopeNode(newNodeExtend);
+                                                                    scopeExtends = insertScopeNode(scopeExtends, newNodeExtend);
                                                                     symbolExtends = 0;
                                                                   }
 ;
@@ -165,8 +165,8 @@ Fields:         Fields Field  { $$ = createTreeNode(yylineno, "Fields", 2, $1, $
 ;
 
 Field:          VariableDecl  { $$ = createTreeNode(yylineno, "Field", 1, $1);
-                                struct TreeNode * variable = $1->root->value;
-                                struct SymbolNode * newSymbol = createSymbolNode(variable->root->node->root->value, variable->root->next->node->value);
+                                struct TreeNode * variable = $1->root->node;
+                                struct SymbolNode * newSymbol = createSymbolNode(variable->root->node->root->node->value, variable->root->next->node->value);
                                 symbolList = insertSymbolNode(symbolClass, newSymbol);
                               }
               | FunctionDecl  { $$ = createTreeNode(yylineno, "Field", 1, $1); }
@@ -216,8 +216,8 @@ Stmt:           IfStmt        { $$ = createTreeNode(yylineno, "Stmt", 1, $1); }
               | StmtBlock     { $$ = createTreeNode(yylineno, "Stmt", 1, $1); }
               | Expr          { $$ = createTreeNode(yylineno, "Stmt", 1, $1); }
               | VariableDecl  { $$ = createTreeNode(yylineno, "Stmt", 1, $1);
-                                struct TreeNode * variable = $1->root->value;
-                                struct SymbolNode * newSymbol = createSymbolNode(variable->root->node->root->value, variable->root->next->node->value);
+                                struct TreeNode * variable = $1->root->node;
+                                struct SymbolNode * newSymbol = createSymbolNode(variable->root->node->root->node->value, variable->root->next->node->value);
                                 symbolList = insertSymbolNode(symbolList, newSymbol);
                               }
 ;
@@ -316,9 +316,9 @@ int main() {
   do {
     yyparse();
 	} while(!feof(yyin));
-  printNode(parent,1);
+  printf("%s\n", globalScope->pScope->value->pScope->next->value->root->type);
+  printf("%s\n", scopeExtends->value->root->next->type);
 	return 0;
-
 }
 
 void yyerror(char *s) {

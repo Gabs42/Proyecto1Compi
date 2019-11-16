@@ -82,15 +82,23 @@ extern int yylineno;
 extern int yyparse();
 void yyerror (char *s);
 int yylex();
-char* symbols[50][3]; 
+char* symbols[50][3];
 int fila = 0;
-struct TreeNode * parent;
-struct SymbolNode * rootSymbol;
-struct Scope * scopeActual;
-struct ScopeNode * listScopes;
+
+struct Scope * globalScope;
+
+struct ScopeNode * classList;
+
+struct ScopeNode * scopeList;
+struct SymbolNode * symbolList;
+
+struct SymbolNode * symbolClass;
+
+struct SymbolNode * symbolExtends;
+struct ScopeNode * scopeExtends;
 
 
-#line 94 "proyecto1Parser.tab.c"
+#line 102 "proyecto1Parser.tab.c"
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus
@@ -195,7 +203,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 27 "proyecto1Parser.y"
+#line 35 "proyecto1Parser.y"
 
   char* str;
 	struct TreeNode * treeNode;
@@ -203,7 +211,7 @@ union YYSTYPE
   struct SymbolNode * symbolNode;
   struct Scope * scope;
 
-#line 207 "proyecto1Parser.tab.c"
+#line 215 "proyecto1Parser.tab.c"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -467,18 +475,18 @@ union yyalloc
 #endif /* !YYCOPY_NEEDED */
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  23
+#define YYFINAL  24
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   364
+#define YYLAST   397
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  62
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  38
+#define YYNNTS  40
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  101
+#define YYNRULES  104
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  194
+#define YYNSTATES  192
 
 #define YYUNDEFTOK  2
 #define YYMAXUTOK   316
@@ -528,19 +536,19 @@ static const yytype_uint8 yytranslate[] =
 
 #if YYDEBUG
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
-static const yytype_uint8 yyrline[] =
+static const yytype_uint16 yyrline[] =
 {
-       0,    61,    61,    64,    65,    68,    69,    70,    71,    74,
-      77,    83,    84,    85,    86,    87,    88,    91,   102,   103,
-     106,   107,   110,   111,   114,   117,   120,   121,   124,   125,
-     128,   129,   132,   133,   136,   137,   140,   143,   144,   147,
-     148,   151,   154,   155,   158,   159,   160,   161,   162,   163,
-     164,   165,   166,   169,   170,   173,   176,   180,   183,   186,
-     189,   192,   195,   196,   199,   200,   201,   202,   203,   204,
-     205,   206,   207,   208,   209,   210,   211,   212,   213,   214,
-     215,   216,   217,   218,   219,   220,   221,   222,   223,   226,
-     227,   228,   231,   232,   235,   236,   239,   240,   241,   242,
-     243,   244
+       0,    69,    69,    76,    77,    80,    81,    82,    83,    86,
+      89,    92,    93,    94,    95,    96,    97,   100,   109,   110,
+     113,   114,   117,   122,   125,   142,   145,   149,   152,   156,
+     159,   160,   163,   164,   167,   172,   175,   185,   188,   189,
+     192,   199,   200,   203,   206,   207,   210,   211,   212,   213,
+     214,   215,   216,   217,   218,   225,   226,   229,   232,   233,
+     236,   239,   242,   245,   248,   251,   252,   255,   256,   257,
+     258,   259,   260,   261,   262,   263,   264,   265,   266,   267,
+     268,   269,   270,   271,   272,   273,   274,   275,   276,   277,
+     278,   279,   282,   283,   284,   287,   288,   291,   292,   295,
+     296,   297,   298,   299,   300
 };
 #endif
 
@@ -561,10 +569,10 @@ static const char *const yytname[] =
   "Program", "Declarations", "Declaration", "VariableDecl", "Variable",
   "Type", "FunctionDecl", "FunctionName", "Formals", "Variables",
   "ClassDecl", "ClassName", "Extend", "Implement", "ListIdents", "Fields",
-  "Field", "InterfaceDecl", "Prototypes", "Prototype", "StmtBlock",
-  "Stmts", "Stmt", "PossibleExpr", "IfStmt", "PossibleElse", "WhileStmt",
-  "ForStmt", "ReturnStmt", "BreakStmt", "PrintStmt", "ListExpr", "Expr",
-  "LValue", "Call", "Actuals", "Constant", YY_NULLPTR
+  "Field", "InterfaceDecl", "InterfaceName", "Prototypes", "Prototype",
+  "PrototypeName", "StmtBlock", "Stmts", "Stmt", "PossibleExpr", "IfStmt",
+  "PossibleElse", "WhileStmt", "ForStmt", "ReturnStmt", "BreakStmt",
+  "PrintStmt", "ListExpr", "Expr", "LValue", "Call", "Actuals", "Constant", YY_NULLPTR
 };
 #endif
 
@@ -583,10 +591,10 @@ static const yytype_uint16 yytoknum[] =
 };
 # endif
 
-#define YYPACT_NINF -95
+#define YYPACT_NINF -162
 
 #define yypact_value_is_default(Yystate) \
-  (!!((Yystate) == (-95)))
+  (!!((Yystate) == (-162)))
 
 #define YYTABLE_NINF -19
 
@@ -597,26 +605,26 @@ static const yytype_uint16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int16 yypact[] =
 {
-      25,   -42,   -95,   -95,   -95,   -95,   -25,   -21,   -95,    47,
-      25,   -95,   -95,    44,   -22,   -95,    52,   -95,    72,   -95,
-     -95,   -95,    76,   -95,   -95,   -95,    56,    81,    -2,    39,
-     100,   -95,   -95,   -95,   -10,    83,    94,   -95,    77,    97,
-       9,   -95,    98,    -2,   -95,   106,   -95,    88,   -95,    53,
-     -95,   -95,   -95,   -95,    92,   157,   119,   120,    74,   -95,
-     -95,   -95,   -95,   -95,    -2,    -2,   -95,   121,   122,   124,
-     165,   125,   128,   138,   139,   143,   144,   -95,   -95,   165,
-     -95,   -95,   -95,   -95,   -95,   -11,   165,   165,   -95,   -95,
-     -95,   -95,   -95,   -95,   -95,   -95,   -95,   304,    99,   -95,
-     -95,   145,   146,   165,   165,   165,   148,   149,   304,   -95,
-     133,   165,   165,   151,   155,   207,   165,    -7,     7,   150,
-     165,   165,   165,   165,   165,   165,   165,   165,   165,   165,
-     165,   165,   165,   165,   165,   160,   161,   164,   240,   256,
-     -95,   167,   191,    75,   304,   -95,   -95,   -95,   173,   169,
-     171,   289,     7,    -7,    -7,    -7,    -7,    -7,    -7,    -7,
-      -7,    -7,     7,     7,     7,     7,   -95,   -95,   165,   123,
-     123,   -95,    -2,   165,   170,   -95,   165,   -95,   178,   -95,
-     187,    16,   304,   -95,   174,   165,   123,   -95,   -95,   -95,
-     180,   -95,   123,   -95
+      28,   -30,  -162,  -162,  -162,  -162,   -27,   -23,  -162,    30,
+      28,  -162,  -162,     9,    52,  -162,    24,  -162,    65,  -162,
+      45,  -162,  -162,  -162,  -162,  -162,  -162,    50,    54,    10,
+      35,    73,  -162,  -162,  -162,    53,    56,    62,  -162,    42,
+      59,    43,  -162,    60,    10,  -162,    77,  -162,    61,  -162,
+      55,  -162,    75,  -162,  -162,  -162,    63,    92,  -162,  -162,
+      10,   110,  -162,  -162,  -162,  -162,  -162,    76,  -162,    81,
+      88,    89,   200,    74,   106,   107,   108,   111,   112,  -162,
+    -162,   200,  -162,  -162,  -162,  -162,  -162,   -26,   200,   200,
+    -162,  -162,  -162,  -162,  -162,  -162,  -162,  -162,  -162,   337,
+      66,  -162,  -162,   113,   200,   200,   200,   116,   115,   337,
+    -162,   101,   200,   200,   118,   119,   240,   200,   -20,    25,
+     109,   200,   200,   200,   200,   200,   200,   200,   200,   200,
+     200,   200,   200,   200,   200,   200,  -162,   123,   273,   289,
+    -162,   127,   224,    -8,   337,  -162,  -162,  -162,   134,   135,
+     137,   322,    25,   -20,   -20,   -20,   -20,   -20,   -20,   -20,
+     -20,   -20,    25,    25,    25,    25,   200,   158,   158,  -162,
+      10,   200,   133,  -162,   200,  -162,   142,  -162,   168,   -28,
+     337,  -162,   154,   200,   158,  -162,  -162,  -162,   155,  -162,
+     158,  -162
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -626,42 +634,42 @@ static const yytype_uint8 yydefact[] =
 {
        0,     0,    11,    12,    13,    14,     0,     0,    15,     0,
        2,     3,     5,     0,     0,     6,     0,     7,    27,     8,
-      19,    25,     0,     1,     4,     9,     0,    10,    21,     0,
-      29,    38,    16,    22,     0,     0,    20,    26,     0,     0,
-       0,    10,     0,     0,    30,    28,    33,     0,    36,     0,
-      37,    43,    17,    23,     0,     0,     0,     0,     0,    31,
-      24,    34,    35,    32,    21,    21,    67,     0,     0,     0,
-      54,     0,     0,     0,     0,     0,     0,    98,    99,     0,
-      41,    96,    97,   100,   101,    89,     0,     0,    52,    50,
-      42,    44,    45,    46,    48,    47,    49,    51,    66,    68,
-      65,     0,     0,    54,     0,     0,    89,     0,    53,    60,
-       0,     0,     0,     0,     0,     0,    95,    75,    84,     0,
+       0,    19,    25,    37,     1,     4,     9,     0,    10,    21,
+       0,    29,    39,    16,    22,     0,     0,    20,    26,     0,
+       0,     0,    10,     0,     0,    30,    28,    33,     0,    36,
+       0,    38,     0,    45,    17,    23,     0,     0,    42,    41,
+      21,     0,    31,    24,    34,    35,    32,     0,    70,     0,
+       0,     0,    56,     0,     0,     0,     0,     0,     0,   101,
+     102,     0,    43,    99,   100,   103,   104,    92,     0,     0,
+      54,    52,    44,    46,    47,    48,    50,    49,    51,    53,
+      69,    71,    68,     0,    56,     0,     0,    92,     0,    55,
+      63,     0,     0,     0,     0,     0,     0,    98,    78,    87,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-      59,     0,     0,     0,    62,    85,    86,    69,    94,     0,
-      90,     0,    83,    77,    70,    71,    72,    73,    76,    78,
-      74,    79,    80,    81,    82,    64,    40,    39,    54,     0,
-       0,    87,     0,     0,     0,    92,    95,    91,     0,    57,
-       0,     0,    63,    61,     0,    54,     0,    55,    88,    93,
-       0,    56,     0,    58
+       0,     0,     0,     0,     0,     0,    40,     0,     0,     0,
+      62,     0,     0,     0,    65,    88,    89,    72,    97,     0,
+      93,     0,    86,    80,    73,    74,    75,    76,    79,    81,
+      77,    82,    83,    84,    85,    67,    56,     0,     0,    90,
+       0,     0,     0,    95,    98,    94,     0,    60,    59,     0,
+      66,    64,     0,    56,     0,    57,    91,    96,     0,    58,
+       0,    61
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int16 yypgoto[] =
 {
-     -95,   -95,   -95,   204,     1,   152,     0,   166,   -95,    11,
-     -95,   -95,   -95,   -95,   -95,   -95,   -95,   -95,   -95,   -95,
-     -95,   181,   -95,   -66,   -94,   -95,   -95,   -95,   -95,   -95,
-     -95,   -95,   110,   -62,   -95,   -95,    48,   -95
+    -162,  -162,  -162,   178,     2,    58,     0,   136,  -162,   130,
+    -162,  -162,  -162,  -162,  -162,  -162,  -162,  -162,  -162,  -162,
+    -162,  -162,  -162,   148,  -162,  -161,   -91,  -162,  -162,  -162,
+    -162,  -162,  -162,  -162,    82,   -61,  -162,  -162,    20,  -162
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int16 yydefgoto[] =
 {
-      -1,     9,    10,    11,    88,    13,    34,    15,    16,    35,
-      36,    17,    18,    30,    39,    45,    55,    63,    19,    40,
-      50,    89,    58,    90,   107,    91,   187,    92,    93,    94,
-      95,    96,   148,    97,    98,    99,   149,   100
+      -1,     9,    10,    11,    90,    13,    35,    15,    16,    36,
+      37,    17,    18,    31,    40,    46,    57,    66,    19,    20,
+      41,    51,    52,    91,    61,    92,   108,    93,   185,    94,
+      95,    96,    97,    98,   148,    99,   100,   101,   149,   102
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -669,84 +677,90 @@ static const yytype_int16 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int16 yytable[] =
 {
-      14,    12,     2,     3,     4,     5,    20,    26,   108,   137,
-      14,    12,    47,     2,     3,     4,     5,   115,   -15,    26,
-     116,   119,   120,    21,   117,   118,    27,    22,     1,     2,
-       3,     4,     5,     6,     7,   119,   120,   -15,    41,   121,
-      49,   108,   138,   139,    48,    26,     8,    23,   188,   142,
-     144,   131,   132,   133,   144,    14,    61,     8,   151,   152,
-     153,   154,   155,   156,   157,   158,   159,   160,   161,   162,
-     163,   164,   165,     8,   178,   101,   102,    25,     2,     3,
-       4,     5,    26,    28,    29,    66,    32,    37,    67,    68,
-      69,   190,    70,    71,    72,    73,    74,    75,    76,    77,
-      78,    57,   173,   179,   180,    79,   108,   174,    51,    80,
-      31,   182,   -18,    38,   144,    42,    81,    82,    83,    84,
-     191,    43,    85,   108,    86,    44,   193,     2,     3,     4,
-       5,    46,    51,    54,    66,    87,    56,    67,    68,    69,
-      59,    70,    71,    72,    73,    74,    75,    76,    77,    78,
-      64,    65,   103,   104,    79,   105,   134,    51,   109,   110,
-       1,     2,     3,     4,     5,    81,    82,    83,    84,   111,
-     112,    85,   181,    86,   113,   114,    66,   135,   136,   116,
-      33,   141,   140,   145,    87,    72,    73,   146,    75,    76,
-      77,    78,    60,   166,   167,    53,    79,   168,   150,   171,
-     173,   175,   176,   183,   186,     8,   189,    81,    82,    83,
-      84,   185,   192,   106,    24,    86,    33,    33,   172,   119,
-     120,    62,   143,    52,   184,     0,    87,     0,     0,     0,
-       0,     0,     0,     0,     0,   119,   120,   121,   122,   147,
-     123,   124,   125,   126,   127,   128,   129,   130,     0,   131,
-     132,   133,     0,   121,   122,     0,   123,   124,   125,   126,
-     127,   128,   129,   130,     0,   131,   132,   133,   119,   120,
-       0,     0,   169,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,   119,   120,   121,   122,   170,   123,
-     124,   125,   126,   127,   128,   129,   130,     0,   131,   132,
-     133,     0,   121,   122,     0,   123,   124,   125,   126,   127,
-     128,   129,   130,     0,   131,   132,   133,   119,   120,   177,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,   119,   120,     0,   121,   122,     0,   123,   124,
-     125,   126,   127,   128,   129,   130,     0,   131,   132,   133,
-     121,   122,     0,   123,   124,   125,   126,   127,   128,   129,
-     130,     0,   131,   132,   133
+      14,    27,    12,   -15,   186,   117,   177,   178,   120,   121,
+      14,   109,    12,   137,     2,     3,     4,     5,    21,   171,
+     116,    22,   -15,   189,   172,    23,   122,   118,   119,   191,
+      24,     1,     2,     3,     4,     5,     6,     7,   132,   133,
+     134,    50,    26,   109,   138,   139,    48,     2,     3,     4,
+       5,   142,   144,   120,   121,    29,   144,    14,     8,    64,
+     151,   152,   153,   154,   155,   156,   157,   158,   159,   160,
+     161,   162,   163,   164,   165,   176,     8,    30,    49,    32,
+      33,    27,    27,    38,    27,   -18,    39,    34,    43,    44,
+      45,     8,   188,    47,    53,     1,     2,     3,     4,     5,
+      28,    42,    55,    59,    56,   109,    60,   110,   103,    58,
+     180,    62,   104,   144,     2,     3,     4,     5,    34,   105,
+     106,    68,   109,   135,    69,    70,    71,    63,    72,    73,
+      74,    75,    76,    77,    78,    79,    80,   111,   112,   113,
+       8,    81,   114,   115,    53,    82,   136,   117,   140,   141,
+     145,   146,    83,    84,    85,    86,   166,   150,    87,   169,
+      88,   171,     2,     3,     4,     5,   181,   173,   174,    68,
+     179,    89,    69,    70,    71,   183,    72,    73,    74,    75,
+      76,    77,    78,    79,    80,   184,   187,   190,    25,    81,
+      67,    54,    53,    65,   182,   143,     0,     0,     0,     0,
+      83,    84,    85,    86,     0,     0,    87,     0,    88,     0,
+       0,    68,     0,     0,     0,     0,     0,     0,     0,    89,
+      74,    75,     0,    77,    78,    79,    80,     0,     0,     0,
+       0,    81,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,    83,    84,    85,    86,     0,     0,   107,     0,
+      88,   170,   120,   121,     0,     0,     0,     0,     0,     0,
+       0,    89,     0,     0,     0,     0,     0,     0,   120,   121,
+     122,   123,   147,   124,   125,   126,   127,   128,   129,   130,
+     131,     0,   132,   133,   134,     0,   122,   123,     0,   124,
+     125,   126,   127,   128,   129,   130,   131,     0,   132,   133,
+     134,   120,   121,     0,     0,   167,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,   120,   121,   122,
+     123,   168,   124,   125,   126,   127,   128,   129,   130,   131,
+       0,   132,   133,   134,     0,   122,   123,     0,   124,   125,
+     126,   127,   128,   129,   130,   131,     0,   132,   133,   134,
+     120,   121,   175,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,   120,   121,     0,   122,   123,
+       0,   124,   125,   126,   127,   128,   129,   130,   131,     0,
+     132,   133,   134,   122,   123,     0,   124,   125,   126,   127,
+     128,   129,   130,   131,     0,   132,   133,   134
 };
 
 static const yytype_int16 yycheck[] =
 {
-       0,     0,     4,     5,     6,     7,    48,    29,    70,   103,
-      10,    10,     3,     4,     5,     6,     7,    79,    29,    29,
-      31,    28,    29,    48,    86,    87,    48,    48,     3,     4,
-       5,     6,     7,     8,     9,    28,    29,    48,    48,    46,
-      40,   103,   104,   105,    35,    29,    48,     0,    32,   111,
-     112,    58,    59,    60,   116,    55,    55,    48,   120,   121,
-     122,   123,   124,   125,   126,   127,   128,   129,   130,   131,
-     132,   133,   134,    48,   168,    64,    65,    33,     4,     5,
-       6,     7,    29,    31,    12,    11,    30,    48,    14,    15,
-      16,   185,    18,    19,    20,    21,    22,    23,    24,    25,
-      26,    48,    27,   169,   170,    31,   168,    32,    34,    35,
-      34,   173,    31,    13,   176,    32,    42,    43,    44,    45,
-     186,    27,    48,   185,    50,    48,   192,     4,     5,     6,
-       7,    34,    34,    27,    11,    61,    48,    14,    15,    16,
-      48,    18,    19,    20,    21,    22,    23,    24,    25,    26,
-      31,    31,    31,    31,    31,    31,    57,    34,    33,    31,
-       3,     4,     5,     6,     7,    42,    43,    44,    45,    31,
-      31,    48,   172,    50,    31,    31,    11,    32,    32,    31,
-      28,    48,    33,    32,    61,    20,    21,    32,    23,    24,
-      25,    26,    35,    33,    33,    43,    31,    33,    48,    32,
-      27,    32,    31,    33,    17,    48,    32,    42,    43,    44,
-      45,    33,    32,    48,    10,    50,    64,    65,    27,    28,
-      29,    55,   112,    42,   176,    -1,    61,    -1,    -1,    -1,
-      -1,    -1,    -1,    -1,    -1,    28,    29,    46,    47,    32,
-      49,    50,    51,    52,    53,    54,    55,    56,    -1,    58,
-      59,    60,    -1,    46,    47,    -1,    49,    50,    51,    52,
-      53,    54,    55,    56,    -1,    58,    59,    60,    28,    29,
-      -1,    -1,    32,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-      -1,    -1,    -1,    -1,    28,    29,    46,    47,    32,    49,
+       0,    29,     0,    29,    32,    31,   167,   168,    28,    29,
+      10,    72,    10,   104,     4,     5,     6,     7,    48,    27,
+      81,    48,    48,   184,    32,    48,    46,    88,    89,   190,
+       0,     3,     4,     5,     6,     7,     8,     9,    58,    59,
+      60,    41,    33,   104,   105,   106,     3,     4,     5,     6,
+       7,   112,   113,    28,    29,    31,   117,    57,    48,    57,
+     121,   122,   123,   124,   125,   126,   127,   128,   129,   130,
+     131,   132,   133,   134,   135,   166,    48,    12,    35,    34,
+      30,    29,    29,    48,    29,    31,    13,    29,    32,    27,
+      48,    48,   183,    34,    34,     3,     4,     5,     6,     7,
+      48,    48,    44,    48,    27,   166,    31,    33,    32,    48,
+     171,    48,    31,   174,     4,     5,     6,     7,    60,    31,
+      31,    11,   183,    57,    14,    15,    16,    35,    18,    19,
+      20,    21,    22,    23,    24,    25,    26,    31,    31,    31,
+      48,    31,    31,    31,    34,    35,    33,    31,    33,    48,
+      32,    32,    42,    43,    44,    45,    33,    48,    48,    32,
+      50,    27,     4,     5,     6,     7,    33,    32,    31,    11,
+     170,    61,    14,    15,    16,    33,    18,    19,    20,    21,
+      22,    23,    24,    25,    26,    17,    32,    32,    10,    31,
+      60,    43,    34,    57,   174,   113,    -1,    -1,    -1,    -1,
+      42,    43,    44,    45,    -1,    -1,    48,    -1,    50,    -1,
+      -1,    11,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    61,
+      20,    21,    -1,    23,    24,    25,    26,    -1,    -1,    -1,
+      -1,    31,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
+      -1,    -1,    42,    43,    44,    45,    -1,    -1,    48,    -1,
+      50,    27,    28,    29,    -1,    -1,    -1,    -1,    -1,    -1,
+      -1,    61,    -1,    -1,    -1,    -1,    -1,    -1,    28,    29,
+      46,    47,    32,    49,    50,    51,    52,    53,    54,    55,
+      56,    -1,    58,    59,    60,    -1,    46,    47,    -1,    49,
       50,    51,    52,    53,    54,    55,    56,    -1,    58,    59,
-      60,    -1,    46,    47,    -1,    49,    50,    51,    52,    53,
-      54,    55,    56,    -1,    58,    59,    60,    28,    29,    30,
-      -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-      -1,    -1,    28,    29,    -1,    46,    47,    -1,    49,    50,
+      60,    28,    29,    -1,    -1,    32,    -1,    -1,    -1,    -1,
+      -1,    -1,    -1,    -1,    -1,    -1,    -1,    28,    29,    46,
+      47,    32,    49,    50,    51,    52,    53,    54,    55,    56,
+      -1,    58,    59,    60,    -1,    46,    47,    -1,    49,    50,
       51,    52,    53,    54,    55,    56,    -1,    58,    59,    60,
-      46,    47,    -1,    49,    50,    51,    52,    53,    54,    55,
-      56,    -1,    58,    59,    60
+      28,    29,    30,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
+      -1,    -1,    -1,    -1,    -1,    28,    29,    -1,    46,    47,
+      -1,    49,    50,    51,    52,    53,    54,    55,    56,    -1,
+      58,    59,    60,    46,    47,    -1,    49,    50,    51,    52,
+      53,    54,    55,    56,    -1,    58,    59,    60
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
@@ -755,24 +769,24 @@ static const yytype_uint8 yystos[] =
 {
        0,     3,     4,     5,     6,     7,     8,     9,    48,    63,
       64,    65,    66,    67,    68,    69,    70,    73,    74,    80,
-      48,    48,    48,     0,    65,    33,    29,    48,    31,    12,
-      75,    34,    30,    67,    68,    71,    72,    48,    13,    76,
-      81,    48,    32,    27,    48,    77,    34,     3,    35,    68,
-      82,    34,    83,    67,    27,    78,    48,    48,    84,    48,
-      35,    66,    69,    79,    31,    31,    11,    14,    15,    16,
-      18,    19,    20,    21,    22,    23,    24,    25,    26,    31,
-      35,    42,    43,    44,    45,    48,    50,    61,    66,    83,
-      85,    87,    89,    90,    91,    92,    93,    95,    96,    97,
-      99,    71,    71,    31,    31,    31,    48,    86,    95,    33,
-      31,    31,    31,    31,    31,    95,    31,    95,    95,    28,
-      29,    46,    47,    49,    50,    51,    52,    53,    54,    55,
-      56,    58,    59,    60,    57,    32,    32,    86,    95,    95,
-      33,    48,    95,    94,    95,    32,    32,    32,    94,    98,
-      48,    95,    95,    95,    95,    95,    95,    95,    95,    95,
-      95,    95,    95,    95,    95,    95,    33,    33,    33,    32,
-      32,    32,    27,    27,    32,    32,    31,    30,    86,    85,
-      85,    68,    95,    33,    98,    33,    17,    88,    32,    32,
-      86,    85,    32,    85
+      81,    48,    48,    48,     0,    65,    33,    29,    48,    31,
+      12,    75,    34,    30,    67,    68,    71,    72,    48,    13,
+      76,    82,    48,    32,    27,    48,    77,    34,     3,    35,
+      68,    83,    84,    34,    85,    67,    27,    78,    48,    48,
+      31,    86,    48,    35,    66,    69,    79,    71,    11,    14,
+      15,    16,    18,    19,    20,    21,    22,    23,    24,    25,
+      26,    31,    35,    42,    43,    44,    45,    48,    50,    61,
+      66,    85,    87,    89,    91,    92,    93,    94,    95,    97,
+      98,    99,   101,    32,    31,    31,    31,    48,    88,    97,
+      33,    31,    31,    31,    31,    31,    97,    31,    97,    97,
+      28,    29,    46,    47,    49,    50,    51,    52,    53,    54,
+      55,    56,    58,    59,    60,    57,    33,    88,    97,    97,
+      33,    48,    97,    96,    97,    32,    32,    32,    96,   100,
+      48,    97,    97,    97,    97,    97,    97,    97,    97,    97,
+      97,    97,    97,    97,    97,    97,    33,    32,    32,    32,
+      27,    27,    32,    32,    31,    30,    88,    87,    87,    68,
+      97,    33,   100,    33,    17,    90,    32,    32,    88,    87,
+      32,    87
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
@@ -781,14 +795,14 @@ static const yytype_uint8 yyr1[] =
        0,    62,    63,    64,    64,    65,    65,    65,    65,    66,
       67,    68,    68,    68,    68,    68,    68,    69,    70,    70,
       71,    71,    72,    72,    73,    74,    75,    75,    76,    76,
-      77,    77,    78,    78,    79,    79,    80,    81,    81,    82,
-      82,    83,    84,    84,    85,    85,    85,    85,    85,    85,
-      85,    85,    85,    86,    86,    87,    88,    89,    90,    91,
-      92,    93,    94,    94,    95,    95,    95,    95,    95,    95,
-      95,    95,    95,    95,    95,    95,    95,    95,    95,    95,
-      95,    95,    95,    95,    95,    95,    95,    95,    95,    96,
-      96,    96,    97,    97,    98,    98,    99,    99,    99,    99,
-      99,    99
+      77,    77,    78,    78,    79,    79,    80,    81,    82,    82,
+      83,    84,    84,    85,    86,    86,    87,    87,    87,    87,
+      87,    87,    87,    87,    87,    88,    88,    89,    90,    90,
+      91,    92,    93,    94,    95,    96,    96,    97,    97,    97,
+      97,    97,    97,    97,    97,    97,    97,    97,    97,    97,
+      97,    97,    97,    97,    97,    97,    97,    97,    97,    97,
+      97,    97,    98,    98,    98,    99,    99,   100,   100,   101,
+     101,   101,   101,   101,   101
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
@@ -797,14 +811,14 @@ static const yytype_uint8 yyr2[] =
        0,     2,     1,     1,     2,     1,     1,     1,     1,     2,
        2,     1,     1,     1,     1,     1,     3,     5,     2,     2,
        1,     0,     1,     3,     6,     2,     2,     0,     2,     0,
-       1,     3,     2,     0,     1,     1,     5,     2,     0,     6,
-       6,     3,     2,     0,     1,     1,     1,     1,     1,     1,
-       1,     1,     1,     1,     0,     6,     2,     5,     9,     3,
-       2,     5,     1,     3,     3,     1,     1,     1,     1,     3,
-       3,     3,     3,     3,     3,     2,     3,     3,     3,     3,
-       3,     3,     3,     3,     2,     3,     3,     4,     6,     1,
-       3,     4,     4,     6,     1,     0,     1,     1,     1,     1,
-       1,     1
+       1,     3,     2,     0,     1,     1,     4,     2,     2,     0,
+       5,     2,     2,     3,     2,     0,     1,     1,     1,     1,
+       1,     1,     1,     1,     1,     1,     0,     6,     2,     0,
+       5,     9,     3,     2,     5,     1,     3,     3,     1,     1,
+       1,     1,     3,     3,     3,     3,     3,     3,     2,     3,
+       3,     3,     3,     3,     3,     3,     3,     2,     3,     3,
+       4,     6,     1,     3,     4,     4,     6,     1,     0,     1,
+       1,     1,     1,     1,     1
 };
 
 
@@ -1586,617 +1600,678 @@ yyreduce:
   switch (yyn)
     {
   case 2:
-#line 61 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "Program", 1, (yyvsp[0].treeNode)); parent = (yyval.treeNode); }
-#line 1592 "proyecto1Parser.tab.c"
-    break;
-
-  case 3:
-#line 64 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "Declarations", 1, (yyvsp[0].treeNode)); }
-#line 1598 "proyecto1Parser.tab.c"
-    break;
-
-  case 4:
-#line 65 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "Declarations", 2, (yyvsp[-1].treeNode), (yyvsp[0].treeNode)); }
-#line 1604 "proyecto1Parser.tab.c"
-    break;
-
-  case 5:
-#line 68 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "Declaration", 1, (yyvsp[0].treeNode)); }
+#line 69 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "Program", 1, (yyvsp[0].treeNode));
+                                globalScope = createScope("global", "Global");
+                                globalScope = setFScope(globalScope, classList);
+                                globalScope = setPScope(globalScope, classList);
+                              }
 #line 1610 "proyecto1Parser.tab.c"
     break;
 
-  case 6:
-#line 69 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "Declaration", 1, (yyvsp[0].treeNode)); }
+  case 3:
+#line 76 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "Declarations", 1, (yyvsp[0].treeNode)); }
 #line 1616 "proyecto1Parser.tab.c"
     break;
 
-  case 7:
-#line 70 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "Declaration", 1, (yyvsp[0].treeNode)); }
+  case 4:
+#line 77 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "Declarations", 2, (yyvsp[-1].treeNode), (yyvsp[0].treeNode)); }
 #line 1622 "proyecto1Parser.tab.c"
     break;
 
-  case 8:
-#line 71 "proyecto1Parser.y"
+  case 5:
+#line 80 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Declaration", 1, (yyvsp[0].treeNode)); }
 #line 1628 "proyecto1Parser.tab.c"
     break;
 
-  case 9:
-#line 74 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "VariableDecl", 2, (yyvsp[-1].treeNode), tN(";")); }
+  case 6:
+#line 81 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "Declaration", 1, (yyvsp[0].treeNode)); }
 #line 1634 "proyecto1Parser.tab.c"
     break;
 
+  case 7:
+#line 82 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "Declaration", 1, (yyvsp[0].treeNode)); }
+#line 1640 "proyecto1Parser.tab.c"
+    break;
+
+  case 8:
+#line 83 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "Declaration", 1, (yyvsp[0].treeNode)); }
+#line 1646 "proyecto1Parser.tab.c"
+    break;
+
+  case 9:
+#line 86 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "VariableDecl", 2, (yyvsp[-1].treeNode), tN(";")); }
+#line 1652 "proyecto1Parser.tab.c"
+    break;
+
   case 10:
-#line 77 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "Variable", 2, (yyvsp[-1].treeNode), tT(yylval.str, "ID"));
-                          struct SymbolNode * newSymbol = createSymbolNode((yyvsp[-1].treeNode)->value,yylval.str);
-                          rootSymbol = insertSymbolNode(rootSymbol,newSymbol);
-                        }
-#line 1643 "proyecto1Parser.tab.c"
+#line 89 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "Variable", 2, (yyvsp[-1].treeNode), tT(yylval.str, "ID")); }
+#line 1658 "proyecto1Parser.tab.c"
     break;
 
   case 11:
-#line 83 "proyecto1Parser.y"
+#line 92 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Type", 1, tN("integer")); }
-#line 1649 "proyecto1Parser.tab.c"
+#line 1664 "proyecto1Parser.tab.c"
     break;
 
   case 12:
-#line 84 "proyecto1Parser.y"
+#line 93 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Type", 1, tN("double")); }
-#line 1655 "proyecto1Parser.tab.c"
+#line 1670 "proyecto1Parser.tab.c"
     break;
 
   case 13:
-#line 85 "proyecto1Parser.y"
+#line 94 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Type", 1, tN("boolean")); }
-#line 1661 "proyecto1Parser.tab.c"
+#line 1676 "proyecto1Parser.tab.c"
     break;
 
   case 14:
-#line 86 "proyecto1Parser.y"
+#line 95 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Type", 1, tN("string")); }
-#line 1667 "proyecto1Parser.tab.c"
+#line 1682 "proyecto1Parser.tab.c"
     break;
 
   case 15:
-#line 87 "proyecto1Parser.y"
+#line 96 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Type", 1, tN(yylval.str)); }
-#line 1673 "proyecto1Parser.tab.c"
+#line 1688 "proyecto1Parser.tab.c"
     break;
 
   case 16:
-#line 88 "proyecto1Parser.y"
+#line 97 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Type", 3, (yyvsp[-2].treeNode), tN("["), tN("]")); }
-#line 1679 "proyecto1Parser.tab.c"
+#line 1694 "proyecto1Parser.tab.c"
     break;
 
   case 17:
-#line 91 "proyecto1Parser.y"
-    {  (yyval.treeNode) = createTreeNode(yylineno, "FunctionDecl", 5, (yyvsp[-4].treeNode), tN("("), (yyvsp[-2].treeNode), tN(")"), (yyvsp[0].treeNode)); 
-                                                                    scopeActual = createScope((yyvsp[-4].treeNode)->root->next->node->value);
-                                                                    insertSymbol(scopeActual,rootSymbol);
-                                                                    struct ScopeNode * scopeNode = createScopeNode(scopeActual);
-                                                                    listScopes = insertScopeNode(listScopes, scopeNode);
-                                                                    free(rootSymbol);
-                                                                    rootSymbol = 0;
+#line 100 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "FunctionDecl", 5, (yyvsp[-4].treeNode), tN("("), (yyvsp[-2].treeNode), tN(")"), (yyvsp[0].treeNode));
+                                                                    struct Scope * newScope = createScope((yyvsp[-4].treeNode)->root->next->node->value, "Function");
+                                                                    newScope = insertSymbol(newScope, symbolList);
+                                                                    struct ScopeNode * newNode = createScopeNode(newScope);
+                                                                    scopeList = insertScopeNode(scopeList, newNode);
+                                                                    symbolList = 0;
                                                                   }
-#line 1692 "proyecto1Parser.tab.c"
+#line 1706 "proyecto1Parser.tab.c"
     break;
 
   case 18:
-#line 102 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "FunctionName", 2, (yyvsp[-1].treeNode), tT(yylval.str, "ID"));}
-#line 1698 "proyecto1Parser.tab.c"
+#line 109 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "FunctionName", 2, (yyvsp[-1].treeNode), tT(yylval.str, "ID")); }
+#line 1712 "proyecto1Parser.tab.c"
     break;
 
   case 19:
-#line 103 "proyecto1Parser.y"
+#line 110 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "FunctionName", 2, tN("void"), tT(yylval.str, "ID")); }
-#line 1704 "proyecto1Parser.tab.c"
+#line 1718 "proyecto1Parser.tab.c"
     break;
 
   case 20:
-#line 106 "proyecto1Parser.y"
+#line 113 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Formals", 1, (yyvsp[0].treeNode)); }
-#line 1710 "proyecto1Parser.tab.c"
+#line 1724 "proyecto1Parser.tab.c"
     break;
 
   case 21:
-#line 107 "proyecto1Parser.y"
+#line 114 "proyecto1Parser.y"
     { (yyval.treeNode) = eN(); }
-#line 1716 "proyecto1Parser.tab.c"
+#line 1730 "proyecto1Parser.tab.c"
     break;
 
   case 22:
-#line 110 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "Variables", 1, (yyvsp[0].treeNode)); }
-#line 1722 "proyecto1Parser.tab.c"
-    break;
-
-  case 23:
-#line 111 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "Variables", 3, (yyvsp[-2].treeNode), tN(","), (yyvsp[0].treeNode)); }
-#line 1728 "proyecto1Parser.tab.c"
-    break;
-
-  case 24:
-#line 114 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "ClassDecl", 6, (yyvsp[-5].treeNode), (yyvsp[-4].treeNode), (yyvsp[-3].treeNode), tN("{"), (yyvsp[-1].treeNode), tN("}")); }
-#line 1734 "proyecto1Parser.tab.c"
-    break;
-
-  case 25:
 #line 117 "proyecto1Parser.y"
-    {(yyval.treeNode) = createTreeNode(yylineno, "ClassName", 2, tN("Class"), tT(yylval.str, "ID"));}
+    { (yyval.treeNode) = createTreeNode(yylineno, "Variables", 1, (yyvsp[0].treeNode));
+                                            struct TreeNode * variable = (yyvsp[0].treeNode);
+                                            struct SymbolNode * newSymbol = createSymbolNode(variable->root->node->root->node->value, variable->root->next->node->value);
+                                            symbolList = insertSymbolNode(symbolList, newSymbol);
+                                          }
 #line 1740 "proyecto1Parser.tab.c"
     break;
 
-  case 26:
-#line 120 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "Extend", 2, tN("extends"), tT(yylval.str, "ID")); }
+  case 23:
+#line 122 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "Variables", 3, (yyvsp[-2].treeNode), tN(","), (yyvsp[0].treeNode)); }
 #line 1746 "proyecto1Parser.tab.c"
     break;
 
+  case 24:
+#line 125 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "ClassDecl", 6, (yyvsp[-5].treeNode), (yyvsp[-4].treeNode), (yyvsp[-3].treeNode), tN("{"), (yyvsp[-1].treeNode), tN("}"));
+                                                                    struct Scope * newScope = createScope((yyvsp[-5].treeNode)->root->next->node->value, "Class");
+                                                                    newScope = insertSymbol(newScope, symbolClass);
+                                                                    newScope = setFScope(newScope, scopeList);
+                                                                    newScope = setPScope(newScope, scopeList);
+                                                                    struct ScopeNode * newNode = createScopeNode(newScope);
+                                                                    classList = insertScopeNode(classList, newNode);
+                                                                    scopeList = 0;
+                                                                    symbolClass = 0;
+                                                                    struct Scope * newScopeExtend = createScope((yyvsp[-5].treeNode)->root->next->node->value, "Class");
+                                                                    newScopeExtend = insertSymbol(newScopeExtend, symbolExtends);
+                                                                    struct ScopeNode * newNodeExtend = createScopeNode(newScopeExtend);
+                                                                    scopeExtends = insertScopeNode(scopeExtends, newNodeExtend);
+                                                                    symbolExtends = 0;
+                                                                  }
+#line 1766 "proyecto1Parser.tab.c"
+    break;
+
+  case 25:
+#line 142 "proyecto1Parser.y"
+    {(yyval.treeNode) = createTreeNode(yylineno, "ClassName", 2, tN("Class"), tT(yylval.str, "ID"));}
+#line 1772 "proyecto1Parser.tab.c"
+    break;
+
+  case 26:
+#line 145 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "Extend", 2, tN("extends"), tT(yylval.str, "ID"));
+                              struct SymbolNode * newSymbol = createSymbolNode("extend", yylval.str);
+                              symbolExtends = insertSymbolNode(symbolExtends, newSymbol);
+                            }
+#line 1781 "proyecto1Parser.tab.c"
+    break;
+
   case 27:
-#line 121 "proyecto1Parser.y"
+#line 149 "proyecto1Parser.y"
     { (yyval.treeNode) = eN(); }
-#line 1752 "proyecto1Parser.tab.c"
+#line 1787 "proyecto1Parser.tab.c"
     break;
 
   case 28:
-#line 124 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "Implement", 2, tN("implements"), (yyvsp[0].treeNode)); }
-#line 1758 "proyecto1Parser.tab.c"
+#line 152 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "Implement", 2, tN("implements"), (yyvsp[0].treeNode));
+                                        struct SymbolNode * newSymbol = createSymbolNode("implement", yylval.str);
+                                        symbolExtends = insertSymbolNode(symbolExtends, newSymbol);
+                                      }
+#line 1796 "proyecto1Parser.tab.c"
     break;
 
   case 29:
-#line 125 "proyecto1Parser.y"
+#line 156 "proyecto1Parser.y"
     { (yyval.treeNode) = eN(); }
-#line 1764 "proyecto1Parser.tab.c"
+#line 1802 "proyecto1Parser.tab.c"
     break;
 
   case 30:
-#line 128 "proyecto1Parser.y"
+#line 159 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "ListIdents", 1, tT(yylval.str, "ID")); }
-#line 1770 "proyecto1Parser.tab.c"
+#line 1808 "proyecto1Parser.tab.c"
     break;
 
   case 31:
-#line 129 "proyecto1Parser.y"
+#line 160 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "ListIdents", 3, (yyvsp[-2].treeNode), tN(","), tT(yylval.str, "ID")); }
-#line 1776 "proyecto1Parser.tab.c"
+#line 1814 "proyecto1Parser.tab.c"
     break;
 
   case 32:
-#line 132 "proyecto1Parser.y"
+#line 163 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Fields", 2, (yyvsp[-1].treeNode), (yyvsp[0].treeNode)); }
-#line 1782 "proyecto1Parser.tab.c"
+#line 1820 "proyecto1Parser.tab.c"
     break;
 
   case 33:
-#line 133 "proyecto1Parser.y"
+#line 164 "proyecto1Parser.y"
     { (yyval.treeNode) = eN(); }
-#line 1788 "proyecto1Parser.tab.c"
+#line 1826 "proyecto1Parser.tab.c"
     break;
 
   case 34:
-#line 136 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "Field", 1, (yyvsp[0].treeNode)); }
-#line 1794 "proyecto1Parser.tab.c"
-    break;
-
-  case 35:
-#line 137 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "Field", 1, (yyvsp[0].treeNode)); }
-#line 1800 "proyecto1Parser.tab.c"
-    break;
-
-  case 36:
-#line 140 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "InterfaceDecl", 5, tN("interface"), tT(yylval.str, "ID"), tN("{"), (yyvsp[-1].treeNode), tN("}")); }
-#line 1806 "proyecto1Parser.tab.c"
-    break;
-
-  case 37:
-#line 143 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "Prototypes", 2, (yyvsp[-1].treeNode), (yyvsp[0].treeNode)); }
-#line 1812 "proyecto1Parser.tab.c"
-    break;
-
-  case 38:
-#line 144 "proyecto1Parser.y"
-    { (yyval.treeNode) = eN(); }
-#line 1818 "proyecto1Parser.tab.c"
-    break;
-
-  case 39:
-#line 147 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "Prototype", 6, (yyvsp[-5].treeNode), tT(yylval.str, "ID"), tN("("), (yyvsp[-2].treeNode), tN(")"), tN(";")); }
-#line 1824 "proyecto1Parser.tab.c"
-    break;
-
-  case 40:
-#line 148 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "Prototype", 6, tN("void"), tT(yylval.str, "ID"), tN("("), (yyvsp[-2].treeNode), tN(")"), tN(";")); }
-#line 1830 "proyecto1Parser.tab.c"
-    break;
-
-  case 41:
-#line 151 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "StmtBlock", 3, tN("{"), (yyvsp[-1].treeNode), tN("}")); }
+#line 167 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "Field", 1, (yyvsp[0].treeNode));
+                                struct TreeNode * variable = (yyvsp[0].treeNode)->root->node;
+                                struct SymbolNode * newSymbol = createSymbolNode(variable->root->node->root->node->value, variable->root->next->node->value);
+                                symbolList = insertSymbolNode(symbolClass, newSymbol);
+                              }
 #line 1836 "proyecto1Parser.tab.c"
     break;
 
-  case 42:
-#line 154 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "Stmts", 2, (yyvsp[-1].treeNode), (yyvsp[0].treeNode)); }
+  case 35:
+#line 172 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "Field", 1, (yyvsp[0].treeNode)); }
 #line 1842 "proyecto1Parser.tab.c"
     break;
 
-  case 43:
-#line 155 "proyecto1Parser.y"
+  case 36:
+#line 175 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "InterfaceDecl", 4, (yyvsp[-3].treeNode), tN("{"), (yyvsp[-1].treeNode), tN("}"));
+                                                            struct Scope * newScope = createScope((yyvsp[-3].treeNode)->root->next->node->value, "Interface");
+                                                            newScope = setFScope(newScope, scopeList);
+                                                            newScope = setPScope(newScope, scopeList);
+                                                            struct ScopeNode * newNode = createScopeNode(newScope);
+                                                            classList = insertScopeNode(classList, newNode);
+                                                            scopeList = 0;
+                                                          }
+#line 1855 "proyecto1Parser.tab.c"
+    break;
+
+  case 37:
+#line 185 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "InterfaceName", 2, tN("interface"), tT(yylval.str, "ID")); }
+#line 1861 "proyecto1Parser.tab.c"
+    break;
+
+  case 38:
+#line 188 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "Prototypes", 2, (yyvsp[-1].treeNode), (yyvsp[0].treeNode)); }
+#line 1867 "proyecto1Parser.tab.c"
+    break;
+
+  case 39:
+#line 189 "proyecto1Parser.y"
     { (yyval.treeNode) = eN(); }
-#line 1848 "proyecto1Parser.tab.c"
+#line 1873 "proyecto1Parser.tab.c"
+    break;
+
+  case 40:
+#line 192 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "Prototype", 5, (yyvsp[-4].treeNode), tN("("), (yyvsp[-2].treeNode), tN(")"), tN(";"));
+                                                                  struct Scope * newScope = createScope((yyvsp[-4].treeNode)->root->next->node->value, "Function");
+                                                                  struct ScopeNode * newNode = createScopeNode(newScope);
+                                                                  scopeList = insertScopeNode(scopeList, newNode);
+                                                                }
+#line 1883 "proyecto1Parser.tab.c"
+    break;
+
+  case 41:
+#line 199 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "PrototypeName", 2, (yyvsp[-1].treeNode), tT(yylval.str, "ID")); }
+#line 1889 "proyecto1Parser.tab.c"
+    break;
+
+  case 42:
+#line 200 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "PrototypeName", 2, tN("void"), tT(yylval.str, "ID")); }
+#line 1895 "proyecto1Parser.tab.c"
+    break;
+
+  case 43:
+#line 203 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "StmtBlock", 3, tN("{"), (yyvsp[-1].treeNode), tN("}")); }
+#line 1901 "proyecto1Parser.tab.c"
     break;
 
   case 44:
-#line 158 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "Stmt", 1, (yyvsp[0].treeNode)); }
-#line 1854 "proyecto1Parser.tab.c"
+#line 206 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "Stmts", 2, (yyvsp[-1].treeNode), (yyvsp[0].treeNode)); }
+#line 1907 "proyecto1Parser.tab.c"
     break;
 
   case 45:
-#line 159 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "Stmt", 1, (yyvsp[0].treeNode)); }
-#line 1860 "proyecto1Parser.tab.c"
+#line 207 "proyecto1Parser.y"
+    { (yyval.treeNode) = eN(); }
+#line 1913 "proyecto1Parser.tab.c"
     break;
 
   case 46:
-#line 160 "proyecto1Parser.y"
+#line 210 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Stmt", 1, (yyvsp[0].treeNode)); }
-#line 1866 "proyecto1Parser.tab.c"
+#line 1919 "proyecto1Parser.tab.c"
     break;
 
   case 47:
-#line 161 "proyecto1Parser.y"
+#line 211 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Stmt", 1, (yyvsp[0].treeNode)); }
-#line 1872 "proyecto1Parser.tab.c"
+#line 1925 "proyecto1Parser.tab.c"
     break;
 
   case 48:
-#line 162 "proyecto1Parser.y"
+#line 212 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Stmt", 1, (yyvsp[0].treeNode)); }
-#line 1878 "proyecto1Parser.tab.c"
+#line 1931 "proyecto1Parser.tab.c"
     break;
 
   case 49:
-#line 163 "proyecto1Parser.y"
+#line 213 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Stmt", 1, (yyvsp[0].treeNode)); }
-#line 1884 "proyecto1Parser.tab.c"
+#line 1937 "proyecto1Parser.tab.c"
     break;
 
   case 50:
-#line 164 "proyecto1Parser.y"
+#line 214 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Stmt", 1, (yyvsp[0].treeNode)); }
-#line 1890 "proyecto1Parser.tab.c"
+#line 1943 "proyecto1Parser.tab.c"
     break;
 
   case 51:
-#line 165 "proyecto1Parser.y"
+#line 215 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Stmt", 1, (yyvsp[0].treeNode)); }
-#line 1896 "proyecto1Parser.tab.c"
+#line 1949 "proyecto1Parser.tab.c"
     break;
 
   case 52:
-#line 166 "proyecto1Parser.y"
+#line 216 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Stmt", 1, (yyvsp[0].treeNode)); }
-#line 1902 "proyecto1Parser.tab.c"
+#line 1955 "proyecto1Parser.tab.c"
     break;
 
   case 53:
-#line 169 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 1, (yyvsp[0].treeNode)); }
-#line 1908 "proyecto1Parser.tab.c"
+#line 217 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "Stmt", 1, (yyvsp[0].treeNode)); }
+#line 1961 "proyecto1Parser.tab.c"
     break;
 
   case 54:
-#line 170 "proyecto1Parser.y"
-    { (yyval.treeNode) = eN(); }
-#line 1914 "proyecto1Parser.tab.c"
+#line 218 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "Stmt", 1, (yyvsp[0].treeNode));
+                                struct TreeNode * variable = (yyvsp[0].treeNode)->root->node;
+                                struct SymbolNode * newSymbol = createSymbolNode(variable->root->node->root->node->value, variable->root->next->node->value);
+                                symbolList = insertSymbolNode(symbolList, newSymbol);
+                              }
+#line 1971 "proyecto1Parser.tab.c"
     break;
 
   case 55:
-#line 173 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "IfStmt", 6, tN("if"), tN("("), (yyvsp[-3].treeNode), tN(")"), (yyvsp[-1].treeNode), (yyvsp[0].treeNode)); }
-#line 1920 "proyecto1Parser.tab.c"
+#line 225 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 1, (yyvsp[0].treeNode)); }
+#line 1977 "proyecto1Parser.tab.c"
     break;
 
   case 56:
-#line 176 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "Else", 2, tN("else"), (yyvsp[0].treeNode)); }
-#line 1926 "proyecto1Parser.tab.c"
+#line 226 "proyecto1Parser.y"
+    { (yyval.treeNode) = eN(); }
+#line 1983 "proyecto1Parser.tab.c"
     break;
 
   case 57:
-#line 180 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "WhileStmt", 5, tN("while"), tN("("), (yyvsp[-2].treeNode), tN(")"), (yyvsp[0].treeNode)); }
-#line 1932 "proyecto1Parser.tab.c"
+#line 229 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "IfStmt", 6, tN("if"), tN("("), (yyvsp[-3].treeNode), tN(")"), (yyvsp[-1].treeNode), (yyvsp[0].treeNode)); }
+#line 1989 "proyecto1Parser.tab.c"
     break;
 
   case 58:
-#line 183 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "ForStmt", 9, tN("for"), tN("("), (yyvsp[-6].treeNode), tN(";"), (yyvsp[-4].treeNode), tN(";"), (yyvsp[-2].treeNode), tN(")"), (yyvsp[0].treeNode)); }
-#line 1938 "proyecto1Parser.tab.c"
+#line 232 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "Else", 2, tN("else"), (yyvsp[0].treeNode)); }
+#line 1995 "proyecto1Parser.tab.c"
     break;
 
   case 59:
-#line 186 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "ReturnStmt", 3, tN("return"), (yyvsp[-1].treeNode), tN(";")); }
-#line 1944 "proyecto1Parser.tab.c"
+#line 233 "proyecto1Parser.y"
+    { (yyval.treeNode) = eN(); }
+#line 2001 "proyecto1Parser.tab.c"
     break;
 
   case 60:
-#line 189 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "BreakStmt", 2, tN("break"), tN(";")); }
-#line 1950 "proyecto1Parser.tab.c"
+#line 236 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "WhileStmt", 5, tN("while"), tN("("), (yyvsp[-2].treeNode), tN(")"), (yyvsp[0].treeNode)); }
+#line 2007 "proyecto1Parser.tab.c"
     break;
 
   case 61:
-#line 192 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "PrintStmt", 5, tN("print"), tN("("), (yyvsp[-2].treeNode), tN(")"), tN(";")); }
-#line 1956 "proyecto1Parser.tab.c"
+#line 239 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "ForStmt", 9, tN("for"), tN("("), (yyvsp[-6].treeNode), tN(";"), (yyvsp[-4].treeNode), tN(";"), (yyvsp[-2].treeNode), tN(")"), (yyvsp[0].treeNode)); }
+#line 2013 "proyecto1Parser.tab.c"
     break;
 
   case 62:
-#line 195 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "ListExpr", 1, (yyvsp[0].treeNode)); }
-#line 1962 "proyecto1Parser.tab.c"
+#line 242 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "ReturnStmt", 3, tN("return"), (yyvsp[-1].treeNode), tN(";")); }
+#line 2019 "proyecto1Parser.tab.c"
     break;
 
   case 63:
-#line 196 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "ListExpr", 3, (yyvsp[-2].treeNode), tN(","), (yyvsp[0].treeNode)); }
-#line 1968 "proyecto1Parser.tab.c"
+#line 245 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "BreakStmt", 2, tN("break"), tN(";")); }
+#line 2025 "proyecto1Parser.tab.c"
     break;
 
   case 64:
-#line 199 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 3, (yyvsp[-2].treeNode), tN("="), (yyvsp[0].treeNode)); }
-#line 1974 "proyecto1Parser.tab.c"
+#line 248 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "PrintStmt", 5, tN("print"), tN("("), (yyvsp[-2].treeNode), tN(")"), tN(";")); }
+#line 2031 "proyecto1Parser.tab.c"
     break;
 
   case 65:
-#line 200 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 1, (yyvsp[0].treeNode)); }
-#line 1980 "proyecto1Parser.tab.c"
+#line 251 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "ListExpr", 1, (yyvsp[0].treeNode)); }
+#line 2037 "proyecto1Parser.tab.c"
     break;
 
   case 66:
-#line 201 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 1, (yyvsp[0].treeNode)); }
-#line 1986 "proyecto1Parser.tab.c"
+#line 252 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "ListExpr", 3, (yyvsp[-2].treeNode), tN(","), (yyvsp[0].treeNode)); }
+#line 2043 "proyecto1Parser.tab.c"
     break;
 
   case 67:
-#line 202 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 1, tN("this")); }
-#line 1992 "proyecto1Parser.tab.c"
+#line 255 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 3, (yyvsp[-2].treeNode), tN("="), (yyvsp[0].treeNode)); }
+#line 2049 "proyecto1Parser.tab.c"
     break;
 
   case 68:
-#line 203 "proyecto1Parser.y"
+#line 256 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 1, (yyvsp[0].treeNode)); }
-#line 1998 "proyecto1Parser.tab.c"
+#line 2055 "proyecto1Parser.tab.c"
     break;
 
   case 69:
-#line 204 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 3, tN("("), (yyvsp[-1].treeNode), tN(")")); }
-#line 2004 "proyecto1Parser.tab.c"
+#line 257 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 1, (yyvsp[0].treeNode)); }
+#line 2061 "proyecto1Parser.tab.c"
     break;
 
   case 70:
-#line 205 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 3, (yyvsp[-2].treeNode), tN("+"), (yyvsp[0].treeNode)); }
-#line 2010 "proyecto1Parser.tab.c"
+#line 258 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 1, tN("this")); }
+#line 2067 "proyecto1Parser.tab.c"
     break;
 
   case 71:
-#line 206 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 3, (yyvsp[-2].treeNode), tN("-"), (yyvsp[0].treeNode)); }
-#line 2016 "proyecto1Parser.tab.c"
+#line 259 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 1, (yyvsp[0].treeNode)); }
+#line 2073 "proyecto1Parser.tab.c"
     break;
 
   case 72:
-#line 207 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 3, (yyvsp[-2].treeNode), tN("*"), (yyvsp[0].treeNode)); }
-#line 2022 "proyecto1Parser.tab.c"
+#line 260 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 3, tN("("), (yyvsp[-1].treeNode), tN(")")); }
+#line 2079 "proyecto1Parser.tab.c"
     break;
 
   case 73:
-#line 208 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 3, (yyvsp[-2].treeNode), tN("/"), (yyvsp[0].treeNode)); }
-#line 2028 "proyecto1Parser.tab.c"
+#line 261 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 3, (yyvsp[-2].treeNode), tN("+"), (yyvsp[0].treeNode)); }
+#line 2085 "proyecto1Parser.tab.c"
     break;
 
   case 74:
-#line 209 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 3, (yyvsp[-2].treeNode), tN("mod"), (yyvsp[0].treeNode)); }
-#line 2034 "proyecto1Parser.tab.c"
+#line 262 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 3, (yyvsp[-2].treeNode), tN("-"), (yyvsp[0].treeNode)); }
+#line 2091 "proyecto1Parser.tab.c"
     break;
 
   case 75:
-#line 210 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 2, tN("-"), (yyvsp[0].treeNode)); }
-#line 2040 "proyecto1Parser.tab.c"
+#line 263 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 3, (yyvsp[-2].treeNode), tN("*"), (yyvsp[0].treeNode)); }
+#line 2097 "proyecto1Parser.tab.c"
     break;
 
   case 76:
-#line 211 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 3, (yyvsp[-2].treeNode), tN("<"), (yyvsp[0].treeNode)); }
-#line 2046 "proyecto1Parser.tab.c"
+#line 264 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 3, (yyvsp[-2].treeNode), tN("/"), (yyvsp[0].treeNode)); }
+#line 2103 "proyecto1Parser.tab.c"
     break;
 
   case 77:
-#line 212 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 3, (yyvsp[-2].treeNode), tN("<="), (yyvsp[0].treeNode)); }
-#line 2052 "proyecto1Parser.tab.c"
+#line 265 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 3, (yyvsp[-2].treeNode), tN("mod"), (yyvsp[0].treeNode)); }
+#line 2109 "proyecto1Parser.tab.c"
     break;
 
   case 78:
-#line 213 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 3, (yyvsp[-2].treeNode), tN(">"), (yyvsp[0].treeNode)); }
-#line 2058 "proyecto1Parser.tab.c"
+#line 266 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 2, tN("-"), (yyvsp[0].treeNode)); }
+#line 2115 "proyecto1Parser.tab.c"
     break;
 
   case 79:
-#line 214 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 3, (yyvsp[-2].treeNode), tN(">="), (yyvsp[0].treeNode)); }
-#line 2064 "proyecto1Parser.tab.c"
+#line 267 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 3, (yyvsp[-2].treeNode), tN("<"), (yyvsp[0].treeNode)); }
+#line 2121 "proyecto1Parser.tab.c"
     break;
 
   case 80:
-#line 215 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 3, (yyvsp[-2].treeNode), tN("=="), (yyvsp[0].treeNode)); }
-#line 2070 "proyecto1Parser.tab.c"
+#line 268 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 3, (yyvsp[-2].treeNode), tN("<="), (yyvsp[0].treeNode)); }
+#line 2127 "proyecto1Parser.tab.c"
     break;
 
   case 81:
-#line 216 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 3, (yyvsp[-2].treeNode), tN("!="), (yyvsp[0].treeNode)); }
-#line 2076 "proyecto1Parser.tab.c"
+#line 269 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 3, (yyvsp[-2].treeNode), tN(">"), (yyvsp[0].treeNode)); }
+#line 2133 "proyecto1Parser.tab.c"
     break;
 
   case 82:
-#line 217 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 3, (yyvsp[-2].treeNode), tN("&&"), (yyvsp[0].treeNode)); }
-#line 2082 "proyecto1Parser.tab.c"
+#line 270 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 3, (yyvsp[-2].treeNode), tN(">="), (yyvsp[0].treeNode)); }
+#line 2139 "proyecto1Parser.tab.c"
     break;
 
   case 83:
-#line 218 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 3, (yyvsp[-2].treeNode), tN("||"), (yyvsp[0].treeNode)); }
-#line 2088 "proyecto1Parser.tab.c"
+#line 271 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 3, (yyvsp[-2].treeNode), tN("=="), (yyvsp[0].treeNode)); }
+#line 2145 "proyecto1Parser.tab.c"
     break;
 
   case 84:
-#line 219 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 2, tN("!"), (yyvsp[0].treeNode)); }
-#line 2094 "proyecto1Parser.tab.c"
+#line 272 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 3, (yyvsp[-2].treeNode), tN("!="), (yyvsp[0].treeNode)); }
+#line 2151 "proyecto1Parser.tab.c"
     break;
 
   case 85:
-#line 220 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 3, tN("readInteger"), tN("("), tN(")")); }
-#line 2100 "proyecto1Parser.tab.c"
+#line 273 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 3, (yyvsp[-2].treeNode), tN("&&"), (yyvsp[0].treeNode)); }
+#line 2157 "proyecto1Parser.tab.c"
     break;
 
   case 86:
-#line 221 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 3, tN("readLine"), tN("("), tN(")")); }
-#line 2106 "proyecto1Parser.tab.c"
+#line 274 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 3, (yyvsp[-2].treeNode), tN("||"), (yyvsp[0].treeNode)); }
+#line 2163 "proyecto1Parser.tab.c"
     break;
 
   case 87:
-#line 222 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 4, tN("new"), tN("("), tT(yylval.str, "ID"), tN(")")); }
-#line 2112 "proyecto1Parser.tab.c"
+#line 275 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 2, tN("!"), (yyvsp[0].treeNode)); }
+#line 2169 "proyecto1Parser.tab.c"
     break;
 
   case 88:
-#line 223 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 6, tN("newArray"), tN("("), (yyvsp[-3].treeNode), tN(","), (yyvsp[-1].treeNode), tN(")")); }
-#line 2118 "proyecto1Parser.tab.c"
+#line 276 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 3, tN("readInteger"), tN("("), tN(")")); }
+#line 2175 "proyecto1Parser.tab.c"
     break;
 
   case 89:
-#line 226 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "LValue", 1, tT(yylval.str, "ID")); }
-#line 2124 "proyecto1Parser.tab.c"
+#line 277 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 3, tN("readLine"), tN("("), tN(")")); }
+#line 2181 "proyecto1Parser.tab.c"
     break;
 
   case 90:
-#line 227 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "LValue", 3, (yyvsp[-2].treeNode), tN("."), tT(yylval.str, "ID")); }
-#line 2130 "proyecto1Parser.tab.c"
+#line 278 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 4, tN("new"), tN("("), tT(yylval.str, "ID"), tN(")")); }
+#line 2187 "proyecto1Parser.tab.c"
     break;
 
   case 91:
-#line 228 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "LValue", 4, (yyvsp[-3].treeNode), tN("["), (yyvsp[-1].treeNode), tN("]")); }
-#line 2136 "proyecto1Parser.tab.c"
+#line 279 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 6, tN("newArray"), tN("("), (yyvsp[-3].treeNode), tN(","), (yyvsp[-1].treeNode), tN(")")); }
+#line 2193 "proyecto1Parser.tab.c"
     break;
 
   case 92:
-#line 231 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "Call", 4, tT(yylval.str, "ID"), tN("("), (yyvsp[-1].treeNode), tN(")")); }
-#line 2142 "proyecto1Parser.tab.c"
+#line 282 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "LValue", 1, tT(yylval.str, "ID")); }
+#line 2199 "proyecto1Parser.tab.c"
     break;
 
   case 93:
-#line 232 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "Call", 6, (yyvsp[-5].treeNode), tN("."), tT(yylval.str, "ID"), tN("("), (yyvsp[-1].treeNode), tN(")")); }
-#line 2148 "proyecto1Parser.tab.c"
+#line 283 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "LValue", 3, (yyvsp[-2].treeNode), tN("."), tT(yylval.str, "ID")); }
+#line 2205 "proyecto1Parser.tab.c"
     break;
 
   case 94:
-#line 235 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "Actuals", 1, (yyvsp[0].treeNode)); }
-#line 2154 "proyecto1Parser.tab.c"
+#line 284 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "LValue", 4, (yyvsp[-3].treeNode), tN("["), (yyvsp[-1].treeNode), tN("]")); }
+#line 2211 "proyecto1Parser.tab.c"
     break;
 
   case 95:
-#line 236 "proyecto1Parser.y"
-    { (yyval.treeNode) = eN(); }
-#line 2160 "proyecto1Parser.tab.c"
+#line 287 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "Call", 4, tT(yylval.str, "ID"), tN("("), (yyvsp[-1].treeNode), tN(")")); }
+#line 2217 "proyecto1Parser.tab.c"
     break;
 
   case 96:
-#line 239 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "Constant", 1, tT(yylval.str, "integer")); }
-#line 2166 "proyecto1Parser.tab.c"
+#line 288 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "Call", 6, (yyvsp[-5].treeNode), tN("."), tT(yylval.str, "ID"), tN("("), (yyvsp[-1].treeNode), tN(")")); }
+#line 2223 "proyecto1Parser.tab.c"
     break;
 
   case 97:
-#line 240 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "Constant", 1, tT(yylval.str, "double")); }
-#line 2172 "proyecto1Parser.tab.c"
+#line 291 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "Actuals", 1, (yyvsp[0].treeNode)); }
+#line 2229 "proyecto1Parser.tab.c"
     break;
 
   case 98:
-#line 241 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "Constant", 1, tT("true", "boolean")); }
-#line 2178 "proyecto1Parser.tab.c"
+#line 292 "proyecto1Parser.y"
+    { (yyval.treeNode) = eN(); }
+#line 2235 "proyecto1Parser.tab.c"
     break;
 
   case 99:
-#line 242 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "Constant", 1, tT("false", "boolean")); }
-#line 2184 "proyecto1Parser.tab.c"
+#line 295 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "Constant", 1, tT(yylval.str, "integer")); }
+#line 2241 "proyecto1Parser.tab.c"
     break;
 
   case 100:
-#line 243 "proyecto1Parser.y"
-    { (yyval.treeNode) = createTreeNode(yylineno, "Constant", 1, tT(yylval.str, "string")); }
-#line 2190 "proyecto1Parser.tab.c"
+#line 296 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "Constant", 1, tT(yylval.str, "double")); }
+#line 2247 "proyecto1Parser.tab.c"
     break;
 
   case 101:
-#line 244 "proyecto1Parser.y"
+#line 297 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "Constant", 1, tT("true", "boolean")); }
+#line 2253 "proyecto1Parser.tab.c"
+    break;
+
+  case 102:
+#line 298 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "Constant", 1, tT("false", "boolean")); }
+#line 2259 "proyecto1Parser.tab.c"
+    break;
+
+  case 103:
+#line 299 "proyecto1Parser.y"
+    { (yyval.treeNode) = createTreeNode(yylineno, "Constant", 1, tT(yylval.str, "string")); }
+#line 2265 "proyecto1Parser.tab.c"
+    break;
+
+  case 104:
+#line 300 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Constant", 1, tT("null", "null")); }
-#line 2196 "proyecto1Parser.tab.c"
+#line 2271 "proyecto1Parser.tab.c"
     break;
 
 
-#line 2200 "proyecto1Parser.tab.c"
+#line 2275 "proyecto1Parser.tab.c"
 
       default: break;
     }
@@ -2434,19 +2509,26 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 247 "proyecto1Parser.y"
+#line 303 "proyecto1Parser.y"
 
 
 int main() {
-  rootSymbol = 0;
-  listScopes = 0;
+  //Variables
+  globalScope = 0;
+  classList = 0;
+  scopeList = 0;
+  symbolList = 0;
+  symbolClass = 0;
+  symbolExtends = 0;
+  scopeExtends = 0;
+  //Parser
   yyin = stdin;
   do {
     yyparse();
 	} while(!feof(yyin));
-  printNode(parent,1);
+  printf("%s\n", globalScope->pScope->value->pScope->next->value->root->type);
+  printf("%s\n", scopeExtends->value->root->next->type);
 	return 0;
-
 }
 
 void yyerror(char *s) {
