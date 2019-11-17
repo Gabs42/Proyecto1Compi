@@ -31,6 +31,7 @@ class Nadador extends Deportista implements Humano {
         this.edad = edad
         this.velocidad = velocidad
         this.preparado = preparado
+        this.estatura = 10
     }
 
     void setEdad(int edad) {

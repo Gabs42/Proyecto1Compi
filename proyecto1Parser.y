@@ -7,12 +7,13 @@
 #include <stdarg.h>
 #include "tree.c"
 #include "scopeList.c"
-#include "validations.c"
 
 extern FILE* yyin;
 extern int yylineno;
 extern int yyparse();
 void yyerror (char *s);
+struct SymbolNode * createSymbol(struct TreeNode * variable);
+struct SymbolNode * createSymbolAux(struct TreeNode * type, char * id, int dimension);
 int yylex();
 char* symbols[50][3];
 int fila = 0;
@@ -26,8 +27,13 @@ struct SymbolNode * symbolList;
 
 struct SymbolNode * symbolClass;
 
+struct SymbolNode * symbolGlobal;
+
 struct SymbolNode * symbolExtends;
 struct ScopeNode * scopeExtends;
+
+//Validations functions
+
 
 %}
 
@@ -71,6 +77,9 @@ Program:        Declarations  { $$ = createTreeNode(yylineno, "Program", 1, $1);
                                 globalScope = createScope("global", "Global");
                                 globalScope = setFScope(globalScope, classList);
                                 globalScope = setPScope(globalScope, classList);
+                                globalScope = insertSymbol(globalScope, symbolGlobal);
+                                globalScope = setTree(globalScope, $$);
+                                symbolGlobal = 0;
                               }
 ;
 
@@ -78,7 +87,11 @@ Declarations:   Declaration               { $$ = createTreeNode(yylineno, "Decla
               | Declarations Declaration  { $$ = createTreeNode(yylineno, "Declarations", 2, $1, $2); }
 ;
 
-Declaration:    VariableDecl  { $$ = createTreeNode(yylineno, "Declaration", 1, $1); }
+Declaration:    VariableDecl  { $$ = createTreeNode(yylineno, "Declaration", 1, $1);
+                                struct TreeNode * variable = $1->root->node;
+                                struct SymbolNode * newSymbol = createSymbol(variable);
+                                symbolGlobal = insertSymbolNode(symbolGlobal, newSymbol);
+                              }
               | FunctionDecl  { $$ = createTreeNode(yylineno, "Declaration", 1, $1); }
               | ClassDecl     { $$ = createTreeNode(yylineno, "Declaration", 1, $1); }
               | InterfaceDecl { $$ = createTreeNode(yylineno, "Declaration", 1, $1); }
@@ -101,6 +114,7 @@ Type:           INTEGER                 { $$ = createTreeNode(yylineno, "Type", 
 FunctionDecl:   FunctionName LFTPARTH Formals RGHPARTH StmtBlock  { $$ = createTreeNode(yylineno, "FunctionDecl", 5, $1, tN("("), $3, tN(")"), $5);
                                                                     struct Scope * newScope = createScope($1->root->next->node->value, "Function");
                                                                     newScope = insertSymbol(newScope, symbolList);
+                                                                    newScope = setTree(newScope, $$);
                                                                     struct ScopeNode * newNode = createScopeNode(newScope);
                                                                     scopeList = insertScopeNode(scopeList, newNode);
                                                                     symbolList = 0;
@@ -117,7 +131,7 @@ Formals:        Variables   { $$ = createTreeNode(yylineno, "Formals", 1, $1); }
 
 Variables:      Variable                  { $$ = createTreeNode(yylineno, "Variables", 1, $1);
                                             struct TreeNode * variable = $1;
-                                            struct SymbolNode * newSymbol = createSymbolNode(variable->root->node->root->node->value, variable->root->next->node->value);
+                                            struct SymbolNode * newSymbol = createSymbol(variable);
                                             newSymbol->parameter = 1;
                                             symbolList = insertSymbolNode(symbolList, newSymbol);
                                           }
@@ -129,6 +143,7 @@ ClassDecl:      ClassName Extend Implement LFTGATE Fields RGHGATE { $$ = createT
                                                                     newScope = insertSymbol(newScope, symbolClass);
                                                                     newScope = setFScope(newScope, scopeList);
                                                                     newScope = setPScope(newScope, scopeList);
+                                                                    newScope = setTree(newScope, $$);
                                                                     struct ScopeNode * newNode = createScopeNode(newScope);
                                                                     classList = insertScopeNode(classList, newNode);
                                                                     scopeList = 0;
@@ -168,7 +183,7 @@ Fields:         Fields Field  { $$ = createTreeNode(yylineno, "Fields", 2, $1, $
 
 Field:          VariableDecl  { $$ = createTreeNode(yylineno, "Field", 1, $1);
                                 struct TreeNode * variable = $1->root->node;
-                                struct SymbolNode * newSymbol = createSymbolNode(variable->root->node->root->node->value, variable->root->next->node->value);
+                                struct SymbolNode * newSymbol = createSymbol(variable);
                                 symbolList = insertSymbolNode(symbolClass, newSymbol);
                               }
               | FunctionDecl  { $$ = createTreeNode(yylineno, "Field", 1, $1); }
@@ -178,6 +193,7 @@ InterfaceDecl:  InterfaceName LFTGATE Prototypes RGHGATE  { $$ = createTreeNode(
                                                             struct Scope * newScope = createScope($1->root->next->node->value, "Interface");
                                                             newScope = setFScope(newScope, scopeList);
                                                             newScope = setPScope(newScope, scopeList);
+                                                            newScope = setTree(newScope, $$);
                                                             struct ScopeNode * newNode = createScopeNode(newScope);
                                                             classList = insertScopeNode(classList, newNode);
                                                             scopeList = 0;
@@ -219,7 +235,7 @@ Stmt:           IfStmt        { $$ = createTreeNode(yylineno, "Stmt", 1, $1); }
               | Expr          { $$ = createTreeNode(yylineno, "Stmt", 1, $1); }
               | VariableDecl  { $$ = createTreeNode(yylineno, "Stmt", 1, $1);
                                 struct TreeNode * variable = $1->root->node;
-                                struct SymbolNode * newSymbol = createSymbolNode(variable->root->node->root->node->value, variable->root->next->node->value);
+                                struct SymbolNode * newSymbol = createSymbol(variable);
                                 symbolList = insertSymbolNode(symbolList, newSymbol);
                               }
 ;
@@ -311,6 +327,7 @@ int main() {
   scopeList = 0;
   symbolList = 0;
   symbolClass = 0;
+  symbolGlobal = 0;
   symbolExtends = 0;
   scopeExtends = 0;
   //Parser
@@ -318,11 +335,29 @@ int main() {
   do {
     yyparse();
 	} while(!feof(yyin));
-  printf("%s\n", globalScope->pScope->value->pScope->next->value->root->type);
-  printf("%s\n", scopeExtends->value->root->next->type);
 	return 0;
 }
 
 void yyerror(char *s) {
   fprintf(stderr,"Error | Line: %d\n%s\n",yylineno,s);
 }
+
+struct SymbolNode * createSymbol(struct TreeNode * variable) {
+  struct ListNode * root = variable->root;
+  char * id = root->next->node->value;
+  return createSymbolAux(root->node, id, 0);
+}
+
+struct SymbolNode * createSymbolAux(struct TreeNode * type, char * id, int dimension) {
+  struct ListNode * root = type->root;
+  int size = listSize(root);
+  if(size > 1) {
+    return createSymbolAux(root->node, id, dimension + 1);
+  }
+  else {
+    struct SymbolNode * node = createSymbolNode(root->node->value, id);
+    node = setArray(dimension);
+  }
+}
+
+//Validation Functions

@@ -3,6 +3,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include "symbol.c"
+#include "tree.c"
 
 /* Structures */
 
@@ -12,6 +13,7 @@ struct Scope {
   struct SymbolNode * root;
   struct Scope * fScope;
   struct ScopeNode * pScope;
+  struct TreeNode * tree;
 };
 
 struct ScopeNode {
@@ -22,6 +24,8 @@ struct ScopeNode {
 /* Functions */
 
 struct Scope * createScope(char * id, char * type);
+
+struct Scope * setTree(struct Scope * scope, struct TreeNode * tree);
 
 struct Scope * setFScope(struct Scope * fScope, struct ScopeNode * scope);
 struct Scope * setPScope(struct Scope * scope, struct ScopeNode * pScope);
@@ -73,7 +77,13 @@ struct Scope * createScope(char * id, char * type) {
     newScope->type = type;
     newScope->root = 0;
     newScope->pScope = 0;
+    newScope->tree = 0;
     return newScope;
+};
+
+struct Scope * setTree(struct Scope * scope, struct TreeNode * tree) {
+    scope->tree = tree;
+    return scope;
 };
 
 struct Scope * setFScope(struct Scope * fScope, struct ScopeNode * scope) {

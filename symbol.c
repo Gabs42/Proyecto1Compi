@@ -9,6 +9,7 @@ struct SymbolNode {
     char * type;
     char * id;
     int parameter;
+    int array;
     struct SymbolNode * next;
 };
 
@@ -19,7 +20,15 @@ struct SymbolNode * insertSymbolNode(struct SymbolNode * root, struct SymbolNode
 
 struct SymbolNode * searchSymbol(struct SymbolNode * root, char * id);
 
+struct SymbolNode * setArray(struct SymbolNode * node, int array);
+
 int sizeSymbol(struct SymbolNode * root);
+
+struct SymbolNode * setArray(struct SymbolNode * node, int array);
+
+struct SymbolNode * setArray(struct SymbolNode * node, int array) {
+  node->array = array;
+};
 
 struct SymbolNode * searchSymbol(struct SymbolNode * root, char * id) {
     int size = sizeSymbol(root);
@@ -41,6 +50,7 @@ struct SymbolNode * createSymbolNode(char * type, char * id) {
     newNode->id = id;
     newNode->next = 0;
     newNode->parameter = 0;
+    newMode->array = 0;
     return newNode;
 };
 
