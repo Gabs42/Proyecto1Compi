@@ -77,6 +77,7 @@ struct Scope * createScope(char * id, char * type) {
     newScope->type = type;
     newScope->root = 0;
     newScope->pScope = 0;
+    newScope->fScope = 0;
     newScope->tree = 0;
     return newScope;
 };
@@ -100,14 +101,12 @@ struct Scope * setFScope(struct Scope * fScope, struct ScopeNode * scope) {
 struct Scope * setPScope(struct Scope * scope, struct ScopeNode * pScope) {
   int size = sizeScopeList(pScope);
   struct ScopeNode * temp = pScope;
-  struct ScopeNode * newRoot = 0;
   for(int i = 0; i < size; i++) {
     struct Scope * value = temp->value;
     struct ScopeNode * newNode = createScopeNode(value);
-    newRoot = insertScopeNode(newRoot, newNode);
+    scope->pScope = insertScopeNode(scope->pScope, newNode);
     temp = temp->next;
   }
-  scope->pScope = newRoot;
   return scope;
 }
 

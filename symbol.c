@@ -28,6 +28,7 @@ struct SymbolNode * setArray(struct SymbolNode * node, int array);
 
 struct SymbolNode * setArray(struct SymbolNode * node, int array) {
   node->array = array;
+  return node;
 };
 
 struct SymbolNode * searchSymbol(struct SymbolNode * root, char * id) {
@@ -50,7 +51,7 @@ struct SymbolNode * createSymbolNode(char * type, char * id) {
     newNode->id = id;
     newNode->next = 0;
     newNode->parameter = 0;
-    newMode->array = 0;
+    newNode->array = 0;
     return newNode;
 };
 

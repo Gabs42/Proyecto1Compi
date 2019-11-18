@@ -1,0 +1,10 @@
+class Prueba {
+    //Asocia primero por la izquierda en lugar de hacerlo por la derecha
+    void metodo() {
+        int x;
+        int y;
+        x = (y * 5)
+        return;
+    }
+
+}

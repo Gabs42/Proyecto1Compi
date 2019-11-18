@@ -3,6 +3,16 @@
     Tecnologico de Costa Rica
 */
 
+int y;
+int x;
+Nadador z;
+
+bool comprobar() {
+    bool verificar;
+    verificar = true
+    return verificar;
+}
+
 interface Humano {
 
   //Funciones
@@ -25,6 +35,7 @@ class Nadador extends Deportista implements Humano {
     int edad;
     int velocidad;
     bool preparado;
+    string[][] carreras;
 
     public Nadador(string nombre, int edad, int velocidad, bool preparado) {
         this.nombre = nombre
