@@ -127,13 +127,13 @@ struct SymbolNode * getTypeFunction(char * id, struct Scope * scope);
 char * getTypeConstant(struct TreeNode * node);
 char * getValueConstant(struct TreeNode * node);
 
-char * getTypeReturn(struct TreeNode * node, struct Scope * actualScope);
+struct SymbolNode * getTypeReturn(struct TreeNode * node, struct Scope * actualScope);
 
-char * getTypeExpr(struct TreeNode * node, struct Scope * actualScope);
+struct SymbolNode * getTypeExpr(struct TreeNode * node, struct Scope * actualScope);
 
-char * getTypeLValue(struct TreeNode * node, struct Scope * actualScope);
+struct SymbolNode * getTypeLValue(struct TreeNode * node, struct Scope * actualScope);
 
-char * getTypeCall(struct TreeNode * node, struct Scope * actualScope);
+struct SymbolNode * getTypeCall(struct TreeNode * node, struct Scope * actualScope);
 
 void probarMetodo(struct TreeNode * node, struct Scope * actualScope);
 
@@ -2745,8 +2745,14 @@ struct SymbolNode * getTypeFunction(char * id, struct Scope * scope) {
       struct TreeNode * functionName = node->root->node;
       char * name = functionName->root->next->node->value;
       if(strcmp("Terminal", functionName->root->node->type) == 0) {
-        struct SymbolNode * res = createSymbolNode(functionName->root->node->value, name);
-        return res;
+        if(strcmp("void", functionName->root->node->value) == 0) {
+          //Funcion no existe
+          return 0;
+        }
+        else {
+          struct SymbolNode * res = createSymbolNode(functionName->root->node->value, name);
+          return res;
+        }    
       }
       else {
         struct SymbolNode * res = createSymbolAux(functionName->root->node, name, 0);
@@ -2756,6 +2762,7 @@ struct SymbolNode * getTypeFunction(char * id, struct Scope * scope) {
     list = list->next;
   }
   if(strcmp("global", scope->id) == 0) {
+    //Funcion no existe
     return 0;
   }
   else {
@@ -2773,11 +2780,11 @@ char * getValueConstant(struct TreeNode * node) {
   return terminal->value;
 };
 
-char * getTypeReturn(struct TreeNode * node, struct Scope * actualScope) {
+struct SymbolNode * getTypeReturn(struct TreeNode * node, struct Scope * actualScope) {
   struct ListNode * list = node->root;
   int size = listSize(list);
   if(size == 2) {
-    return "void";
+    return 0;
   }
   else {
     struct TreeNode * possibleExpr = list->next->node;
@@ -2786,21 +2793,26 @@ char * getTypeReturn(struct TreeNode * node, struct Scope * actualScope) {
   } 
 };
 
-char * getTypeExpr(struct TreeNode * node, struct Scope * actualScope) {
+struct SymbolNode * getTypeExpr(struct TreeNode * node, struct Scope * actualScope) {
   struct ListNode * list = node->root;
   int size = listSize(list);
   if(size == 1) {
     struct TreeNode * value = list->node;
     if(strcmp("Terminal", value->type) == 0) {
       if(actualScope->fScope) {
-        return actualScope->fScope->id;
+        struct SymbolNode * res = createSymbolNode(actualScope->fScope->id, actualScope->fScope->id);
+        return res;
       }
       else {
-        return "This fuera de scope";
+        //This fuera de scope;
+        return 0;
       }
     }
     else if(strcmp("Constant", value->type) == 0) {
-      return getTypeConstant(value);
+      char * type = getTypeConstant(value);
+      char * val = getValueConstant(value);
+      struct SymbolNode * res = createSymbolNode(type, val);
+      return res;
     }
     else if(strcmp("LValue", value->type) == 0) {
       return getTypeLValue(value, actualScope);
@@ -2810,213 +2822,280 @@ char * getTypeExpr(struct TreeNode * node, struct Scope * actualScope) {
     }
   }
   else if(size == 2) {
-    char * typeReturn = getTypeExpr(list->next->node, actualScope);
-    if(strcmp("!", list->node->value) == 0) {
-      if(strcmp(typeReturn, "boolean") == 0) {
-        return "boolean";
+    struct SymbolNode * typeReturn = getTypeExpr(list->next->node, actualScope);
+    if(typeReturn) {
+      if(strcmp("!", list->node->value) == 0) {
+        if(strcmp(typeReturn->type, "boolean") == 0) {
+          return typeReturn;
+        }
+        else {
+          //Tipo invalido, debe ser boolean
+          return 0;
+        }
       }
       else {
-        return "Tipo invalido, debe ser boolean";
+        if(strcmp(typeReturn->type, "integer") == 0 || strcmp(typeReturn->type, "double") == 0) {
+          return typeReturn;
+        }
+        else {
+          //Tipo invalido, debe ser int o double;
+          return 0;
+        }
       }
     }
     else {
-      if(strcmp(typeReturn, "integer") == 0) {
-        return "integer";
-      }
-      else if(strcmp(typeReturn, "double") == 0) {
-        return "double";
-      }
-      else {
-        return "Tipo invalido, debe ser int o double";
-      }
-    }
+      //Error en la expresion
+      return 0;
+    } 
   }
   else if(size == 3) {
     struct TreeNode * terminal = list->next->node;
     if(strcmp("+", terminal->value) == 0 || strcmp("-", terminal->value) == 0 || strcmp("*", terminal->value) == 0 || strcmp("/", terminal->value) == 0 || strcmp("mod", terminal->value) == 0) {
-      char * typeExpr1 = getTypeExpr(list->node, actualScope);
-      char * typeExpr2 = getTypeExpr(list->next->next->node, actualScope);
-      if(strcmp("integer", typeExpr1) == 0 || strcmp("double", typeExpr1) == 0) {
-        if(strcmp("integer", typeExpr2) == 0 || strcmp("double", typeExpr2) == 0) {
-          return typeExpr1;
+      struct SymbolNode * typeExpr1 = getTypeExpr(list->node, actualScope);
+      struct SymbolNode * typeExpr2 = getTypeExpr(list->next->next->node, actualScope);
+      if(typeExpr1 && typeExpr2) {
+        if(strcmp("integer", typeExpr1->type) == 0 || strcmp("double", typeExpr1->type) == 0) {
+          if(strcmp("integer", typeExpr2->type) == 0 || strcmp("double", typeExpr2->type) == 0) {
+            return typeExpr1;
+          }
+          else {
+            //Segundo tipo invalido en operacion aritmetica
+            return 0;
+          }
         }
         else {
-          return "Segundo tipo invalido en operacion";
+          //Primer tipo invalido en operacion arimetica
+          return 0;
         }
       }
       else {
-        return "Primer tipo invalido en operacion";
+        //La expresion arimetica no es valida
+        return 0;
       }
     }
     else if(strcmp("<", terminal->value) == 0 || strcmp("<=", terminal->value) == 0 || strcmp(">", terminal->value) == 0 || strcmp(">=", terminal->value) == 0) {
-      char * typeExpr1 = getTypeExpr(list->node, actualScope);
-      char * typeExpr2 = getTypeExpr(list->next->next->node, actualScope);
-      if(strcmp("integer", typeExpr1) == 0 || strcmp("double", typeExpr1) == 0) {
-        if(strcmp("integer", typeExpr2) == 0 || strcmp("double", typeExpr2) == 0) {
-          return "boolean";
+      struct SymbolNode * typeExpr1 = getTypeExpr(list->node, actualScope);
+      struct SymbolNode * typeExpr2 = getTypeExpr(list->next->next->node, actualScope);
+      if(typeExpr2 && typeExpr1) {
+        if(strcmp("integer", typeExpr1->type) == 0 || strcmp("double", typeExpr1->type) == 0) {
+          if(strcmp("integer", typeExpr2->type) == 0 || strcmp("double", typeExpr2->type) == 0) {
+            struct SymbolNode * res = createSymbolNode("boolean", "boolean");
+            return res;
+          }
+          else {
+            //Segundo tipo invalido en comparacion de tamano
+            return 0;
+          }
         }
         else {
-          return "Segundo tipo invalido en comparacion de tamano";
+          //Primer tipo invalido en comparacion de tamano
+          return 0;
         }
       }
       else {
-        return "Primer tipo invalido en comparacion de tamano";
+        //Las expresiones no pueden ser void
+        return 0;
       }
     }
     else if(strcmp("==", terminal->value) == 0 || strcmp("!=", terminal->value) == 0) {
-      char * typeExpr1 = getTypeExpr(list->node, actualScope);
-      char * typeExpr2 = getTypeExpr(list->next->next->node, actualScope);
-      if(strcmp(typeExpr2, typeExpr1) == 0) {
-        if(strcmp("void", typeExpr2) != 0) {
-          return "boolean";
+      struct SymbolNode * typeExpr1 = getTypeExpr(list->node, actualScope);
+      struct SymbolNode * typeExpr2 = getTypeExpr(list->next->next->node, actualScope);
+      if(typeExpr2 && typeExpr1) {
+        if(strcmp(typeExpr2->type, typeExpr1->type) == 0) {
+          struct SymbolNode * res = createSymbolNode("boolean", "boolean");
+          return res;
         }
         else {
-          return "Segundo tipo invalido en comparacion de tipo";
+          //Solo se pueden comparar expresiones del mismo tipo
+          return 0;
         }
       }
       else {
-        return "Primer tipo invalido en comparacion de tipo";
+        //Las comparaciones no se pueden hacer con tipo void
+        return 0;
       }
     }
     else if(strcmp("||", terminal->value) == 0 || strcmp("&&", terminal->value) == 0) {
-      char * typeExpr1 = getTypeExpr(list->node, actualScope);
-      char * typeExpr2 = getTypeExpr(list->next->next->node, actualScope);
-      if(strcmp(typeExpr2, typeExpr1) == 0) {
-        if(strcmp("boolean", typeExpr2) == 0) {
-          return "boolean";
+      struct SymbolNode * typeExpr1 = getTypeExpr(list->node, actualScope);
+      struct SymbolNode * typeExpr2 = getTypeExpr(list->next->next->node, actualScope);
+      if(typeExpr2 && typeExpr1) {
+        if(strcmp(typeExpr2->type, typeExpr1->type) == 0) {
+          if(strcmp("boolean", typeExpr2->type) == 0) {
+            struct SymbolNode * res = createSymbolNode("boolean", "boolean");
+            return res;
+          }
+          else {
+            //Expresion debe ser bool
+            return 0;
+          }
         }
         else {
-          return "Las expresiones deben ser booleanas";
+          //Ambas expresiones deben ser tipo bool
+          return 0;
         }
       }
       else {
-        return "Las expresiones deben ser del mismo tipo";
-      }
+        //Operaciones booleanas no se pueden hacer con tipo void
+        return 0;
+      }   
     }
     else if(strcmp("(", list->node->value) == 0 ) {
       return getTypeExpr(list->next->node, actualScope);
     }
     else {
-      char * typeLValue = getTypeLValue(list->node, actualScope);
-      char * typeExpr = getTypeExpr(list->next->next->node, actualScope);
-      if(strcmp("integer", typeLValue) == 0 || strcmp("boolean", typeLValue) == 0 || strcmp("double", typeLValue) == 0 || strcmp("string", typeLValue) == 0 || checkClass(typeLValue)) {
-        if(strcmp(typeExpr, "null") == 0 ||strcmp(typeExpr, typeLValue) == 0 || checkSubClass(typeExpr, typeLValue)) {
-          return "void";
+      struct SymbolNode * typeLValue = getTypeLValue(list->node, actualScope);
+      struct SymbolNode * typeExpr = getTypeExpr(list->next->next->node, actualScope);
+      if(typeLValue && typeExpr) {
+        if(strcmp("integer", typeLValue->type) == 0 || strcmp("boolean", typeLValue->type) == 0 || strcmp("double", typeLValue->type) == 0 || strcmp("string", typeLValue->type) == 0 || checkClass(typeLValue->type)) {
+          if(strcmp(typeExpr->type, "null") == 0 || strcmp(typeExpr->type, typeLValue->type) == 0 || checkSubClass(typeExpr->type, typeLValue->type)) {
+            //Asignacion siempre retorna void aunque sea correcta
+            return 0;
+          }
+          else {
+            //La asignacion debe ser del mismo tipo o de una clase padre
+            return 0;
+          }
         }
         else {
-          return "La asignacion debe ser del mismo tipo o de una clase padre";
+          //La variable debe ser de una clase existente o un tipo primitivo
+          return 0;
         }
       }
       else {
-        return "Primera parametro no puede ser void";
+        //Las expresiones no pueden ser tipo void en igualdad
+        return 0;
       }
     }
   }
   else {
     if(strcmp("readInteger", list->node->value) == 0 || strcmp("readLine", list->node->value) == 0) {
-      return "void";
+      //Ambas funciones retornan void
+      return 0;
     }
     else if(strcmp("new", list->node->value) == 0) {
       struct Scope * checkScope = checkClass(list->next->next->node->value);
       if(checkScope) {
-        return checkScope->id;
+        struct SymbolNode * res = createSymbolNode(checkScope->id, checkScope->id);
+        return res;
       }
       else {
-        return "Clase o interfaz no existe";
+        //Clase o interfaz no existe
+        return 0;
       }
     }
     else {
       struct TreeNode * expr = list->next->next->node;
-      char * typeExpr = getTypeExpr(expr, actualScope);
-      if(strcmp("integer", typeExpr) == 0) {
-        struct TreeNode * type = list->next->next->next->next->node;
-        struct SymbolNode * symbol = createSymbolAux(type, "test", 0);
-        return symbol->type;
+      struct SymbolNode * typeExpr = getTypeExpr(expr, actualScope);
+      if(typeExpr) {
+        if(strcmp("integer", typeExpr->type) == 0) {
+          struct TreeNode * type = list->next->next->next->next->node;
+          struct SymbolNode * symbol = createSymbolAux(type, "TypeArray", 0);
+          return symbol;
+        }
+        else {
+          //El largo debe ser un tipo entero
+          return 0;
+        } 
       }
       else {
-        return "El largo debe ser un tipo entero";
+        //Expresion no puede ser void o funcion no existe
+        return 0;
       }
     }
   }
 };
 
-char * getTypeLValue(struct TreeNode * node, struct Scope * actualScope) {
+struct SymbolNode * getTypeLValue(struct TreeNode * node, struct Scope * actualScope) {
   struct ListNode * list = node->root;
   int size = listSize(list);
   if(size == 1) { 
     struct SymbolNode * symbol = getTypeId(list->node->value, actualScope);
     if(symbol) {
-      return symbol->type;
+      return symbol;
     }
     else {
-      return "Objeto no existe";
+      //No existe el id
+      return 0;
     }
   }
   else if(size == 3) {
     struct TreeNode * expr = list->node;
-    char * typeReturn = getTypeExpr(expr, actualScope);
-    struct Scope * objectScope = getScopeClass(typeReturn);
+    struct SymbolNode * typeReturn = getTypeExpr(expr, actualScope);
+    struct Scope * objectScope = getScopeClass(typeReturn->type);
     if(objectScope) {
       char * id = list->next->next->node->value;
       struct SymbolNode * symbol = getTypeId(id, objectScope);
       if(symbol) {
-        return symbol->type;
+        return symbol;
       }
       else {
-        return "Atributo no existe";
+        //No existe el atributo
+        return 0;
       }
     }
     else {
-      return "Objeto no existe";
+      //No existe el objeto
+      return 0;
     }
   }
   else {
     char * nodeId = list->node->value;
     struct SymbolNode * typeId = getTypeId(nodeId, actualScope);
-    char * verifyReturn = getTypeExpr(list->next->next->node, actualScope);
-    if(strcmp(verifyReturn, "integer") == 0) {
-      if(typeId) {
-        return typeId->type;
+    struct SymbolNode * verifyReturn = getTypeExpr(list->next->next->node, actualScope);
+    if(verifyReturn) {
+      if(strcmp(verifyReturn->type, "integer") == 0) {
+        if(typeId) {
+          return typeId;
+        }
+        else {
+          //Variable no existe
+          return 0;
+        }
       }
       else {
-        return "Variable no existe";
+        //Indice debe ser un integer
+        return 0;
       }
     }
     else {
-      return "Indice no valido";
-    }
+      //Expresion no puede ser void
+      return 0;
+    }  
   }
 };
 
-char * getTypeCall(struct TreeNode * node, struct Scope * actualScope) {
+struct SymbolNode * getTypeCall(struct TreeNode * node, struct Scope * actualScope) {
   struct ListNode * list = node->root;
   int size = listSize(list);
   if(size == 4) {
     char * id = list->node->value;
     struct SymbolNode * res = getTypeFunction(id, actualScope);
     if(res) {
-      return res->type;
+      return res;
     }
     else {
-      return "Metodo no existe";
+      //Metodo no existe
+      return 0;
     }
   }
   else {
     struct TreeNode * expr = list->node;
-    char * typeReturn = getTypeExpr(expr, actualScope);
-    struct Scope * functionScope = getScopeClass(typeReturn);
-    if(functionScope) {
-      char * id = list->next->next->node->value;
-      struct SymbolNode * symbol = getTypeFunction(id, functionScope);
-      if(symbol) {
-        return symbol->type;
+    struct SymbolNode * typeReturn = getTypeExpr(expr, actualScope);
+    if(typeReturn) {
+      struct Scope * functionScope = getScopeClass(typeReturn->type);
+      if(functionScope) {
+        char * id = list->next->next->node->value;
+        struct SymbolNode * symbol = getTypeFunction(id, functionScope);
+        return symbol; //Puede no existir o ser void
       }
       else {
-        return "Metodo de objeto no existe";
+        //Clase no existe
+        return 0;
       }
     }
     else {
-      return "Objeto no existe";
+      //Tipo void no puede invocar una funcion
+      return 0;
     }
   }
 };
@@ -3027,10 +3106,17 @@ void probarMetodo(struct TreeNode * node, struct Scope * actualScope) {
     actualScope = newScope;
   }
   if(strcmp(node->type, "Expr") == 0) {
-    //printf("%s\n", getTypeExpr(node, actualScope));
+    struct SymbolNode * res = getTypeExpr(node, actualScope);
+    if(res) {
+      printf("%s\n", res->type);
+    }
+    else {
+      printf("%s\n", "Error o void");
+    }
+    
   }
   if(strcmp(node->type, "ReturnStmt") == 0) {
-    printf("%i\n", checkFunctionReturn(node, actualScope));
+    //printf("%i\n", checkFunctionReturn(node, actualScope));
   }
   struct ListNode * temp = node->root;
   int size = listSize(temp);
@@ -3062,11 +3148,16 @@ int checkSymbolScope(struct Scope * scope) {
 
 int checkFunctionReturn(struct TreeNode * returnNode, struct Scope * function) {
   struct SymbolNode * symbol = getTypeFunction(function->id, function->fScope);
-  char * typeReturn = getTypeReturn(returnNode, function);
-  if(symbol) {
-    if(strcmp(typeReturn, symbol->type) == 0) {
+  struct SymbolNode * typeReturn = getTypeReturn(returnNode, function);
+  if(symbol && typeReturn) {
+    if(strcmp(typeReturn->type, symbol->type) == 0 && typeReturn->array == symbol->array) {
       return 1;
     }
   }
-  return 0;
+  else if(symbol || typeReturn) {
+    return 0;
+  }
+  else {
+    return 1;
+  }
 };
