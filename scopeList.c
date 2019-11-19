@@ -116,6 +116,8 @@ struct Scope * insertSymbol(struct Scope * scope, struct SymbolNode * symbol) {
     struct SymbolNode * root = scope->root;
     for(int i = 0; i < size; i++) {
       struct SymbolNode * newSymbol = createSymbolNode(symbol->type, symbol->id);
+      newSymbol->array = symbol->array;
+      newSymbol->parameter = symbol->parameter;
       root = insertSymbolNode(root, newSymbol);
       symbol = symbol->next;
     }

@@ -1,6 +1,6 @@
 class Prueba {
     
-    string x;
+    int x;
     string[] y;
     
     void metodo() {

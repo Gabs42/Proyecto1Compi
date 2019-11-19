@@ -3108,12 +3108,11 @@ void probarMetodo(struct TreeNode * node, struct Scope * actualScope) {
   if(strcmp(node->type, "Expr") == 0) {
     struct SymbolNode * res = getTypeExpr(node, actualScope);
     if(res) {
-      printf("%s\n", res->type);
+      //printf("%i\n", res->array);
     }
     else {
-      printf("%s\n", "Error o void");
+      //printf("%s\n", "Error o void");
     }
-    
   }
   if(strcmp(node->type, "ReturnStmt") == 0) {
     //printf("%i\n", checkFunctionReturn(node, actualScope));
