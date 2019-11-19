@@ -91,23 +91,22 @@ extern int yydebug;
     INTVAL = 297,
     DOUBLEVAL = 298,
     STRINGVAL = 299,
-    NULLVAL = 300,
-    OR = 301,
-    LESSEQL = 302,
-    ID = 303,
-    SUM = 304,
-    SUB = 305,
-    MULT = 306,
-    DIV = 307,
-    LESSTHN = 308,
-    GREATERTHN = 309,
-    MOD = 310,
-    GREATEREQL = 311,
-    EQUAL = 312,
-    SAME = 313,
-    DIFF = 314,
-    AND = 315,
-    NOT = 316
+    OR = 300,
+    LESSEQL = 301,
+    ID = 302,
+    SUM = 303,
+    SUB = 304,
+    MULT = 305,
+    DIV = 306,
+    LESSTHN = 307,
+    GREATERTHN = 308,
+    MOD = 309,
+    GREATEREQL = 310,
+    EQUAL = 311,
+    SAME = 312,
+    DIFF = 313,
+    AND = 314,
+    NOT = 315
   };
 #endif
 
@@ -115,7 +114,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 71 "proyecto1Parser.y"
+#line 75 "proyecto1Parser.y"
 
   char* str;
 	struct TreeNode * treeNode;
@@ -123,7 +122,7 @@ union YYSTYPE
   struct SymbolNode * symbolNode;
   struct Scope * scope;
 
-#line 127 "proyecto1Parser.tab.h"
+#line 126 "proyecto1Parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

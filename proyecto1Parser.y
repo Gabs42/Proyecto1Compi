@@ -47,6 +47,10 @@ struct Scope * getScopeClass(char * id);
 
 int checkSubClass(char * class, char * subClass);
 
+int checkSymbolScope(struct Scope * scope);
+
+int checkFunctionReturn(struct TreeNode * returnNode, struct Scope * function);
+
 struct SymbolNode * getTypeId(char * id, struct Scope * scope);
 
 struct SymbolNode * getTypeFunction(char * id, struct Scope * scope);
@@ -84,7 +88,7 @@ void probarMetodo(struct TreeNode * node, struct Scope * actualScope);
 %token PRINT READINTEGER READLINE TRUE FALSE
 %token COMMA POINT LFTBRCKT RGHBRCKT LFTPARTH RGHPARTH SEMICLN
 %token LFTGATE RGHGATE STRINGERROR INVCHAR INVESCP
-%token LINEJMP TAB SPACE INTVAL DOUBLEVAL STRINGVAL NULLVAL
+%token LINEJMP TAB SPACE INTVAL DOUBLEVAL STRINGVAL
 %token OR LESSEQL
 %token<str> ID
 
@@ -95,7 +99,7 @@ void probarMetodo(struct TreeNode * node, struct Scope * actualScope);
 
 %type<treeNode> Program Declarations Declaration VariableDecl Variable Type
 %type<treeNode> FunctionDecl Formals Variables ClassDecl Extend Implement
-%type<treeNode> ListIdents Fields Field InterfaceDecl Prototypes Prototype
+%type<treeNode> ListIdents Fields Field InterfaceDecl Prototypes Prototype FixLValue
 %type<treeNode> StmtBlock Stmts Stmt PossibleExpr IfStmt InterfaceName PrototypeName
 %type<treeNode> PossibleElse WhileStmt ForStmt ReturnStmt BreakStmt PrintStmt
 %type<treeNode> ListExpr Expr LValue Call Actuals Constant FunctionName ClassName
@@ -108,6 +112,7 @@ Program:        Declarations  { $$ = createTreeNode(yylineno, "Program", 1, $1);
                                 globalScope = setFScope(globalScope, classList);
                                 globalScope = setPScope(globalScope, classList);
                                 globalScope = setPScope(globalScope, functionsGlobal);
+                                globalScope = setFScope(globalScope, functionsGlobal);
                                 globalScope = insertSymbol(globalScope, symbolGlobal);
                                 globalScope = setTree(globalScope, $$);
                                 symbolGlobal = 0;
@@ -343,7 +348,10 @@ Expr:           LValue EQUAL Expr                           { $$ = createTreeNod
 
 LValue:         ID                          { $$ = createTreeNode(yylineno, "LValue", 1, tT(yylval.str, "ID")); }
               | Expr POINT ID               { $$ = createTreeNode(yylineno, "LValue", 3, $1, tN("."), tT(yylval.str, "ID")); }
-              | Expr LFTBRCKT Expr RGHBRCKT { $$ = createTreeNode(yylineno, "LValue", 4, $1, tN("["), $3, tN("]")); }
+              | FixLValue Expr RGHBRCKT     { $$ = createTreeNode(yylineno, "LValue", 4, $1->root->node, $1->root->next->node, $2, tN("]")); }
+;
+
+FixLValue:      ID LFTBRCKT { $$ = createTreeNode(yylineno, "FixLValue", 2, tT(yylval.str, "ID"), tN("[")); }
 ;
 
 Call:           ID LFTPARTH Actuals RGHPARTH            { $$ = createTreeNode(yylineno, "Call", 4, tT(yylval.str, "ID"), tN("("), $3, tN(")")); }
@@ -359,7 +367,7 @@ Constant:       INTVAL    { $$ = createTreeNode(yylineno, "Constant", 1, tT(yylv
               | TRUE      { $$ = createTreeNode(yylineno, "Constant", 1, tT("true", "boolean")); }
               | FALSE     { $$ = createTreeNode(yylineno, "Constant", 1, tT("false", "boolean")); }
               | STRINGVAL { $$ = createTreeNode(yylineno, "Constant", 1, tT(yylval.str, "string")); }
-              | NULLVAL   { $$ = createTreeNode(yylineno, "Constant", 1, tT("null", "null")); }
+              | NULLN   { $$ = createTreeNode(yylineno, "Constant", 1, tT("null", "null")); }
 ;
 
 %%
@@ -491,6 +499,12 @@ int checkSubClass(char * class, char * subClass) {
       if(strcmp(class, temp->id) == 0) {
         return 1;
       }
+      if(strcmp("Class", temp->type) == 0) {
+        int check = checkSubClass(temp->id, subClass);
+        if(check) {
+          return 1;
+        }
+      }
       temp = temp->next;
     }
   }
@@ -571,7 +585,12 @@ char * getTypeExpr(struct TreeNode * node, struct Scope * actualScope) {
   if(size == 1) {
     struct TreeNode * value = list->node;
     if(strcmp("Terminal", value->type) == 0) {
-      return actualScope->fScope->id;
+      if(actualScope->fScope) {
+        return actualScope->fScope->id;
+      }
+      else {
+        return "This fuera de scope";
+      }
     }
     else if(strcmp("Constant", value->type) == 0) {
       return getTypeConstant(value);
@@ -673,11 +692,16 @@ char * getTypeExpr(struct TreeNode * node, struct Scope * actualScope) {
     else {
       char * typeLValue = getTypeLValue(list->node, actualScope);
       char * typeExpr = getTypeExpr(list->next->next->node, actualScope);
-      if(strcmp(typeExpr, typeLValue) == 0) {
-        return "void";
+      if(strcmp("integer", typeLValue) == 0 || strcmp("boolean", typeLValue) == 0 || strcmp("double", typeLValue) == 0 || strcmp("string", typeLValue) == 0 || checkClass(typeLValue)) {
+        if(strcmp(typeExpr, "null") == 0 ||strcmp(typeExpr, typeLValue) == 0 || checkSubClass(typeExpr, typeLValue)) {
+          return "void";
+        }
+        else {
+          return "La asignacion debe ser del mismo tipo o de una clase padre";
+        }
       }
       else {
-        return "La asignacion debe ser del mismo tipo";
+        return "Primera parametro no puede ser void";
       }
     }
   }
@@ -740,11 +764,16 @@ char * getTypeLValue(struct TreeNode * node, struct Scope * actualScope) {
     }
   }
   else {
-    struct TreeNode * expr = list->node;
-    char * typeReturn = getTypeExpr(expr, actualScope);
+    char * nodeId = list->node->value;
+    struct SymbolNode * typeId = getTypeId(nodeId, actualScope);
     char * verifyReturn = getTypeExpr(list->next->next->node, actualScope);
     if(strcmp(verifyReturn, "integer") == 0) {
-      return typeReturn;
+      if(typeId) {
+        return typeId->type;
+      }
+      else {
+        return "Variable no existe";
+      }
     }
     else {
       return "Indice no valido";
@@ -791,7 +820,10 @@ void probarMetodo(struct TreeNode * node, struct Scope * actualScope) {
     actualScope = newScope;
   }
   if(strcmp(node->type, "Expr") == 0) {
-    printf("%s\n", getTypeExpr(node, actualScope));
+    //printf("%s\n", getTypeExpr(node, actualScope));
+  }
+  if(strcmp(node->type, "ReturnStmt") == 0) {
+    printf("%i\n", checkFunctionReturn(node, actualScope));
   }
   struct ListNode * temp = node->root;
   int size = listSize(temp);
@@ -800,4 +832,34 @@ void probarMetodo(struct TreeNode * node, struct Scope * actualScope) {
     probarMetodo(value, actualScope);
     temp = temp->next;
   }
+};
+
+int checkSymbolScope(struct Scope * scope) {
+  struct SymbolNode * root = scope->root;
+  int size = sizeSymbol(root);
+  for(int i = 0; i < size; i++) {
+    char * id = root->id;
+    if(i < size - 2) {
+      struct SymbolNode * temp = root->next;
+      for(int j = i + 1; j < size; i++) {
+        if(strcmp(id, temp->id) == 0) {
+          return 0;
+        }
+        temp = temp->next;
+      }
+      root = root->next;
+    }
+  }
+  return 1;
+};
+
+int checkFunctionReturn(struct TreeNode * returnNode, struct Scope * function) {
+  struct SymbolNode * symbol = getTypeFunction(function->id, function->fScope);
+  char * typeReturn = getTypeReturn(returnNode, function);
+  if(symbol) {
+    if(strcmp(typeReturn, symbol->type) == 0) {
+      return 1;
+    }
+  }
+  return 0;
 };

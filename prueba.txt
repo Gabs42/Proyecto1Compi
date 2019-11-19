@@ -1,9 +1,10 @@
 class Prueba {
-    //Asocia primero por la izquierda en lugar de hacerlo por la derecha
+    
+    string x;
+    string[] y;
+    
     void metodo() {
-        int x;
-        int y;
-        x = (y * 5)
+        y[1] = "hola"
         return;
     }
 
