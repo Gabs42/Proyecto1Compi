@@ -3224,18 +3224,16 @@ void probarMetodo(struct TreeNode * node, struct Scope * actualScope) {
 int checkSymbolScope(struct Scope * scope) {
   struct SymbolNode * root = scope->root;
   int size = sizeSymbol(root);
-  for(int i = 0; i < size; i++) {
+  for(int i = 0; i < (size - 1); i++) {
     char * id = root->id;
-    if(i < size - 2) {
-      struct SymbolNode * temp = root->next;
-      for(int j = i + 1; j < size; i++) {
-        if(strcmp(id, temp->id) == 0) {
-          return 0;
-        }
-        temp = temp->next;
+    struct SymbolNode * temp = root->next;
+    for(int j = i + 1; j < size; j++) {
+      if(strcmp(id, temp->id) == 0) {
+        return 0;
       }
-      root = root->next;
+      temp = temp->next;
     }
+    root = root->next;
   }
   return 1;
 };
@@ -3440,21 +3438,35 @@ int checkAtributtes(struct Scope * class) {
   struct Scope * fScope = class->fScope;
   struct SymbolNode * list = class->root;
   int size = sizeSymbol(list);
-  while(fScope || strcmp("global", fScope->id) != 0) {
+  int check = 1;
+  if(checkSymbolScope(class) == 0) {
+    return 0;
+  }
+  while(check) {
     struct SymbolNode * listFScope = fScope->root;
     int sizeFScope = sizeSymbol(listFScope);
     for(int i = 0; i < size; i++) {
+      printf("%s\n", list->id);
       char * id = list->id;
-      for(int j = 0; j < sizeFScope; i++) {
+      for(int j = 0; j < sizeFScope; j++) {
+        printf("%s\n", listFScope->id);
         char * idFScope = listFScope->id;
         if(strcmp(idFScope, id) == 0) {
           return 0;
         }
         listFScope = listFScope->next;
       }
+      listFScope = fScope->root;
       list = list->next;
     }
+    list = class->root;
     fScope = fScope->fScope;
+    if(fScope) {
+      check = 0;
+    }
+    else if(strcmp("global", fScope->id) == 0) {
+      check = 0;
+    }
   }
   return 1;
 };
