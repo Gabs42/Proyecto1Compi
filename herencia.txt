@@ -1,0 +1,43 @@
+class Clase implements Test {
+    
+    int i;
+
+    int probar(int x, int y) {
+
+    }
+    
+    int probar2(){
+
+    }
+
+}
+
+class Clase2 extends Clase implements Test2 {
+    
+    int j;
+
+    int probar(int x,int y){
+
+    }
+
+    int probar2() {
+
+    }
+
+    int prueba(string x) {
+
+    }
+}
+
+interface Test { 
+    
+    int probar(int x,int y);
+    int probar2();
+
+}
+
+interface Test2 { 
+    
+    int prueba(string x);
+    
+}

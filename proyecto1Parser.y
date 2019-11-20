@@ -41,9 +41,39 @@ void adjustFScope();
 struct Scope * getScope(struct TreeNode * node);
 struct Scope * getScopeAux(struct TreeNode * node, struct Scope * scope);
 
+struct Scope * getFunctionScope(struct Scope * classScope, char * id, int global);
+
 struct Scope * checkClass(char * id);
 
+struct Scope * getScopeInterface(char * id);
+
 struct Scope * getScopeClass(char * id);
+
+int compareSymbolNodes(struct SymbolNode * params,struct SymbolNode * funct);
+
+struct SymbolNode * dupSymbol(struct SymbolNode * symbol);
+
+struct SymbolNode * getParams(struct Scope * function);
+
+struct SymbolNode * getTypeActuals(struct TreeNode * actuals, struct Scope * scope);
+struct SymbolNode * getTypeActualsAux(struct TreeNode * list, struct Scope * scope);
+
+int checkAtributtes(struct Scope * class);
+
+struct Scope * methodInterface(struct Scope * class, char * id);
+
+int methodsInInterface(struct Scope * implements, struct Scope * class);
+
+int implementMethods(struct Scope * class);
+int implementMethodsAux(struct Scope * class, struct Scope * fScope);
+
+int scopeInList(struct Scope * scope, struct ScopeNode * list);
+
+int scopesInList(struct ScopeNode * list, struct ScopeNode * scope);
+
+int checkImplementation(struct Scope * method1, struct Scope * method2);
+
+int checkMethods(struct Scope * class);
 
 int checkSubClass(char * class, char * subClass);
 
@@ -57,6 +87,8 @@ struct SymbolNode * getTypeFunction(char * id, struct Scope * scope);
 
 char * getTypeConstant(struct TreeNode * node);
 char * getValueConstant(struct TreeNode * node);
+
+int compareReturnFunctions(struct Scope * scope1, struct Scope * scope2);
 
 struct SymbolNode * getTypeReturn(struct TreeNode * node, struct Scope * actualScope);
 
@@ -98,7 +130,7 @@ void probarMetodo(struct TreeNode * node, struct Scope * actualScope);
 %type<str> SUM SUB MULT DIV LESSTHN LESSEQL GREATERTHN MOD
 
 %type<treeNode> Program Declarations Declaration VariableDecl Variable Type
-%type<treeNode> FunctionDecl Formals Variables ClassDecl Extend Implement
+%type<treeNode> FunctionDecl Formals Variables ClassDecl Extend Implement FixCall
 %type<treeNode> ListIdents Fields Field InterfaceDecl Prototypes Prototype FixLValue
 %type<treeNode> StmtBlock Stmts Stmt PossibleExpr IfStmt InterfaceName PrototypeName
 %type<treeNode> PossibleElse WhileStmt ForStmt ReturnStmt BreakStmt PrintStmt
@@ -172,7 +204,12 @@ Variables:      Variable                  { $$ = createTreeNode(yylineno, "Varia
                                             newSymbol->parameter = 1;
                                             symbolList = insertSymbolNode(symbolList, newSymbol);
                                           }
-              | Variables COMMA Variable  { $$ = createTreeNode(yylineno, "Variables", 3, $1, tN(","), $3); }
+              | Variables COMMA Variable  { $$ = createTreeNode(yylineno, "Variables", 3, $1, tN(","), $3); 
+                                            struct TreeNode * variable = $3;
+                                            struct SymbolNode * newSymbol = createSymbol(variable);
+                                            newSymbol->parameter = 1;
+                                            symbolList = insertSymbolNode(symbolList, newSymbol);
+                                          }
 ;
 
 ClassDecl:      ClassName Extend Implement LFTGATE Fields RGHGATE { $$ = createTreeNode(yylineno, "ClassDecl", 6, $1, $2, $3, tN("{"), $5, tN("}"));
@@ -203,15 +240,18 @@ Extend:         EXTENDS ID  { $$ = createTreeNode(yylineno, "Extend", 2, tN("ext
               | /* empty */ { $$ = eN(); }
 ;
 
-Implement:      IMPLEMENTS ListIdents { $$ = createTreeNode(yylineno, "Implement", 2, tN("implements"), $2);
-                                        struct SymbolNode * newSymbol = createSymbolNode("implement", yylval.str);
-                                        symbolExtends = insertSymbolNode(symbolExtends, newSymbol);
-                                      }
+Implement:      IMPLEMENTS ListIdents { $$ = createTreeNode(yylineno, "Implement", 2, tN("implements"), $2); }
               | /* empty */           { $$ = eN(); }
 ;
 
-ListIdents:     ID                  { $$ = createTreeNode(yylineno, "ListIdents", 1, tT(yylval.str, "ID")); }
-              | ListIdents COMMA ID { $$ = createTreeNode(yylineno, "ListIdents", 3, $1, tN(","), tT(yylval.str, "ID")); }
+ListIdents:     ID                  { $$ = createTreeNode(yylineno, "ListIdents", 1, tT(yylval.str, "ID")); 
+                                      struct SymbolNode * newSymbol = createSymbolNode("implement", yylval.str);
+                                      symbolExtends = insertSymbolNode(symbolExtends, newSymbol);
+                                    }
+              | ListIdents COMMA ID { $$ = createTreeNode(yylineno, "ListIdents", 3, $1, tN(","), tT(yylval.str, "ID")); 
+                                      struct SymbolNode * newSymbol = createSymbolNode("implement", yylval.str);
+                                      symbolExtends = insertSymbolNode(symbolExtends, newSymbol);
+                                    }
 ;
 
 Fields:         Fields Field  { $$ = createTreeNode(yylineno, "Fields", 2, $1, $2); }
@@ -258,8 +298,11 @@ Prototypes:     Prototypes Prototype  { $$ = createTreeNode(yylineno, "Prototype
 
 Prototype:      PrototypeName LFTPARTH Formals RGHPARTH SEMICLN { $$ = createTreeNode(yylineno, "Prototype", 5, $1, tN("("), $3, tN(")"), tN(";"));
                                                                   struct Scope * newScope = createScope($1->root->next->node->value, "Function");
+                                                                  newScope = insertSymbol(newScope, symbolList);
+                                                                  newScope = setTree(newScope, $$);
                                                                   struct ScopeNode * newNode = createScopeNode(newScope);
                                                                   scopeList = insertScopeNode(scopeList, newNode);
+                                                                  symbolList = 0;
                                                                 }
 ;
 
@@ -355,11 +398,14 @@ FixLValue:      ID LFTBRCKT { $$ = createTreeNode(yylineno, "FixLValue", 2, tT(y
 ;
 
 Call:           ID LFTPARTH Actuals RGHPARTH            { $$ = createTreeNode(yylineno, "Call", 4, tT(yylval.str, "ID"), tN("("), $3, tN(")")); }
-              | Expr POINT ID LFTPARTH Actuals RGHPARTH { $$ = createTreeNode(yylineno, "Call", 6, $1, tN("."), tT(yylval.str, "ID"), tN("("), $5, tN(")")); }
+              | Expr FixCall Actuals RGHPARTH  { $$ = createTreeNode(yylineno, "Call", 6, $1, $2->root->node, $2->root->next->node, $2->root->next->next->node, $3, tN(")")); }
+;
+
+FixCall:        POINT ID LFTPARTH { $$ = createTreeNode(yylineno, "FixCall", 3, tN("."), tT(yylval.str, "ID"), tN("(")); }
 ;
 
 Actuals:        ListExpr    { $$ = createTreeNode(yylineno, "Actuals", 1, $1); }
-              | /* empty */ { $$ = eN(); }
+              | /* empty */ { $$ = createTreeNode(yylineno, "Actuals", 0); }
 ;
 
 Constant:       INTVAL    { $$ = createTreeNode(yylineno, "Constant", 1, tT(yylval.str, "integer")); }
@@ -390,7 +436,9 @@ int main() {
     yyparse();
 	} while(!feof(yyin));
   adjustFScope();
-  probarMetodo(tree, 0);
+  struct Scope * scope = getScopeClass("Clase2");
+  printf("%i\n", checkAtributtes(scope));
+  //probarMetodo(tree, 0);
 	return 0;
 }
 
@@ -477,6 +525,19 @@ struct Scope * checkClass(char * id) {
   return 0;
 };
 
+struct Scope * getScopeInterface(char * id) {
+  struct ScopeNode * list = globalScope->pScope;
+  int size = sizeScopeList(list);
+  for(int i = 0; i < size; i++) {
+    struct Scope * scope = list->value;
+    if(strcmp(id, scope->id) == 0 && (strcmp(scope->type, "Interface") == 0 || strcmp(scope->type, "Interface") == 0) ) {
+      return scope;
+    }
+    list = list->next;
+  }
+  return 0;
+};
+
 struct Scope * getScopeClass(char * id) {
   struct ScopeNode * list = globalScope->pScope;
   int size = sizeScopeList(list);
@@ -539,7 +600,7 @@ struct SymbolNode * getTypeFunction(char * id, struct Scope * scope) {
       char * name = functionName->root->next->node->value;
       if(strcmp("Terminal", functionName->root->node->type) == 0) {
         if(strcmp("void", functionName->root->node->value) == 0) {
-          //Funcion no existe
+          //Tipo void
           return 0;
         }
         else {
@@ -863,23 +924,46 @@ struct SymbolNode * getTypeCall(struct TreeNode * node, struct Scope * actualSco
   if(size == 4) {
     char * id = list->node->value;
     struct SymbolNode * res = getTypeFunction(id, actualScope);
-    if(res) {
-      return res;
+    struct SymbolNode * params = getTypeActuals(list->next->next->node,actualScope);
+    struct Scope * functionScope = getFunctionScope(actualScope->fScope, actualScope->id, 1);
+    if(functionScope) {
+      struct SymbolNode * funct = getParams(functionScope);
+      if(compareSymbolNodes(params, funct)) {
+        return res;
+      }
+      else {
+        //Error en los parametros
+        return 0;
+      }
     }
     else {
-      //Metodo no existe
       return 0;
     }
   }
   else {
     struct TreeNode * expr = list->node;
     struct SymbolNode * typeReturn = getTypeExpr(expr, actualScope);
+    struct SymbolNode * actuals = getTypeActuals(list->next->next->next->next->node, actualScope);
     if(typeReturn) {
       struct Scope * functionScope = getScopeClass(typeReturn->type);
       if(functionScope) {
         char * id = list->next->next->node->value;
-        struct SymbolNode * symbol = getTypeFunction(id, functionScope);
-        return symbol; //Puede no existir o ser void
+        struct Scope * checkFunction = getFunctionScope(functionScope, id, 0);
+        if(checkFunction) {
+          struct SymbolNode * params = getParams(checkFunction);
+          if(compareSymbolNodes(actuals, params)) {
+            struct SymbolNode * symbol = getTypeFunction(id, functionScope);
+            return symbol; //Puede no existir o ser void
+          }
+          else {
+            //Parametros no coinciden
+            return 0;
+          }
+        }
+        else {
+          //Funcion no existe
+          return 0;
+        }
       }
       else {
         //Clase no existe
@@ -901,14 +985,22 @@ void probarMetodo(struct TreeNode * node, struct Scope * actualScope) {
   if(strcmp(node->type, "Expr") == 0) {
     struct SymbolNode * res = getTypeExpr(node, actualScope);
     if(res) {
-      //printf("%i\n", res->array);
+      //printf("%s\n", res->type);
     }
     else {
-      //printf("%s\n", "Error o void");
+      printf("%s\n", "Error o void");
     }
   }
   if(strcmp(node->type, "ReturnStmt") == 0) {
     //printf("%i\n", checkFunctionReturn(node, actualScope));
+  }
+  if(strcmp(node->type, "Actuals") == 0) {
+    struct SymbolNode * list = getTypeActuals(node, actualScope);
+    int size = sizeSymbol(list);
+    for(int i = 0; i < size; i++) {
+      //printf("%s\n", list->id);
+      list = list->next;
+    }
   }
   struct ListNode * temp = node->root;
   int size = listSize(temp);
@@ -953,3 +1045,282 @@ int checkFunctionReturn(struct TreeNode * returnNode, struct Scope * function) {
     return 1;
   }
 };
+
+struct SymbolNode * getParams(struct Scope * function) {
+  struct SymbolNode * params = 0;
+  struct SymbolNode * temp = function->root;
+  int size = sizeSymbol(function->root);
+  for(int i = 0; i < size; i++) {
+    if(temp->parameter) {
+      struct SymbolNode * newNode = createSymbolNode(temp->type, temp->id);
+      newNode->array = temp->array;
+      newNode->parameter = temp->parameter;
+      params = insertSymbolNode(params, newNode);
+    }
+    temp = temp->next;
+  }
+  return params;
+};
+
+struct SymbolNode * getTypeActuals(struct TreeNode * actuals, struct Scope * scope) {
+  int size = listSize(actuals->root);
+  if(size) {
+    return getTypeActualsAux(actuals->root->node, scope);
+  }
+  else {
+    return 0;
+  }
+};
+
+struct SymbolNode * getTypeActualsAux(struct TreeNode * list, struct Scope * scope) {
+  struct ListNode * root = list->root;
+  int size = listSize(root);
+  if(size == 1) {
+    struct SymbolNode * res = getTypeExpr(root->node, scope);
+    return dupSymbol(res);
+  }
+  else {
+    struct SymbolNode * newNode = getTypeExpr(root->next->next->node, scope);
+    return insertSymbolNode(getTypeActualsAux(root->node, scope), dupSymbol(newNode));
+  }
+};
+
+struct SymbolNode * dupSymbol(struct SymbolNode * symbol) {
+  struct SymbolNode * newNode = createSymbolNode(symbol->type, symbol->id);
+  newNode->array = symbol->array;
+  newNode->parameter = symbol->parameter;
+  newNode->next = 0;
+  return newNode;
+}
+
+int compareSymbolNodes(struct SymbolNode * params,struct SymbolNode * funct) {
+  if(params && funct) {
+    int sizeParam = sizeSymbol(params);
+    int sizeFun = sizeSymbol(funct);
+    if(sizeParam == sizeFun) {
+      struct SymbolNode * temp = funct;
+      for(int i = 0; i < sizeFun; i++) {
+        if(strcmp(temp->type,params->type) == 0) {
+          temp = temp->next;
+          params = params->next;
+        }
+        else {
+          //Parametros de diferente tipo
+          return 0;
+        }
+      }
+      return 1;
+    } 
+    else {
+      //Diferente cantidad de parametros
+      return 0;
+    }
+
+  }
+  else if(params || funct) {
+    //Diferente cantidad de parametros
+    return 0;
+  }
+  else {
+    return 1;
+  }
+};
+
+struct Scope * getFunctionScope(struct Scope * classScope, char * id, int global) {
+  if(!classScope) {
+    return 0;
+  }
+  struct ScopeNode * list = classScope->pScope;
+  int size = sizeScopeList(list);
+  for(int i = 0; i < size; i++) {
+    struct Scope * scope = list->value;
+    if(strcmp(id, scope->id) == 0) {
+      return scope;
+    }  
+    list = list->next;
+  }
+  struct Scope * fScope = classScope->fScope;
+  if(fScope) {
+    if(strcmp("global", fScope->id) == 0 && global == 0) {
+      return 0;
+    }
+    else {
+      return getFunctionScope(fScope, id, global);
+    }
+  }
+  return 0;
+};
+
+int implementMethods(struct Scope * class) {
+  return implementMethodsAux(class, class);
+};
+
+int implementMethodsAux(struct Scope * class, struct Scope * fScope) {
+  if(strcmp("global", fScope->id) == 0) {
+    return 1;
+  }
+  else {
+    struct Scope * implements = checkClass(fScope->id);
+    if(methodsInInterface(implements, class)) {
+      return implementMethodsAux(class, fScope->fScope);
+    }
+    else {
+      return 0;
+    }
+  } 
+};
+
+int methodsInInterface(struct Scope * implements, struct Scope * class) {
+  struct SymbolNode * list = implements->root;
+  int size = sizeSymbol(list);
+  for(int i = 0; i < size; i++) {
+    if(strcmp("implement", list->type) == 0) {
+      struct Scope * interface = getScopeInterface(list->id);
+      if(!scopesInList(class->pScope, interface->pScope)) {
+        return 0;
+      }
+    }
+    list = list->next;
+  }
+  return 1;
+};
+
+int scopesInList(struct ScopeNode * list, struct ScopeNode * scope) {
+  int size = sizeScopeList(scope);
+  struct ScopeNode * temp = scope;
+  for(int i = 0; i < size; i++) {
+    if(!scopeInList(temp->value, list)) {
+      return 0;
+    }
+    temp = temp->next;
+  }
+  return 1;
+}
+
+int scopeInList(struct Scope * scope, struct ScopeNode * list) {
+  int size = sizeScopeList(list);
+  struct ScopeNode * temp = list;
+  for(int i = 0; i < size; i++) {
+    if(strcmp(scope->id, temp->value->id) == 0) {
+      return 1;
+    }
+    temp = temp->next;
+  }
+  //El metodo de la interfaz no se encuentra en la clase
+  return 0;
+}
+
+int checkMethods(struct Scope * class) {
+  struct ScopeNode * functions = class->pScope;
+  int size = sizeScopeList(functions);
+  for(int i = 0; i < size; i++) {
+    struct Scope * function = functions->value;
+    struct Scope * interface = methodInterface(class, function->id);
+    if(interface) {
+      if(!checkImplementation(function, interface)) {
+        return 0;
+      }
+    }
+    functions = functions->next;
+  }
+  return 1;
+};
+
+int checkAtributtes(struct Scope * class) {
+  struct Scope * fScope = class->fScope;
+  struct SymbolNode * list = class->root;
+  int size = sizeSymbol(list);
+  while(fScope || strcmp("global", fScope->id) != 0) {
+    struct SymbolNode * listFScope = fScope->root;
+    int sizeFScope = sizeSymbol(listFScope);
+    for(int i = 0; i < size; i++) {
+      char * id = list->id;
+      for(int j = 0; j < sizeFScope; i++) {
+        char * idFScope = listFScope->id;
+        if(strcmp(idFScope, id) == 0) {
+          return 0;
+        }
+        listFScope = listFScope->next;
+      }
+      list = list->next;
+    }
+    fScope = fScope->fScope;
+  }
+  return 1;
+};
+
+struct Scope * methodInterface(struct Scope * class, char * id) {
+  struct ScopeNode * list = scopeExtends;
+  int size = sizeScopeList(list);
+  for(int i = 0; i < size; i++) {
+    struct Scope * scope = list->value;
+    if(strcmp(class->id, scope->id) == 0) {
+      struct SymbolNode * extends = scope->root;
+      int sizeExtends = sizeSymbol(extends);
+      for(int j = 0; j < sizeExtends; j++) {
+        if(strcmp("implement", extends->type) == 0) {
+          struct Scope * interface = getScopeInterface(extends->id);
+          
+          if(interface) {
+            struct ScopeNode * functionsInterface = interface->pScope;
+            int sizeFunctions = sizeScopeList(functionsInterface);
+            for(int k = 0; k < sizeFunctions; k++) {
+              struct Scope * function = functionsInterface->value;
+              if(strcmp(id, function->id) == 0) {
+                return interface;
+              }
+              functionsInterface = functionsInterface->next;
+            }
+          }
+          else {
+            return 0;
+          }
+        }
+        extends = extends->next;
+      };
+    }
+    list = list->next;
+  }
+  class = class->fScope;
+  if(class) {
+    if(strcmp("global", class->id) != 0) {
+      return methodInterface(class, id);
+    }
+  }
+  return 0;
+};
+
+int checkImplementation(struct Scope * method1, struct Scope * method2) {
+  struct Scope * functionInterface = getFunctionScope(method2, method1->id, 0);
+  struct SymbolNode * params1 = getParams(method1);
+  struct SymbolNode * params2 = getParams(functionInterface);
+  if(compareSymbolNodes(params1, params2)) {
+    return compareReturnFunctions(functionInterface, method1);
+  }
+  else {
+    //Parametros no coinciden con la interfaz
+    return 0;
+  }
+};
+
+int compareReturnFunctions(struct Scope * scope1, struct Scope * scope2) {
+  struct SymbolNode * return2 = getTypeFunction(scope2->id, scope2->fScope);
+  struct SymbolNode * return1 = getTypeFunction(scope1->id, scope1->fScope);
+  if(return1 && return2) {
+    if(strcmp(return1->type, return2->type) == 0) {
+      return 1;
+    }
+    else {
+      //Tipos diferentes
+      return 0;
+    }
+  }
+  else if(return1 || return2) {
+    //Una de las funciones es void
+    return 0;
+  }
+  else {
+    //Ambas son void
+    return 1;
+  }
+}

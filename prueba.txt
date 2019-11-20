@@ -1,10 +1,25 @@
+class Clase {
+
+    void probar(int x, int y) {
+
+    }
+
+}
+
 class Prueba {
     
     int x;
     string[] y;
     
+    int i;
+    int j;
+    int k;
+
+    Clase z;
+
     void metodo() {
-        y[1] = "hola"
+        //y[1] = "hola"
+        x = z.probar(y,j)
         return;
     }
 

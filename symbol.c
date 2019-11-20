@@ -63,7 +63,7 @@ struct SymbolNode * insertSymbolNode(struct SymbolNode * root, struct SymbolNode
     else {
         struct SymbolNode * temp = root;
         for(int i = 0; i < size - 1; i++) {
-        temp = temp->next;
+            temp = temp->next;
         }
         temp->next = newNode;
     }
