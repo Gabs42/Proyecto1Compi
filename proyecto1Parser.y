@@ -401,8 +401,8 @@ LValue:         ID                          { $$ = createTreeNode(yylineno, "LVa
 FixLValue:      ID LFTBRCKT { $$ = createTreeNode(yylineno, "FixLValue", 2, tT(yylval.str, "ID"), tN("[")); }
 ;
 
-Call:           ID LFTPARTH Actuals RGHPARTH            { $$ = createTreeNode(yylineno, "Call", 4, tT(yylval.str, "ID"), tN("("), $3, tN(")")); }
-              | Expr FixCall Actuals RGHPARTH  { $$ = createTreeNode(yylineno, "Call", 6, $1, $2->root->node, $2->root->next->node, $2->root->next->next->node, $3, tN(")")); }
+Call:           ID LFTPARTH Actuals RGHPARTH  { $$ = createTreeNode(yylineno, "Call", 4, tT(yylval.str, "ID"), tN("("), $3, tN(")")); }
+              | Expr FixCall Actuals RGHPARTH { $$ = createTreeNode(yylineno, "Call", 6, $1, $2->root->node, $2->root->next->node, $2->root->next->next->node, $3, tN(")")); }
 ;
 
 FixCall:        POINT ID LFTPARTH { $$ = createTreeNode(yylineno, "FixCall", 3, tN("."), tT(yylval.str, "ID"), tN("(")); }
@@ -440,9 +440,9 @@ int main() {
     yyparse();
 	} while(!feof(yyin));
   adjustFScope();
-  struct Scope * scope = getScopeClass("Clase2");
-  printf("%i\n", checkAtributtes(scope));
-  //probarMetodo(tree, 0);
+  //struct Scope * scope = getScopeClass("Prueba");
+  //printf("%i\n", checkAtributtes(scope));
+  probarMetodo(tree, 0);
 	return 0;
 }
 
@@ -949,32 +949,44 @@ struct SymbolNode * getTypeCall(struct TreeNode * node, struct Scope * actualSco
     struct SymbolNode * typeReturn = getTypeExpr(expr, actualScope);
     struct SymbolNode * actuals = getTypeActuals(list->next->next->next->next->node, actualScope);
     if(typeReturn) {
-      struct Scope * functionScope = getScopeClass(typeReturn->type);
-      if(functionScope) {
-        char * id = list->next->next->node->value;
-        if(strcmp(id, "length") == 0 && typeReturn->array > 0) {
-          struct SymbolNode * arrayLength = createSymbolNode("integer", id);
-          return arrayLength;
+      char * id = list->next->next->node->value;
+      if(typeReturn->array > 0 && strcmp(id, "length") == 0) {
+        if(strcmp(typeReturn->type, "integer") == 0 || strcmp(typeReturn->type, "double") == 0 || strcmp(typeReturn->type, "string") == 0 || checkClass(typeReturn->type)) {
+          struct SymbolNode * res = createSymbolNode("integer", typeReturn->type);
+          return res;
         }
-        struct Scope * checkFunction = getFunctionScope(functionScope, id, 0);
-        if(checkFunction) {
-          struct SymbolNode * params = getParams(checkFunction);
-          if(compareSymbolNodes(actuals, params)) {
-            struct SymbolNode * symbol = getTypeFunction(id, functionScope);
-            return symbol; //Puede no existir o ser void
+        else {
+          //Tipo del array es erroneo
+          return 0;
+        }
+      }
+      else if(typeReturn->array == 0) {
+        struct Scope * functionScope = getScopeClass(typeReturn->type);
+        if(functionScope) {
+          struct Scope * checkFunction = getFunctionScope(functionScope, id, 0);
+          if(checkFunction) {
+            struct SymbolNode * params = getParams(checkFunction);
+            if(compareSymbolNodes(actuals, params)) {
+              struct SymbolNode * symbol = getTypeFunction(id, functionScope);
+              return symbol; //Puede no existir o ser void
+            }
+            else {
+              //Parametros no coinciden
+              return 0;
+            }
           }
           else {
-            //Parametros no coinciden
+            //Funcion no existe
             return 0;
           }
         }
         else {
-          //Funcion no existe
+          //Clase no existe
           return 0;
         }
       }
       else {
-        //Clase no existe
+        //Array solo puede invocar metodo length
         return 0;
       }
     }

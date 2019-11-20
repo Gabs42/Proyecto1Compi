@@ -1,12 +1,14 @@
 class Clase {
 
+    int hola;
+
     void probar(int x, int y) {
 
     }
 
 }
 
-class Prueba {
+class Prueba extends Clase {
     
     int x;
     string[] y;
@@ -20,6 +22,7 @@ class Prueba {
     void metodo() {
         //y[1] = "hola"
         x = z.probar(y,j)
+        k = y.length()
         return;
     }
 
