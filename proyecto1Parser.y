@@ -75,6 +75,10 @@ int checkImplementation(struct Scope * method1, struct Scope * method2);
 
 int checkMethods(struct Scope * class);
 
+int checkClassName();
+
+int checkRepeatMethods(struct Scope * class);
+
 int checkSubClass(char * class, char * subClass);
 
 int checkSymbolScope(struct Scope * scope);
@@ -948,6 +952,10 @@ struct SymbolNode * getTypeCall(struct TreeNode * node, struct Scope * actualSco
       struct Scope * functionScope = getScopeClass(typeReturn->type);
       if(functionScope) {
         char * id = list->next->next->node->value;
+        if(strcmp(id, "length") == 0 && typeReturn->array > 0) {
+          struct SymbolNode * arrayLength = createSymbolNode("integer", id);
+          return arrayLength;
+        }
         struct Scope * checkFunction = getFunctionScope(functionScope, id, 0);
         if(checkFunction) {
           struct SymbolNode * params = getParams(checkFunction);
@@ -1193,7 +1201,7 @@ int scopesInList(struct ScopeNode * list, struct ScopeNode * scope) {
     temp = temp->next;
   }
   return 1;
-}
+};
 
 int scopeInList(struct Scope * scope, struct ScopeNode * list) {
   int size = sizeScopeList(list);
@@ -1206,7 +1214,7 @@ int scopeInList(struct Scope * scope, struct ScopeNode * list) {
   }
   //El metodo de la interfaz no se encuentra en la clase
   return 0;
-}
+};
 
 int checkMethods(struct Scope * class) {
   struct ScopeNode * functions = class->pScope;
@@ -1220,6 +1228,56 @@ int checkMethods(struct Scope * class) {
       }
     }
     functions = functions->next;
+  }
+  return 1;
+};
+
+int checkClassName() {
+  struct ScopeNode * classes = globalScope->pScope;
+  int size = sizeScopeList(classes);
+  for(int i = 0; i < size - 1; i++) {
+    char * id = classes->value->id;
+    struct ScopeNode * temp = classes->next;
+    for(int j = i + 1; j < size; j++) {
+      if(strcmp(id, temp->value->id) == 0) {
+        return 0;
+      }
+      temp = temp->next;
+    }
+    classes = classes->next;
+  }
+  return 1;
+};
+
+int checkRepeatMethods(struct Scope * class) {
+  struct Scope * temp = class->fScope;
+  struct ScopeNode * methods = class->pScope;
+  int size = sizeScopeList(methods);
+  int check = 1;
+  while(check) {
+    if(temp && strcmp("global", temp->id) == 0 || !temp) {
+      check = 0;
+      continue;
+    }
+    else {
+      struct ScopeNode * fMethods = temp->pScope;
+      int sizeFMethods = sizeScopeList(fMethods);
+      for(int i = 0; i < size; i++) {
+        char * id = methods->value->id;
+        for(int j = 0; j < sizeFMethods; j++) {
+          if(strcmp(id, fMethods->value->id) == 0) {
+            if(methodInterface(class, id) != 0 && methodInterface(temp, id) != 0) {
+              return 0;
+            }
+          }
+          fMethods = fMethods->next;
+        }
+        fMethods = temp->pScope;
+        methods = methods->next;
+      }
+      methods = class->pScope;
+      temp = temp->fScope;
+    }    
   }
   return 1;
 };
@@ -1333,4 +1391,4 @@ int compareReturnFunctions(struct Scope * scope1, struct Scope * scope2) {
     //Ambas son void
     return 1;
   }
-}
+};
