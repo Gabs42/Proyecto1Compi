@@ -78,6 +78,7 @@ int checkMethods(struct Scope * class);
 int checkClassName();
 
 int checkRepeatMethods(struct Scope * class);
+int checkRepeatMethodsAux(struct Scope * scope);
 
 int checkSubClass(char * class, char * subClass);
 
@@ -440,8 +441,8 @@ int main() {
     yyparse();
 	} while(!feof(yyin));
   adjustFScope();
-  //struct Scope * scope = getScopeClass("Prueba");
-  //printf("%i\n", checkAtributtes(scope));
+  struct Scope * scope = getScopeClass("Prueba");
+  //printf("%i\n", checkRepeatMethods(scope));
   probarMetodo(tree, 0);
 	return 0;
 }
@@ -903,6 +904,11 @@ struct SymbolNode * getTypeLValue(struct TreeNode * node, struct Scope * actualS
     if(verifyReturn) {
       if(strcmp(verifyReturn->type, "integer") == 0) {
         if(typeId) {
+          int value = atoi(verifyReturn->id);
+          if(value < 0) {
+            //Indice posee valor negativo
+            return 0;
+          }
           return typeId;
         }
         else {
@@ -1039,6 +1045,23 @@ int checkSymbolScope(struct Scope * scope) {
     struct SymbolNode * temp = root->next;
     for(int j = i + 1; j < size; j++) {
       if(strcmp(id, temp->id) == 0) {
+        return 0;
+      }
+      temp = temp->next;
+    }
+    root = root->next;
+  }
+  return 1;
+};
+
+int checkRepeatMethodsAux(struct Scope * scope) {
+  struct ScopeNode * root = scope->pScope;
+  int size = sizeScopeList(root);
+  for(int i = 0; i < (size - 1); i++) {
+    char * id = root->value->id;
+    struct ScopeNode * temp = root->next;
+    for(int j = i + 1; j < size; j++) {
+      if(strcmp(id, temp->value->id) == 0) {
         return 0;
       }
       temp = temp->next;
@@ -1266,6 +1289,9 @@ int checkRepeatMethods(struct Scope * class) {
   struct ScopeNode * methods = class->pScope;
   int size = sizeScopeList(methods);
   int check = 1;
+  if(!checkRepeatMethodsAux(class)) {
+    return 0;
+  }
   while(check) {
     if(temp && strcmp("global", temp->id) == 0 || !temp) {
       check = 0;
@@ -1278,7 +1304,7 @@ int checkRepeatMethods(struct Scope * class) {
         char * id = methods->value->id;
         for(int j = 0; j < sizeFMethods; j++) {
           if(strcmp(id, fMethods->value->id) == 0) {
-            if(methodInterface(class, id) != 0 && methodInterface(temp, id) != 0) {
+            if(methodInterface(class, id) == 0 && methodInterface(temp, id) == 0) {
               return 0;
             }
           }

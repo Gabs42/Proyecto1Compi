@@ -147,6 +147,7 @@ int checkMethods(struct Scope * class);
 int checkClassName();
 
 int checkRepeatMethods(struct Scope * class);
+int checkRepeatMethodsAux(struct Scope * scope);
 
 int checkSubClass(char * class, char * subClass);
 
@@ -174,7 +175,7 @@ struct SymbolNode * getTypeCall(struct TreeNode * node, struct Scope * actualSco
 void probarMetodo(struct TreeNode * node, struct Scope * actualScope);
 
 
-#line 178 "proyecto1Parser.tab.c"
+#line 179 "proyecto1Parser.tab.c"
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus
@@ -278,7 +279,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 111 "proyecto1Parser.y"
+#line 112 "proyecto1Parser.y"
 
   char* str;
 	struct TreeNode * treeNode;
@@ -286,7 +287,7 @@ union YYSTYPE
   struct SymbolNode * symbolNode;
   struct Scope * scope;
 
-#line 290 "proyecto1Parser.tab.c"
+#line 291 "proyecto1Parser.tab.c"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -613,17 +614,17 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   145,   145,   159,   160,   163,   168,   176,   177,   180,
-     183,   186,   187,   188,   189,   190,   191,   194,   197,   198,
-     201,   202,   205,   211,   219,   237,   240,   244,   247,   248,
-     251,   255,   261,   262,   265,   270,   280,   296,   299,   300,
-     303,   313,   314,   317,   320,   321,   324,   325,   326,   327,
-     328,   329,   330,   331,   332,   339,   340,   343,   346,   347,
-     350,   353,   356,   359,   362,   365,   366,   369,   370,   371,
-     372,   373,   374,   375,   376,   377,   378,   379,   380,   381,
-     382,   383,   384,   385,   386,   387,   388,   389,   390,   391,
-     392,   393,   396,   397,   398,   401,   404,   405,   408,   411,
-     412,   415,   416,   417,   418,   419,   420
+       0,   146,   146,   160,   161,   164,   169,   177,   178,   181,
+     184,   187,   188,   189,   190,   191,   192,   195,   198,   199,
+     202,   203,   206,   212,   220,   238,   241,   245,   248,   249,
+     252,   256,   262,   263,   266,   271,   281,   297,   300,   301,
+     304,   314,   315,   318,   321,   322,   325,   326,   327,   328,
+     329,   330,   331,   332,   333,   340,   341,   344,   347,   348,
+     351,   354,   357,   360,   363,   366,   367,   370,   371,   372,
+     373,   374,   375,   376,   377,   378,   379,   380,   381,   382,
+     383,   384,   385,   386,   387,   388,   389,   390,   391,   392,
+     393,   394,   397,   398,   399,   402,   405,   406,   409,   412,
+     413,   416,   417,   418,   419,   420,   421
 };
 #endif
 
@@ -1670,7 +1671,7 @@ yyreduce:
   switch (yyn)
     {
   case 2:
-#line 145 "proyecto1Parser.y"
+#line 146 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Program", 1, (yyvsp[0].treeNode));
                                 tree = (yyval.treeNode);
                                 globalScope = createScope("global", "Global");
@@ -1683,33 +1684,33 @@ yyreduce:
                                 symbolGlobal = 0;
                                 functionsGlobal = 0;
                               }
-#line 1687 "proyecto1Parser.tab.c"
+#line 1688 "proyecto1Parser.tab.c"
     break;
 
   case 3:
-#line 159 "proyecto1Parser.y"
+#line 160 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Declarations", 1, (yyvsp[0].treeNode)); }
-#line 1693 "proyecto1Parser.tab.c"
+#line 1694 "proyecto1Parser.tab.c"
     break;
 
   case 4:
-#line 160 "proyecto1Parser.y"
+#line 161 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Declarations", 2, (yyvsp[-1].treeNode), (yyvsp[0].treeNode)); }
-#line 1699 "proyecto1Parser.tab.c"
+#line 1700 "proyecto1Parser.tab.c"
     break;
 
   case 5:
-#line 163 "proyecto1Parser.y"
+#line 164 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Declaration", 1, (yyvsp[0].treeNode));
                                 struct TreeNode * variable = (yyvsp[0].treeNode)->root->node;
                                 struct SymbolNode * newSymbol = createSymbol(variable);
                                 symbolGlobal = insertSymbolNode(symbolGlobal, newSymbol);
                               }
-#line 1709 "proyecto1Parser.tab.c"
+#line 1710 "proyecto1Parser.tab.c"
     break;
 
   case 6:
-#line 168 "proyecto1Parser.y"
+#line 169 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Declaration", 1, (yyvsp[0].treeNode));
                                 struct Scope * newScope = createScope((yyvsp[0].treeNode)->root->node->root->next->node->value, "Function");
                                 newScope = insertSymbol(newScope, symbolList);
@@ -1718,123 +1719,123 @@ yyreduce:
                                 functionsGlobal = insertScopeNode(functionsGlobal, newNode);
                                 symbolList = 0;
                               }
-#line 1722 "proyecto1Parser.tab.c"
+#line 1723 "proyecto1Parser.tab.c"
     break;
 
   case 7:
-#line 176 "proyecto1Parser.y"
+#line 177 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Declaration", 1, (yyvsp[0].treeNode)); }
-#line 1728 "proyecto1Parser.tab.c"
+#line 1729 "proyecto1Parser.tab.c"
     break;
 
   case 8:
-#line 177 "proyecto1Parser.y"
+#line 178 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Declaration", 1, (yyvsp[0].treeNode)); }
-#line 1734 "proyecto1Parser.tab.c"
+#line 1735 "proyecto1Parser.tab.c"
     break;
 
   case 9:
-#line 180 "proyecto1Parser.y"
+#line 181 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "VariableDecl", 2, (yyvsp[-1].treeNode), tN(";")); }
-#line 1740 "proyecto1Parser.tab.c"
+#line 1741 "proyecto1Parser.tab.c"
     break;
 
   case 10:
-#line 183 "proyecto1Parser.y"
+#line 184 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Variable", 2, (yyvsp[-1].treeNode), tT(yylval.str, "ID")); }
-#line 1746 "proyecto1Parser.tab.c"
+#line 1747 "proyecto1Parser.tab.c"
     break;
 
   case 11:
-#line 186 "proyecto1Parser.y"
+#line 187 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Type", 1, tN("integer")); }
-#line 1752 "proyecto1Parser.tab.c"
+#line 1753 "proyecto1Parser.tab.c"
     break;
 
   case 12:
-#line 187 "proyecto1Parser.y"
+#line 188 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Type", 1, tN("double")); }
-#line 1758 "proyecto1Parser.tab.c"
+#line 1759 "proyecto1Parser.tab.c"
     break;
 
   case 13:
-#line 188 "proyecto1Parser.y"
+#line 189 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Type", 1, tN("boolean")); }
-#line 1764 "proyecto1Parser.tab.c"
+#line 1765 "proyecto1Parser.tab.c"
     break;
 
   case 14:
-#line 189 "proyecto1Parser.y"
+#line 190 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Type", 1, tN("string")); }
-#line 1770 "proyecto1Parser.tab.c"
+#line 1771 "proyecto1Parser.tab.c"
     break;
 
   case 15:
-#line 190 "proyecto1Parser.y"
+#line 191 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Type", 1, tN(yylval.str)); }
-#line 1776 "proyecto1Parser.tab.c"
+#line 1777 "proyecto1Parser.tab.c"
     break;
 
   case 16:
-#line 191 "proyecto1Parser.y"
+#line 192 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Type", 3, (yyvsp[-2].treeNode), tN("["), tN("]")); }
-#line 1782 "proyecto1Parser.tab.c"
+#line 1783 "proyecto1Parser.tab.c"
     break;
 
   case 17:
-#line 194 "proyecto1Parser.y"
+#line 195 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "FunctionDecl", 5, (yyvsp[-4].treeNode), tN("("), (yyvsp[-2].treeNode), tN(")"), (yyvsp[0].treeNode)); }
-#line 1788 "proyecto1Parser.tab.c"
+#line 1789 "proyecto1Parser.tab.c"
     break;
 
   case 18:
-#line 197 "proyecto1Parser.y"
+#line 198 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "FunctionName", 2, (yyvsp[-1].treeNode), tT(yylval.str, "ID")); }
-#line 1794 "proyecto1Parser.tab.c"
+#line 1795 "proyecto1Parser.tab.c"
     break;
 
   case 19:
-#line 198 "proyecto1Parser.y"
+#line 199 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "FunctionName", 2, tN("void"), tT(yylval.str, "ID")); }
-#line 1800 "proyecto1Parser.tab.c"
+#line 1801 "proyecto1Parser.tab.c"
     break;
 
   case 20:
-#line 201 "proyecto1Parser.y"
+#line 202 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Formals", 1, (yyvsp[0].treeNode)); }
-#line 1806 "proyecto1Parser.tab.c"
+#line 1807 "proyecto1Parser.tab.c"
     break;
 
   case 21:
-#line 202 "proyecto1Parser.y"
+#line 203 "proyecto1Parser.y"
     { (yyval.treeNode) = eN(); }
-#line 1812 "proyecto1Parser.tab.c"
+#line 1813 "proyecto1Parser.tab.c"
     break;
 
   case 22:
-#line 205 "proyecto1Parser.y"
+#line 206 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Variables", 1, (yyvsp[0].treeNode));
                                             struct TreeNode * variable = (yyvsp[0].treeNode);
                                             struct SymbolNode * newSymbol = createSymbol(variable);
                                             newSymbol->parameter = 1;
                                             symbolList = insertSymbolNode(symbolList, newSymbol);
                                           }
-#line 1823 "proyecto1Parser.tab.c"
+#line 1824 "proyecto1Parser.tab.c"
     break;
 
   case 23:
-#line 211 "proyecto1Parser.y"
+#line 212 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Variables", 3, (yyvsp[-2].treeNode), tN(","), (yyvsp[0].treeNode)); 
                                             struct TreeNode * variable = (yyvsp[0].treeNode);
                                             struct SymbolNode * newSymbol = createSymbol(variable);
                                             newSymbol->parameter = 1;
                                             symbolList = insertSymbolNode(symbolList, newSymbol);
                                           }
-#line 1834 "proyecto1Parser.tab.c"
+#line 1835 "proyecto1Parser.tab.c"
     break;
 
   case 24:
-#line 219 "proyecto1Parser.y"
+#line 220 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "ClassDecl", 6, (yyvsp[-5].treeNode), (yyvsp[-4].treeNode), (yyvsp[-3].treeNode), tN("{"), (yyvsp[-1].treeNode), tN("}"));
                                                                     struct Scope * newScope = createScope((yyvsp[-5].treeNode)->root->next->node->value, "Class");
                                                                     newScope = insertSymbol(newScope, symbolClass);
@@ -1851,84 +1852,84 @@ yyreduce:
                                                                     scopeExtends = insertScopeNode(scopeExtends, newNodeExtend);
                                                                     symbolExtends = 0;
                                                                   }
-#line 1855 "proyecto1Parser.tab.c"
+#line 1856 "proyecto1Parser.tab.c"
     break;
 
   case 25:
-#line 237 "proyecto1Parser.y"
+#line 238 "proyecto1Parser.y"
     {(yyval.treeNode) = createTreeNode(yylineno, "ClassName", 2, tN("Class"), tT(yylval.str, "ID"));}
-#line 1861 "proyecto1Parser.tab.c"
+#line 1862 "proyecto1Parser.tab.c"
     break;
 
   case 26:
-#line 240 "proyecto1Parser.y"
+#line 241 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Extend", 2, tN("extends"), tT(yylval.str, "ID"));
                               struct SymbolNode * newSymbol = createSymbolNode("extend", yylval.str);
                               symbolExtends = insertSymbolNode(symbolExtends, newSymbol);
                             }
-#line 1870 "proyecto1Parser.tab.c"
+#line 1871 "proyecto1Parser.tab.c"
     break;
 
   case 27:
-#line 244 "proyecto1Parser.y"
+#line 245 "proyecto1Parser.y"
     { (yyval.treeNode) = eN(); }
-#line 1876 "proyecto1Parser.tab.c"
+#line 1877 "proyecto1Parser.tab.c"
     break;
 
   case 28:
-#line 247 "proyecto1Parser.y"
+#line 248 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Implement", 2, tN("implements"), (yyvsp[0].treeNode)); }
-#line 1882 "proyecto1Parser.tab.c"
+#line 1883 "proyecto1Parser.tab.c"
     break;
 
   case 29:
-#line 248 "proyecto1Parser.y"
+#line 249 "proyecto1Parser.y"
     { (yyval.treeNode) = eN(); }
-#line 1888 "proyecto1Parser.tab.c"
+#line 1889 "proyecto1Parser.tab.c"
     break;
 
   case 30:
-#line 251 "proyecto1Parser.y"
+#line 252 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "ListIdents", 1, tT(yylval.str, "ID")); 
                                       struct SymbolNode * newSymbol = createSymbolNode("implement", yylval.str);
                                       symbolExtends = insertSymbolNode(symbolExtends, newSymbol);
                                     }
-#line 1897 "proyecto1Parser.tab.c"
+#line 1898 "proyecto1Parser.tab.c"
     break;
 
   case 31:
-#line 255 "proyecto1Parser.y"
+#line 256 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "ListIdents", 3, (yyvsp[-2].treeNode), tN(","), tT(yylval.str, "ID")); 
                                       struct SymbolNode * newSymbol = createSymbolNode("implement", yylval.str);
                                       symbolExtends = insertSymbolNode(symbolExtends, newSymbol);
                                     }
-#line 1906 "proyecto1Parser.tab.c"
+#line 1907 "proyecto1Parser.tab.c"
     break;
 
   case 32:
-#line 261 "proyecto1Parser.y"
+#line 262 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Fields", 2, (yyvsp[-1].treeNode), (yyvsp[0].treeNode)); }
-#line 1912 "proyecto1Parser.tab.c"
+#line 1913 "proyecto1Parser.tab.c"
     break;
 
   case 33:
-#line 262 "proyecto1Parser.y"
+#line 263 "proyecto1Parser.y"
     { (yyval.treeNode) = eN(); }
-#line 1918 "proyecto1Parser.tab.c"
+#line 1919 "proyecto1Parser.tab.c"
     break;
 
   case 34:
-#line 265 "proyecto1Parser.y"
+#line 266 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Field", 1, (yyvsp[0].treeNode));
                                 struct TreeNode * variable = (yyvsp[0].treeNode)->root->node;
                                 struct SymbolNode * newSymbol = createSymbol(variable);
                                 symbolClass = insertSymbolNode(symbolClass, newSymbol);
                               }
-#line 1928 "proyecto1Parser.tab.c"
+#line 1929 "proyecto1Parser.tab.c"
     break;
 
   case 35:
-#line 270 "proyecto1Parser.y"
+#line 271 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Field", 1, (yyvsp[0].treeNode)); 
                                 struct Scope * newScope = createScope((yyvsp[0].treeNode)->root->node->root->next->node->value, "Function");
                                 newScope = insertSymbol(newScope, symbolList);
@@ -1937,11 +1938,11 @@ yyreduce:
                                 scopeList = insertScopeNode(scopeList, newNode);
                                 symbolList = 0;
                               }
-#line 1941 "proyecto1Parser.tab.c"
+#line 1942 "proyecto1Parser.tab.c"
     break;
 
   case 36:
-#line 280 "proyecto1Parser.y"
+#line 281 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "InterfaceDecl", 4, (yyvsp[-3].treeNode), tN("{"), (yyvsp[-1].treeNode), tN("}"));
                                                             struct Scope * newScope = createScope((yyvsp[-3].treeNode)->root->next->node->value, "Interface");
                                                             newScope = setFScope(newScope, scopeList);
@@ -1956,29 +1957,29 @@ yyreduce:
                                                             scopeExtends = insertScopeNode(scopeExtends, newNodeExtend);
                                                             symbolExtends = 0;
                                                           }
-#line 1960 "proyecto1Parser.tab.c"
+#line 1961 "proyecto1Parser.tab.c"
     break;
 
   case 37:
-#line 296 "proyecto1Parser.y"
+#line 297 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "InterfaceName", 2, tN("interface"), tT(yylval.str, "ID")); }
-#line 1966 "proyecto1Parser.tab.c"
+#line 1967 "proyecto1Parser.tab.c"
     break;
 
   case 38:
-#line 299 "proyecto1Parser.y"
+#line 300 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Prototypes", 2, (yyvsp[-1].treeNode), (yyvsp[0].treeNode)); }
-#line 1972 "proyecto1Parser.tab.c"
+#line 1973 "proyecto1Parser.tab.c"
     break;
 
   case 39:
-#line 300 "proyecto1Parser.y"
+#line 301 "proyecto1Parser.y"
     { (yyval.treeNode) = eN(); }
-#line 1978 "proyecto1Parser.tab.c"
+#line 1979 "proyecto1Parser.tab.c"
     break;
 
   case 40:
-#line 303 "proyecto1Parser.y"
+#line 304 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Prototype", 5, (yyvsp[-4].treeNode), tN("("), (yyvsp[-2].treeNode), tN(")"), tN(";"));
                                                                   struct Scope * newScope = createScope((yyvsp[-4].treeNode)->root->next->node->value, "Function");
                                                                   newScope = insertSymbol(newScope, symbolList);
@@ -1987,411 +1988,411 @@ yyreduce:
                                                                   scopeList = insertScopeNode(scopeList, newNode);
                                                                   symbolList = 0;
                                                                 }
-#line 1991 "proyecto1Parser.tab.c"
+#line 1992 "proyecto1Parser.tab.c"
     break;
 
   case 41:
-#line 313 "proyecto1Parser.y"
+#line 314 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "PrototypeName", 2, (yyvsp[-1].treeNode), tT(yylval.str, "ID")); }
-#line 1997 "proyecto1Parser.tab.c"
+#line 1998 "proyecto1Parser.tab.c"
     break;
 
   case 42:
-#line 314 "proyecto1Parser.y"
+#line 315 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "PrototypeName", 2, tN("void"), tT(yylval.str, "ID")); }
-#line 2003 "proyecto1Parser.tab.c"
+#line 2004 "proyecto1Parser.tab.c"
     break;
 
   case 43:
-#line 317 "proyecto1Parser.y"
+#line 318 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "StmtBlock", 3, tN("{"), (yyvsp[-1].treeNode), tN("}")); }
-#line 2009 "proyecto1Parser.tab.c"
+#line 2010 "proyecto1Parser.tab.c"
     break;
 
   case 44:
-#line 320 "proyecto1Parser.y"
+#line 321 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Stmts", 2, (yyvsp[-1].treeNode), (yyvsp[0].treeNode)); }
-#line 2015 "proyecto1Parser.tab.c"
+#line 2016 "proyecto1Parser.tab.c"
     break;
 
   case 45:
-#line 321 "proyecto1Parser.y"
+#line 322 "proyecto1Parser.y"
     { (yyval.treeNode) = eN(); }
-#line 2021 "proyecto1Parser.tab.c"
+#line 2022 "proyecto1Parser.tab.c"
     break;
 
   case 46:
-#line 324 "proyecto1Parser.y"
+#line 325 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Stmt", 1, (yyvsp[0].treeNode)); }
-#line 2027 "proyecto1Parser.tab.c"
+#line 2028 "proyecto1Parser.tab.c"
     break;
 
   case 47:
-#line 325 "proyecto1Parser.y"
+#line 326 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Stmt", 1, (yyvsp[0].treeNode)); }
-#line 2033 "proyecto1Parser.tab.c"
+#line 2034 "proyecto1Parser.tab.c"
     break;
 
   case 48:
-#line 326 "proyecto1Parser.y"
+#line 327 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Stmt", 1, (yyvsp[0].treeNode)); }
-#line 2039 "proyecto1Parser.tab.c"
+#line 2040 "proyecto1Parser.tab.c"
     break;
 
   case 49:
-#line 327 "proyecto1Parser.y"
+#line 328 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Stmt", 1, (yyvsp[0].treeNode)); }
-#line 2045 "proyecto1Parser.tab.c"
+#line 2046 "proyecto1Parser.tab.c"
     break;
 
   case 50:
-#line 328 "proyecto1Parser.y"
+#line 329 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Stmt", 1, (yyvsp[0].treeNode)); }
-#line 2051 "proyecto1Parser.tab.c"
+#line 2052 "proyecto1Parser.tab.c"
     break;
 
   case 51:
-#line 329 "proyecto1Parser.y"
+#line 330 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Stmt", 1, (yyvsp[0].treeNode)); }
-#line 2057 "proyecto1Parser.tab.c"
+#line 2058 "proyecto1Parser.tab.c"
     break;
 
   case 52:
-#line 330 "proyecto1Parser.y"
+#line 331 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Stmt", 1, (yyvsp[0].treeNode)); }
-#line 2063 "proyecto1Parser.tab.c"
+#line 2064 "proyecto1Parser.tab.c"
     break;
 
   case 53:
-#line 331 "proyecto1Parser.y"
+#line 332 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Stmt", 1, (yyvsp[0].treeNode)); }
-#line 2069 "proyecto1Parser.tab.c"
+#line 2070 "proyecto1Parser.tab.c"
     break;
 
   case 54:
-#line 332 "proyecto1Parser.y"
+#line 333 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Stmt", 1, (yyvsp[0].treeNode));
                                 struct TreeNode * variable = (yyvsp[0].treeNode)->root->node;
                                 struct SymbolNode * newSymbol = createSymbol(variable);
                                 symbolList = insertSymbolNode(symbolList, newSymbol);
                               }
-#line 2079 "proyecto1Parser.tab.c"
+#line 2080 "proyecto1Parser.tab.c"
     break;
 
   case 55:
-#line 339 "proyecto1Parser.y"
+#line 340 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "PossibleExpr", 1, (yyvsp[0].treeNode)); }
-#line 2085 "proyecto1Parser.tab.c"
+#line 2086 "proyecto1Parser.tab.c"
     break;
 
   case 56:
-#line 340 "proyecto1Parser.y"
+#line 341 "proyecto1Parser.y"
     { (yyval.treeNode) = eN(); }
-#line 2091 "proyecto1Parser.tab.c"
+#line 2092 "proyecto1Parser.tab.c"
     break;
 
   case 57:
-#line 343 "proyecto1Parser.y"
+#line 344 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "IfStmt", 6, tN("if"), tN("("), (yyvsp[-3].treeNode), tN(")"), (yyvsp[-1].treeNode), (yyvsp[0].treeNode)); }
-#line 2097 "proyecto1Parser.tab.c"
+#line 2098 "proyecto1Parser.tab.c"
     break;
 
   case 58:
-#line 346 "proyecto1Parser.y"
+#line 347 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Else", 2, tN("else"), (yyvsp[0].treeNode)); }
-#line 2103 "proyecto1Parser.tab.c"
+#line 2104 "proyecto1Parser.tab.c"
     break;
 
   case 59:
-#line 347 "proyecto1Parser.y"
+#line 348 "proyecto1Parser.y"
     { (yyval.treeNode) = eN(); }
-#line 2109 "proyecto1Parser.tab.c"
+#line 2110 "proyecto1Parser.tab.c"
     break;
 
   case 60:
-#line 350 "proyecto1Parser.y"
+#line 351 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "WhileStmt", 5, tN("while"), tN("("), (yyvsp[-2].treeNode), tN(")"), (yyvsp[0].treeNode)); }
-#line 2115 "proyecto1Parser.tab.c"
+#line 2116 "proyecto1Parser.tab.c"
     break;
 
   case 61:
-#line 353 "proyecto1Parser.y"
+#line 354 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "ForStmt", 9, tN("for"), tN("("), (yyvsp[-6].treeNode), tN(";"), (yyvsp[-4].treeNode), tN(";"), (yyvsp[-2].treeNode), tN(")"), (yyvsp[0].treeNode)); }
-#line 2121 "proyecto1Parser.tab.c"
+#line 2122 "proyecto1Parser.tab.c"
     break;
 
   case 62:
-#line 356 "proyecto1Parser.y"
+#line 357 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "ReturnStmt", 3, tN("return"), (yyvsp[-1].treeNode), tN(";")); }
-#line 2127 "proyecto1Parser.tab.c"
+#line 2128 "proyecto1Parser.tab.c"
     break;
 
   case 63:
-#line 359 "proyecto1Parser.y"
+#line 360 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "BreakStmt", 2, tN("break"), tN(";")); }
-#line 2133 "proyecto1Parser.tab.c"
+#line 2134 "proyecto1Parser.tab.c"
     break;
 
   case 64:
-#line 362 "proyecto1Parser.y"
+#line 363 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "PrintStmt", 5, tN("print"), tN("("), (yyvsp[-2].treeNode), tN(")"), tN(";")); }
-#line 2139 "proyecto1Parser.tab.c"
+#line 2140 "proyecto1Parser.tab.c"
     break;
 
   case 65:
-#line 365 "proyecto1Parser.y"
+#line 366 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "ListExpr", 1, (yyvsp[0].treeNode)); }
-#line 2145 "proyecto1Parser.tab.c"
+#line 2146 "proyecto1Parser.tab.c"
     break;
 
   case 66:
-#line 366 "proyecto1Parser.y"
+#line 367 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "ListExpr", 3, (yyvsp[-2].treeNode), tN(","), (yyvsp[0].treeNode)); }
-#line 2151 "proyecto1Parser.tab.c"
+#line 2152 "proyecto1Parser.tab.c"
     break;
 
   case 67:
-#line 369 "proyecto1Parser.y"
+#line 370 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 3, (yyvsp[-2].treeNode), tN("="), (yyvsp[0].treeNode)); }
-#line 2157 "proyecto1Parser.tab.c"
+#line 2158 "proyecto1Parser.tab.c"
     break;
 
   case 68:
-#line 370 "proyecto1Parser.y"
+#line 371 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 1, (yyvsp[0].treeNode)); }
-#line 2163 "proyecto1Parser.tab.c"
+#line 2164 "proyecto1Parser.tab.c"
     break;
 
   case 69:
-#line 371 "proyecto1Parser.y"
+#line 372 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 1, (yyvsp[0].treeNode)); }
-#line 2169 "proyecto1Parser.tab.c"
+#line 2170 "proyecto1Parser.tab.c"
     break;
 
   case 70:
-#line 372 "proyecto1Parser.y"
+#line 373 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 1, tN("this")); }
-#line 2175 "proyecto1Parser.tab.c"
+#line 2176 "proyecto1Parser.tab.c"
     break;
 
   case 71:
-#line 373 "proyecto1Parser.y"
+#line 374 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 1, (yyvsp[0].treeNode)); }
-#line 2181 "proyecto1Parser.tab.c"
+#line 2182 "proyecto1Parser.tab.c"
     break;
 
   case 72:
-#line 374 "proyecto1Parser.y"
+#line 375 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 3, tN("("), (yyvsp[-1].treeNode), tN(")")); }
-#line 2187 "proyecto1Parser.tab.c"
+#line 2188 "proyecto1Parser.tab.c"
     break;
 
   case 73:
-#line 375 "proyecto1Parser.y"
+#line 376 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 3, (yyvsp[-2].treeNode), tN("+"), (yyvsp[0].treeNode)); }
-#line 2193 "proyecto1Parser.tab.c"
+#line 2194 "proyecto1Parser.tab.c"
     break;
 
   case 74:
-#line 376 "proyecto1Parser.y"
+#line 377 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 3, (yyvsp[-2].treeNode), tN("-"), (yyvsp[0].treeNode)); }
-#line 2199 "proyecto1Parser.tab.c"
+#line 2200 "proyecto1Parser.tab.c"
     break;
 
   case 75:
-#line 377 "proyecto1Parser.y"
+#line 378 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 3, (yyvsp[-2].treeNode), tN("*"), (yyvsp[0].treeNode)); }
-#line 2205 "proyecto1Parser.tab.c"
+#line 2206 "proyecto1Parser.tab.c"
     break;
 
   case 76:
-#line 378 "proyecto1Parser.y"
+#line 379 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 3, (yyvsp[-2].treeNode), tN("/"), (yyvsp[0].treeNode)); }
-#line 2211 "proyecto1Parser.tab.c"
+#line 2212 "proyecto1Parser.tab.c"
     break;
 
   case 77:
-#line 379 "proyecto1Parser.y"
+#line 380 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 3, (yyvsp[-2].treeNode), tN("mod"), (yyvsp[0].treeNode)); }
-#line 2217 "proyecto1Parser.tab.c"
+#line 2218 "proyecto1Parser.tab.c"
     break;
 
   case 78:
-#line 380 "proyecto1Parser.y"
+#line 381 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 2, tN("-"), (yyvsp[0].treeNode)); }
-#line 2223 "proyecto1Parser.tab.c"
+#line 2224 "proyecto1Parser.tab.c"
     break;
 
   case 79:
-#line 381 "proyecto1Parser.y"
+#line 382 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 3, (yyvsp[-2].treeNode), tN("<"), (yyvsp[0].treeNode)); }
-#line 2229 "proyecto1Parser.tab.c"
+#line 2230 "proyecto1Parser.tab.c"
     break;
 
   case 80:
-#line 382 "proyecto1Parser.y"
+#line 383 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 3, (yyvsp[-2].treeNode), tN("<="), (yyvsp[0].treeNode)); }
-#line 2235 "proyecto1Parser.tab.c"
+#line 2236 "proyecto1Parser.tab.c"
     break;
 
   case 81:
-#line 383 "proyecto1Parser.y"
+#line 384 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 3, (yyvsp[-2].treeNode), tN(">"), (yyvsp[0].treeNode)); }
-#line 2241 "proyecto1Parser.tab.c"
+#line 2242 "proyecto1Parser.tab.c"
     break;
 
   case 82:
-#line 384 "proyecto1Parser.y"
+#line 385 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 3, (yyvsp[-2].treeNode), tN(">="), (yyvsp[0].treeNode)); }
-#line 2247 "proyecto1Parser.tab.c"
+#line 2248 "proyecto1Parser.tab.c"
     break;
 
   case 83:
-#line 385 "proyecto1Parser.y"
+#line 386 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 3, (yyvsp[-2].treeNode), tN("=="), (yyvsp[0].treeNode)); }
-#line 2253 "proyecto1Parser.tab.c"
+#line 2254 "proyecto1Parser.tab.c"
     break;
 
   case 84:
-#line 386 "proyecto1Parser.y"
+#line 387 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 3, (yyvsp[-2].treeNode), tN("!="), (yyvsp[0].treeNode)); }
-#line 2259 "proyecto1Parser.tab.c"
+#line 2260 "proyecto1Parser.tab.c"
     break;
 
   case 85:
-#line 387 "proyecto1Parser.y"
+#line 388 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 3, (yyvsp[-2].treeNode), tN("&&"), (yyvsp[0].treeNode)); }
-#line 2265 "proyecto1Parser.tab.c"
+#line 2266 "proyecto1Parser.tab.c"
     break;
 
   case 86:
-#line 388 "proyecto1Parser.y"
+#line 389 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 3, (yyvsp[-2].treeNode), tN("||"), (yyvsp[0].treeNode)); }
-#line 2271 "proyecto1Parser.tab.c"
+#line 2272 "proyecto1Parser.tab.c"
     break;
 
   case 87:
-#line 389 "proyecto1Parser.y"
+#line 390 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 2, tN("!"), (yyvsp[0].treeNode)); }
-#line 2277 "proyecto1Parser.tab.c"
+#line 2278 "proyecto1Parser.tab.c"
     break;
 
   case 88:
-#line 390 "proyecto1Parser.y"
+#line 391 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 3, tN("readInteger"), tN("("), tN(")")); }
-#line 2283 "proyecto1Parser.tab.c"
+#line 2284 "proyecto1Parser.tab.c"
     break;
 
   case 89:
-#line 391 "proyecto1Parser.y"
+#line 392 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 3, tN("readLine"), tN("("), tN(")")); }
-#line 2289 "proyecto1Parser.tab.c"
+#line 2290 "proyecto1Parser.tab.c"
     break;
 
   case 90:
-#line 392 "proyecto1Parser.y"
+#line 393 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 4, tN("new"), tN("("), tT(yylval.str, "ID"), tN(")")); }
-#line 2295 "proyecto1Parser.tab.c"
+#line 2296 "proyecto1Parser.tab.c"
     break;
 
   case 91:
-#line 393 "proyecto1Parser.y"
+#line 394 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Expr", 6, tN("newArray"), tN("("), (yyvsp[-3].treeNode), tN(","), (yyvsp[-1].treeNode), tN(")")); }
-#line 2301 "proyecto1Parser.tab.c"
+#line 2302 "proyecto1Parser.tab.c"
     break;
 
   case 92:
-#line 396 "proyecto1Parser.y"
+#line 397 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "LValue", 1, tT(yylval.str, "ID")); }
-#line 2307 "proyecto1Parser.tab.c"
+#line 2308 "proyecto1Parser.tab.c"
     break;
 
   case 93:
-#line 397 "proyecto1Parser.y"
+#line 398 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "LValue", 3, (yyvsp[-2].treeNode), tN("."), tT(yylval.str, "ID")); }
-#line 2313 "proyecto1Parser.tab.c"
+#line 2314 "proyecto1Parser.tab.c"
     break;
 
   case 94:
-#line 398 "proyecto1Parser.y"
+#line 399 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "LValue", 4, (yyvsp[-2].treeNode)->root->node, (yyvsp[-2].treeNode)->root->next->node, (yyvsp[-1].treeNode), tN("]")); }
-#line 2319 "proyecto1Parser.tab.c"
+#line 2320 "proyecto1Parser.tab.c"
     break;
 
   case 95:
-#line 401 "proyecto1Parser.y"
+#line 402 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "FixLValue", 2, tT(yylval.str, "ID"), tN("[")); }
-#line 2325 "proyecto1Parser.tab.c"
+#line 2326 "proyecto1Parser.tab.c"
     break;
 
   case 96:
-#line 404 "proyecto1Parser.y"
+#line 405 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Call", 4, tT(yylval.str, "ID"), tN("("), (yyvsp[-1].treeNode), tN(")")); }
-#line 2331 "proyecto1Parser.tab.c"
+#line 2332 "proyecto1Parser.tab.c"
     break;
 
   case 97:
-#line 405 "proyecto1Parser.y"
+#line 406 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Call", 6, (yyvsp[-3].treeNode), (yyvsp[-2].treeNode)->root->node, (yyvsp[-2].treeNode)->root->next->node, (yyvsp[-2].treeNode)->root->next->next->node, (yyvsp[-1].treeNode), tN(")")); }
-#line 2337 "proyecto1Parser.tab.c"
+#line 2338 "proyecto1Parser.tab.c"
     break;
 
   case 98:
-#line 408 "proyecto1Parser.y"
+#line 409 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "FixCall", 3, tN("."), tT(yylval.str, "ID"), tN("(")); }
-#line 2343 "proyecto1Parser.tab.c"
+#line 2344 "proyecto1Parser.tab.c"
     break;
 
   case 99:
-#line 411 "proyecto1Parser.y"
+#line 412 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Actuals", 1, (yyvsp[0].treeNode)); }
-#line 2349 "proyecto1Parser.tab.c"
+#line 2350 "proyecto1Parser.tab.c"
     break;
 
   case 100:
-#line 412 "proyecto1Parser.y"
+#line 413 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Actuals", 0); }
-#line 2355 "proyecto1Parser.tab.c"
+#line 2356 "proyecto1Parser.tab.c"
     break;
 
   case 101:
-#line 415 "proyecto1Parser.y"
+#line 416 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Constant", 1, tT(yylval.str, "integer")); }
-#line 2361 "proyecto1Parser.tab.c"
+#line 2362 "proyecto1Parser.tab.c"
     break;
 
   case 102:
-#line 416 "proyecto1Parser.y"
+#line 417 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Constant", 1, tT(yylval.str, "double")); }
-#line 2367 "proyecto1Parser.tab.c"
+#line 2368 "proyecto1Parser.tab.c"
     break;
 
   case 103:
-#line 417 "proyecto1Parser.y"
+#line 418 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Constant", 1, tT("true", "boolean")); }
-#line 2373 "proyecto1Parser.tab.c"
+#line 2374 "proyecto1Parser.tab.c"
     break;
 
   case 104:
-#line 418 "proyecto1Parser.y"
+#line 419 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Constant", 1, tT("false", "boolean")); }
-#line 2379 "proyecto1Parser.tab.c"
+#line 2380 "proyecto1Parser.tab.c"
     break;
 
   case 105:
-#line 419 "proyecto1Parser.y"
+#line 420 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Constant", 1, tT(yylval.str, "string")); }
-#line 2385 "proyecto1Parser.tab.c"
+#line 2386 "proyecto1Parser.tab.c"
     break;
 
   case 106:
-#line 420 "proyecto1Parser.y"
+#line 421 "proyecto1Parser.y"
     { (yyval.treeNode) = createTreeNode(yylineno, "Constant", 1, tT("null", "null")); }
-#line 2391 "proyecto1Parser.tab.c"
+#line 2392 "proyecto1Parser.tab.c"
     break;
 
 
-#line 2395 "proyecto1Parser.tab.c"
+#line 2396 "proyecto1Parser.tab.c"
 
       default: break;
     }
@@ -2629,7 +2630,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 423 "proyecto1Parser.y"
+#line 424 "proyecto1Parser.y"
 
 
 int main() {
@@ -2650,8 +2651,8 @@ int main() {
     yyparse();
 	} while(!feof(yyin));
   adjustFScope();
-  //struct Scope * scope = getScopeClass("Prueba");
-  //printf("%i\n", checkAtributtes(scope));
+  struct Scope * scope = getScopeClass("Prueba");
+  //printf("%i\n", checkRepeatMethods(scope));
   probarMetodo(tree, 0);
 	return 0;
 }
@@ -3113,6 +3114,13 @@ struct SymbolNode * getTypeLValue(struct TreeNode * node, struct Scope * actualS
     if(verifyReturn) {
       if(strcmp(verifyReturn->type, "integer") == 0) {
         if(typeId) {
+          int value = atoi(verifyReturn->id);
+          printf("%i\n", value);
+          if(value < 0) {
+             printf("%s\n", "Entre");
+            //Indice posee valor negativo
+            return 0;
+          }
           return typeId;
         }
         else {
@@ -3196,7 +3204,6 @@ struct SymbolNode * getTypeCall(struct TreeNode * node, struct Scope * actualSco
         }
       }
       else {
-        printf("%s\n", "Funcion en array equivocada");
         //Array solo puede invocar metodo length
         return 0;
       }
@@ -3250,6 +3257,23 @@ int checkSymbolScope(struct Scope * scope) {
     struct SymbolNode * temp = root->next;
     for(int j = i + 1; j < size; j++) {
       if(strcmp(id, temp->id) == 0) {
+        return 0;
+      }
+      temp = temp->next;
+    }
+    root = root->next;
+  }
+  return 1;
+};
+
+int checkRepeatMethodsAux(struct Scope * scope) {
+  struct ScopeNode * root = scope->pScope;
+  int size = sizeScopeList(root);
+  for(int i = 0; i < (size - 1); i++) {
+    char * id = root->value->id;
+    struct ScopeNode * temp = root->next;
+    for(int j = i + 1; j < size; j++) {
+      if(strcmp(id, temp->value->id) == 0) {
         return 0;
       }
       temp = temp->next;
@@ -3477,6 +3501,9 @@ int checkRepeatMethods(struct Scope * class) {
   struct ScopeNode * methods = class->pScope;
   int size = sizeScopeList(methods);
   int check = 1;
+  if(!checkRepeatMethodsAux(class)) {
+    return 0;
+  }
   while(check) {
     if(temp && strcmp("global", temp->id) == 0 || !temp) {
       check = 0;
@@ -3489,7 +3516,7 @@ int checkRepeatMethods(struct Scope * class) {
         char * id = methods->value->id;
         for(int j = 0; j < sizeFMethods; j++) {
           if(strcmp(id, fMethods->value->id) == 0) {
-            if(methodInterface(class, id) != 0 && methodInterface(temp, id) != 0) {
+            if(methodInterface(class, id) == 0 && methodInterface(temp, id) == 0) {
               return 0;
             }
           }

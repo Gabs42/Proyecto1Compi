@@ -50,7 +50,7 @@ void printInt(struct Node *nodeLine,struct Node *nodeColumn,struct Node *nodeTok
 ["][^"\n]*["]           addListVal(57,columnNumber,yylineno,yytext);columnNumber= columnNumber+yyleng-1;yylval.str = strdup(yytext);return STRINGVAL;
 ["][^"\n]*[\n]          printf("String no cerrado en la linea %d columna %d\n",yylineno-1,columnNumber);return STRINGERROR;
 ["][^"\n]*[\n]["]       printf("String no cerrado en la linea %d columna %d\n",yylineno-1,columnNumber);return STRINGERROR;
-[1-9][0-9]*             addListVal(57,columnNumber,yylineno,yytext);columnNumber= columnNumber+yyleng-1;yylval.str = strdup(yytext);return INTVAL;
+[-]{0,1}[1-9][0-9]*             addListVal(57,columnNumber,yylineno,yytext);columnNumber= columnNumber+yyleng-1;yylval.str = strdup(yytext);return INTVAL;
 [0][Xx]+[0-9a-fA-F]*     addListVal(57,columnNumber,yylineno,yytext);columnNumber= columnNumber+yyleng-1;yylval.str = strdup(yytext);return INTVAL;
 [0-9]+[.][0-9]+          addListVal(56,columnNumber,yylineno,yytext);columnNumber= columnNumber+yyleng-1;yylval.str = strdup(yytext);return DOUBLEVAL;
 [0-9]+[.][E][+][1-9][0-9]* addListVal(56,columnNumber,yylineno,yytext);columnNumber= columnNumber+yyleng-1;yylval.str = strdup(yytext);return DOUBLEVAL;

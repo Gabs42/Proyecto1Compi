@@ -6,6 +6,10 @@ class Clase {
 
     }
 
+    void metodo2(string x) {
+
+    }
+
 }
 
 class Prueba extends Clase {
@@ -20,7 +24,7 @@ class Prueba extends Clase {
     Clase z;
 
     void metodo() {
-        //y[1] = "hola"
+        y[5] = "hola"
         x = z.probar(y,j)
         k = y.length()
         return;
