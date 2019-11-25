@@ -2750,8 +2750,8 @@ int main() {
   adjustFScope();
   struct Scope * scope = getScopeClass("SubClase");
   //printf("%i\n", checkSymbolScope(scope));
-  probarMetodo(tree, 0);
-  //validate();
+  //probarMetodo(tree, 0);
+  validate();
 	return 0;
 }
 
@@ -3850,6 +3850,8 @@ int checkDecl(struct TreeNode * node, struct Scope * scope) {
 };
 
 void validate() {
+  checkClassName();
+
   validateAux(tree, 0);
 };
 
