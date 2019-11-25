@@ -319,15 +319,15 @@ SubClassDecl:   ClassName Implement LFTGATE SubFields RGHGATE  {  $$ = createTre
                                                                 }
 ;
 
-SubFields:      SubFields SubField  { $$ = createTreeNode(yylineno, "SubFields", 2, $1, $2); }
+SubFields:      SubFields SubField  { $$ = createTreeNode(yylineno, "Fields", 2, $1, $2); }
               | /* empty */   { $$ = eN(); }
 
-SubField:       VariableDecl  { $$ = createTreeNode(yylineno, "SubField", 1, $1);
+SubField:       VariableDecl  { $$ = createTreeNode(yylineno, "Field", 1, $1);
                                 struct TreeNode * variable = $1->root->node;
                                 struct SymbolNode * newSymbol = createSymbol(variable);
                                 symbolSubClass = insertSymbolNode(symbolSubClass, newSymbol);
                               }
-              | FunctionDecl  { $$ = createTreeNode(yylineno, "SubField", 1, $1);
+              | FunctionDecl  { $$ = createTreeNode(yylineno, "Field", 1, $1);
                                 struct Scope * newScope = createScope($1->root->node->root->next->node->value, "Function");
                                 newScope = insertSymbol(newScope, symbolList);
                                 newScope = setTree(newScope, $1);
@@ -1009,6 +1009,7 @@ struct SymbolNode * getTypeCall(struct TreeNode * node, struct Scope * actualSco
       }
     }
     else {
+      //La funcion invocada no existe
       return 0;
     }
   }
@@ -1119,6 +1120,7 @@ int checkSymbolScope(struct Scope * scope) {
     struct SymbolNode * temp = root->next;
     for(int j = i + 1; j < size; j++) {     
       if(strcmp(id, temp->id) == 0) {
+        //Variable duplicada
         return 0;
       }
       temp = temp->next;
@@ -1136,6 +1138,7 @@ int checkRepeatMethodsAux(struct Scope * scope) {
     struct ScopeNode * temp = root->next;
     for(int j = i + 1; j < size; j++) {
       if(strcmp(id, temp->value->id) == 0) {
+        //Metodo duplicado
         return 0;
       }
       temp = temp->next;
@@ -1152,8 +1155,13 @@ int checkFunctionReturn(struct TreeNode * returnNode, struct Scope * function) {
     if(strcmp(typeReturn->type, symbol->type) == 0 && typeReturn->array == symbol->array) {
       return 1;
     }
+    else {
+      //Return no coincide con la funcion
+      return 0;
+    }
   }
   else if(symbol || typeReturn) {
+    //Return no coincide con la funcion
     return 0;
   }
   else {
@@ -1243,6 +1251,7 @@ int compareSymbolNodes(struct SymbolNode * params,struct SymbolNode * funct) {
 
 struct Scope * getFunctionScope(struct Scope * classScope, char * id, int global) {
   if(!classScope) {
+    //Scope no se encuentra definido
     return 0;
   }
   struct ScopeNode * list = classScope->pScope;
@@ -1257,12 +1266,14 @@ struct Scope * getFunctionScope(struct Scope * classScope, char * id, int global
   struct Scope * fScope = classScope->fScope;
   if(fScope) {
     if(strcmp("global", fScope->id) == 0 && global == 0) {
+      //Funcion no se encuentra definida
       return 0;
     }
     else {
       return getFunctionScope(fScope, id, global);
     }
   }
+  //Funcion no se encuentra definida
   return 0;
 };
 
@@ -1280,6 +1291,7 @@ int implementMethodsAux(struct Scope * class, struct Scope * fScope) {
       return implementMethodsAux(class, fScope->fScope);
     }
     else {
+      //No se encuentran los metodos correctamente definidos
       return 0;
     }
   }
@@ -1292,6 +1304,7 @@ int methodsInInterface(struct Scope * implements, struct Scope * class) {
     if(strcmp("implement", list->type) == 0) {
       struct Scope * interface = getScopeInterface(list->id);
       if(!scopesInList(class->pScope, interface->pScope)) {
+        //No se encuentran todos los metodos definidos
         return 0;
       }
     }
@@ -1305,6 +1318,7 @@ int scopesInList(struct ScopeNode * list, struct ScopeNode * scope) {
   struct ScopeNode * temp = scope;
   for(int i = 0; i < size; i++) {
     if(!scopeInList(temp->value, list)) {
+      //Metodo no esta definido
       return 0;
     }
     temp = temp->next;
@@ -1333,6 +1347,7 @@ int checkMethods(struct Scope * class) {
     struct Scope * interface = methodInterface(class, function->id);
     if(interface) {
       if(!checkImplementation(function, interface)) {
+        //Metodo no se encuentra correctamente implementado
         return 0;
       }
     }
@@ -1349,6 +1364,7 @@ int checkClassName() {
     struct ScopeNode * temp = classes->next;
     for(int j = i + 1; j < size; j++) {
       if(strcmp(id, temp->value->id) == 0) {
+        //El nombre de la clase esta duplicado
         return 0;
       }
       temp = temp->next;
@@ -1364,6 +1380,7 @@ int checkRepeatMethods(struct Scope * class) {
   int size = sizeScopeList(methods);
   int check = 1;
   if(!checkRepeatMethodsAux(class)) {
+    //Metodos repetidos en la misma clase
     return 0;
   }
   while(check) {
@@ -1379,6 +1396,7 @@ int checkRepeatMethods(struct Scope * class) {
         for(int j = 0; j < sizeFMethods; j++) {
           if(strcmp(id, fMethods->value->id) == 0) {
             if(methodInterface(class, id) == 0 && methodInterface(temp, id) == 0) {
+              //Metodos repetidos en las clases padre
               return 0;
             }
           }
@@ -1400,6 +1418,7 @@ int checkAtributtes(struct Scope * class) {
   int size = sizeSymbol(list);
   int check = 1;
   if(checkSymbolScope(class) == 0) {
+    //Atributos repetidos en la misma clase
     return 0;
   }
   while(check) {
@@ -1410,6 +1429,7 @@ int checkAtributtes(struct Scope * class) {
       for(int j = 0; j < sizeFScope; j++) {
         char * idFScope = listFScope->id;
         if(strcmp(idFScope, id) == 0) {
+          //Atributo repetido en la clase padre
           return 0;
         }
         listFScope = listFScope->next;
@@ -1496,7 +1516,7 @@ int compareReturnFunctions(struct Scope * scope1, struct Scope * scope2) {
     }
   }
   else if(return1 || return2) {
-    //Una de las funciones es void
+    //Una de las funciones es void y la otra no
     return 0;
   }
   else {
@@ -1584,8 +1604,8 @@ int checkDecl(struct TreeNode * node, struct Scope * scope) {
 
 void validate() {
   validateAux(tree, 0);
-}
+};
 
 void validateAux(struct TreeNode * node, struct Scope * scope) {
   //TODO
-}
+};
