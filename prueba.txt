@@ -2,14 +2,37 @@ class Clase {
 
     int hola;
 
-    void probar(int x, int y) {
+    Clase[] nadador;
 
+    boolean valor1;
+    boolean valor2;
+
+    void probar(int x, int y) {
+        if(valor1 || valor2) {
+            if(hola < 10) {
+
+            }
+        }
     }
 
     void metodo2(string x) {
 
     }
+    
+    class SubClase {
 
+        int sub1;
+        int sub2;
+        int sub3;
+
+        void metodoSubClase() {
+            if(sub1 < sub2) {
+                sub3 = 100
+            }
+        }
+
+    }
+    
 }
 
 class Prueba extends Clase {

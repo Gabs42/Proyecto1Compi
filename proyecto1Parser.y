@@ -29,6 +29,9 @@ struct ScopeNode * scopeList;
 struct SymbolNode * symbolList;
 
 struct SymbolNode * symbolClass;
+struct SymbolNode * symbolSubClass;
+
+struct ScopeNode * scopeSubList;
 
 struct SymbolNode * symbolGlobal;
 struct ScopeNode * functionsGlobal;
@@ -71,7 +74,7 @@ int methodsInInterface(struct Scope * implements, struct Scope * class);
 
 int checkStmt(struct TreeNode * node, struct Scope * actualScope);
 
-int checkDecl(struct TreeNode * node);
+int checkDecl(struct TreeNode * node, struct Scope * scope);
 
 int implementMethods(struct Scope * class);
 int implementMethodsAux(struct Scope * class, struct Scope * fScope);
@@ -148,7 +151,7 @@ void probarMetodo(struct TreeNode * node, struct Scope * actualScope);
 %type<treeNode> ListIdents Fields Field InterfaceDecl Prototypes Prototype FixLValue
 %type<treeNode> StmtBlock Stmts Stmt PossibleExpr IfStmt InterfaceName PrototypeName
 %type<treeNode> PossibleElse WhileStmt ForStmt ReturnStmt BreakStmt PrintStmt SubClassDecl
-%type<treeNode> ListExpr Expr LValue Call Actuals Constant FunctionName ClassName
+%type<treeNode> ListExpr Expr LValue Call Actuals Constant FunctionName ClassName SubFields SubField
 
 %%
 
@@ -237,8 +240,8 @@ ClassDecl:      ClassName Extend Implement LFTGATE Fields RGHGATE { $$ = createT
                                                                     scopeList = 0;
                                                                     symbolClass = 0;
                                                                     struct Scope * newScopeExtend = createScope($1->root->next->node->value, "Class");
-                                                                    if(innerClass) {
-                                                                      struct SymbolNode * extend = createSymbol("extend", $1->root->next->node->value);
+                                                                    if(innerClass) {                     
+                                                                      struct SymbolNode * extend = createSymbolNode("extend", $1->root->next->node->value);
                                                                       innerClass = insertSymbol(innerClass, extend);
                                                                     }
                                                                     innerClass = 0;
@@ -293,28 +296,45 @@ Field:          VariableDecl  { $$ = createTreeNode(yylineno, "Field", 1, $1);
               | SubClassDecl  { $$ = createTreeNode(yylineno, "Field", 1, $1); }
 ;
 
-SubClassDecl:   ClassName Implement LFTGATE Fields RGHGATE  { $$ = createTreeNode(yylineno, "ClassDecl", 5, $1, $2, tN("{"), $4, tN("}"));
-                                                              struct Scope * newScope = createScope($1->root->next->node->value, "Class");
-                                                              newScope = insertSymbol(newScope, symbolClass);
-                                                              newScope = setFScope(newScope, scopeList);
-                                                              newScope = setPScope(newScope, scopeList);
-                                                              newScope = setTree(newScope, $$);
-                                                              struct ScopeNode * newNode = createScopeNode(newScope);
-                                                              classList = insertScopeNode(classList, newNode);
-                                                              scopeList = 0;
-                                                              symbolClass = 0;
-                                                              struct Scope * newScopeExtend = createScope($1->root->next->node->value, "Class");
-                                                              if(innerClass) {
-                                                                struct SymbolNode * extend = createSymbol("extend", $1->root->next->node->value);
-                                                                innerClass = insertSymbol(innerClass, extend);
-                                                              }
-                                                              innerClass = newScopeExtend;
-                                                              newScopeExtend = insertSymbol(newScopeExtend, symbolExtends);
-                                                              struct ScopeNode * newNodeExtend = createScopeNode(newScopeExtend);
-                                                              scopeExtends = insertScopeNode(scopeExtends, newNodeExtend);
-                                                              symbolExtends = 0;
-                                                            }
+SubClassDecl:   ClassName Implement LFTGATE SubFields RGHGATE  {  $$ = createTreeNode(yylineno, "ClassDecl", 5, $1, $2, tN("{"), $4, tN("}"));
+                                                                  struct Scope * newScope = createScope($1->root->next->node->value, "Class");
+                                                                  newScope = insertSymbol(newScope, symbolSubClass);
+                                                                  newScope = setFScope(newScope, scopeSubList);
+                                                                  newScope = setPScope(newScope, scopeSubList);
+                                                                  newScope = setTree(newScope, $$);
+                                                                  struct ScopeNode * newNode = createScopeNode(newScope);
+                                                                  classList = insertScopeNode(classList, newNode);
+                                                                  scopeSubList = 0;
+                                                                  symbolSubClass = 0;
+                                                                  struct Scope * newScopeExtend = createScope($1->root->next->node->value, "Class");
+                                                                  if(innerClass) {
+                                                                    struct SymbolNode * extend = createSymbolNode("extend", $1->root->next->node->value);
+                                                                    innerClass = insertSymbol(innerClass, extend);
+                                                                  }
+                                                                  newScopeExtend = insertSymbol(newScopeExtend, symbolExtends);
+                                                                  struct ScopeNode * newNodeExtend = createScopeNode(newScopeExtend);
+                                                                  scopeExtends = insertScopeNode(scopeExtends, newNodeExtend);
+                                                                  symbolExtends = 0;
+                                                                  innerClass = newScopeExtend;
+                                                                }
 ;
+
+SubFields:      SubFields SubField  { $$ = createTreeNode(yylineno, "SubFields", 2, $1, $2); }
+              | /* empty */   { $$ = eN(); }
+
+SubField:       VariableDecl  { $$ = createTreeNode(yylineno, "SubField", 1, $1);
+                                struct TreeNode * variable = $1->root->node;
+                                struct SymbolNode * newSymbol = createSymbol(variable);
+                                symbolSubClass = insertSymbolNode(symbolSubClass, newSymbol);
+                              }
+              | FunctionDecl  { $$ = createTreeNode(yylineno, "SubField", 1, $1);
+                                struct Scope * newScope = createScope($1->root->node->root->next->node->value, "Function");
+                                newScope = insertSymbol(newScope, symbolList);
+                                newScope = setTree(newScope, $1);
+                                struct ScopeNode * newNode = createScopeNode(newScope);
+                                scopeSubList = insertScopeNode(scopeSubList, newNode);
+                                symbolList = 0;
+                              }
 
 InterfaceDecl:  InterfaceName LFTGATE Prototypes RGHGATE  { $$ = createTreeNode(yylineno, "InterfaceDecl", 4, $1, tN("{"), $3, tN("}"));
                                                             struct Scope * newScope = createScope($1->root->next->node->value, "Interface");
@@ -463,6 +483,8 @@ Constant:       INTVAL    { $$ = createTreeNode(yylineno, "Constant", 1, tT(yylv
 
 int main() {
   //Variables
+  scopeSubList = 0;
+  symbolSubClass = 0;
   innerClass = 0;
   globalScope = 0;
   classList = 0;
@@ -480,10 +502,10 @@ int main() {
     yyparse();
 	} while(!feof(yyin));
   adjustFScope();
-  struct Scope * scope = getScopeClass("Prueba");
-  //printf("%i\n", checkRepeatMethods(scope));
+  struct Scope * scope = getScopeClass("SubClase");
+  //printf("%i\n", checkSymbolScope(scope));
   probarMetodo(tree, 0);
-  validate();
+  //validate();
 	return 0;
 }
 
@@ -1043,7 +1065,7 @@ struct SymbolNode * getTypeCall(struct TreeNode * node, struct Scope * actualSco
   }
 };
 
-void probarMetodo(struct TreeNode * node, struct Scope * actualScope) {
+void probarMetodo(struct TreeNode * node, struct Scope * actualScope) { 
   struct Scope * newScope = getScope(node);
   if(newScope) {
     actualScope = newScope;
@@ -1054,7 +1076,7 @@ void probarMetodo(struct TreeNode * node, struct Scope * actualScope) {
       //printf("%s\n", res->type);
     }
     else {
-      printf("%s\n", "Error o void");
+      //printf("%s\n", "Error o void");
     }
   }
   if(strcmp(node->type, "ReturnStmt") == 0) {
@@ -1066,6 +1088,18 @@ void probarMetodo(struct TreeNode * node, struct Scope * actualScope) {
     for(int i = 0; i < size; i++) {
       //printf("%s\n", list->id);
       list = list->next;
+    }
+  }
+  if(strcmp(node->type, "Stmt") == 0) {
+    int res = checkStmt(node, actualScope);
+    if(res == 0) {
+      printf("%s\n", "Expresion invalida");
+    }
+  }
+  if(strcmp(node->type, "VariableDecl") == 0) {
+    int res = checkDecl(node, actualScope);
+    if(res == 0) {
+      printf("%s\n", "Tipo no existe");
     }
   }
   struct ListNode * temp = node->root;
@@ -1083,7 +1117,7 @@ int checkSymbolScope(struct Scope * scope) {
   for(int i = 0; i < (size - 1); i++) {
     char * id = root->id;
     struct SymbolNode * temp = root->next;
-    for(int j = i + 1; j < size; j++) {
+    for(int j = i + 1; j < size; j++) {     
       if(strcmp(id, temp->id) == 0) {
         return 0;
       }
@@ -1496,7 +1530,7 @@ int checkStmt(struct TreeNode * node, struct Scope * actualScope) {
     for(int i = 0; i < size; i++) {
       struct TreeNode * forNode = list->node;
       if(strcmp("PossibleExpr", forNode->type) == 0) {
-        int value = getTypeExpr(forNode->root->node, actualScope);
+        struct SymbolNode * value = getTypeExpr(forNode->root->node, actualScope);
       }
       list = list->next;
     }
@@ -1510,7 +1544,7 @@ int checkStmt(struct TreeNode * node, struct Scope * actualScope) {
       struct TreeNode * expr = 0;
       if(size > 1) {
         expr = list->next->next->node;
-        list = list->node;
+        list = list->node->root;
       }
       else {
         expr = list->node;
