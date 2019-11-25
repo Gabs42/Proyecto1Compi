@@ -589,6 +589,7 @@ struct Scope * checkClass(char * id) {
     }
     temp = temp->next;
   }
+  printf("La clase: %s no existe\n", id);
   return 0;
 };
 
@@ -649,6 +650,7 @@ struct SymbolNode * getTypeId(char * id, struct Scope * scope) {
     root = root->next;
   }
   if(strcmp("global", scope->id) == 0) {
+    printf("La variable %s no se encuentra definida\n", id);
     return 0;
   }
   else {
@@ -683,7 +685,7 @@ struct SymbolNode * getTypeFunction(char * id, struct Scope * scope) {
     list = list->next;
   }
   if(strcmp("global", scope->id) == 0) {
-    //Funcion no existe
+    printf("La funcion %s no existe\n", id);
     return 0;
   }
   else {
@@ -725,7 +727,7 @@ struct SymbolNode * getTypeExpr(struct TreeNode * node, struct Scope * actualSco
         return res;
       }
       else {
-        //This fuera de scope;
+        printf("This utilizado fuera de una clase\n");
         return 0;
       }
     }
@@ -750,7 +752,7 @@ struct SymbolNode * getTypeExpr(struct TreeNode * node, struct Scope * actualSco
           return typeReturn;
         }
         else {
-          //Tipo invalido, debe ser boolean
+          printf("El simbolo ! debe ser utilizado en una expresion boolean\n");
           return 0;
         }
       }
@@ -759,13 +761,13 @@ struct SymbolNode * getTypeExpr(struct TreeNode * node, struct Scope * actualSco
           return typeReturn;
         }
         else {
-          //Tipo invalido, debe ser int o double;
+          printf("El simbolo - debe ser utilizado en un dato numerico\n");
           return 0;
         }
       }
     }
     else {
-      //Error en la expresion
+      printf("Error en la expresion o es de tipo void\n");
       return 0;
     }
   }
@@ -780,17 +782,17 @@ struct SymbolNode * getTypeExpr(struct TreeNode * node, struct Scope * actualSco
             return typeExpr1;
           }
           else {
-            //Segundo tipo invalido en operacion aritmetica
+            printf("El segundo valor debe ser tipo arimetico en la operacion\n");
             return 0;
           }
         }
         else {
-          //Primer tipo invalido en operacion arimetica
+          printf("El primer valor debe ser tipo arimetico en la operacion\n");
           return 0;
         }
       }
       else {
-        //La expresion arimetica no es valida
+        printf("La expresion no es correcta o es tipo void\n");
         return 0;
       }
     }
@@ -804,17 +806,17 @@ struct SymbolNode * getTypeExpr(struct TreeNode * node, struct Scope * actualSco
             return res;
           }
           else {
-            //Segundo tipo invalido en comparacion de tamano
+            printf("El segundo valor debe ser tipo arimetico en la comparacion\n");
             return 0;
           }
         }
         else {
-          //Primer tipo invalido en comparacion de tamano
+          printf("El primer valor debe ser tipo arimetico en la comparacion\n");
           return 0;
         }
       }
       else {
-        //Las expresiones no pueden ser void
+        printf("La expresion no es correcta o es tipo void\n");
         return 0;
       }
     }
@@ -822,17 +824,17 @@ struct SymbolNode * getTypeExpr(struct TreeNode * node, struct Scope * actualSco
       struct SymbolNode * typeExpr1 = getTypeExpr(list->node, actualScope);
       struct SymbolNode * typeExpr2 = getTypeExpr(list->next->next->node, actualScope);
       if(typeExpr2 && typeExpr1) {
-        if(strcmp(typeExpr2->type, typeExpr1->type) == 0) {
+        if(strcmp(typeExpr2->type, typeExpr1->type) == 0 && typeExpr1->array == typeExpr2->array) {
           struct SymbolNode * res = createSymbolNode("boolean", "boolean");
           return res;
         }
         else {
-          //Solo se pueden comparar expresiones del mismo tipo
+          printf("Las comparaciones solo pueden ser del mismo tipo de objeto\n");
           return 0;
         }
       }
       else {
-        //Las comparaciones no se pueden hacer con tipo void
+        printf("Las comparaciones no se pueden hacer con tipo void\n");
         return 0;
       }
     }
@@ -846,17 +848,17 @@ struct SymbolNode * getTypeExpr(struct TreeNode * node, struct Scope * actualSco
             return res;
           }
           else {
-            //Expresion debe ser bool
+            printf("La segunda expresion debe ser tipo booleana\n");
             return 0;
           }
         }
         else {
-          //Ambas expresiones deben ser tipo bool
+          printf("Ambas expresiones deben ser booleanas\n");
           return 0;
         }
       }
       else {
-        //Operaciones booleanas no se pueden hacer con tipo void
+        printf("Operaciones booleanas no se pueden hacer con tipo void\n");
         return 0;
       }
     }
@@ -873,17 +875,17 @@ struct SymbolNode * getTypeExpr(struct TreeNode * node, struct Scope * actualSco
             return 0;
           }
           else {
-            //La asignacion debe ser del mismo tipo o de una clase padre
+            printf("La asignacion debe ser del mismo tipo o de una clase padre\n");
             return 0;
           }
         }
         else {
-          //La variable debe ser de una clase existente o un tipo primitivo
+          printf("La variable debe ser de una clase existente o un tipo primitivo\n");
           return 0;
         }
       }
       else {
-        //Las expresiones no pueden ser tipo void en igualdad
+        printf("Las expresiones no pueden ser tipo void en igualdad\n");
         return 0;
       }
     }
@@ -900,7 +902,7 @@ struct SymbolNode * getTypeExpr(struct TreeNode * node, struct Scope * actualSco
         return res;
       }
       else {
-        //Clase o interfaz no existe
+        printf("Clase o interfaz %s no existe\n", list->next->next->node->value);
         return 0;
       }
     }
@@ -914,12 +916,12 @@ struct SymbolNode * getTypeExpr(struct TreeNode * node, struct Scope * actualSco
           return symbol;
         }
         else {
-          //El largo debe ser un tipo entero
+          printf("El largo de un array debe ser un tipo entero\n");
           return 0;
         }
       }
       else {
-        //Expresion no puede ser void o funcion no existe
+        printf("Los arrays solo pueden contener tipos existentes\n");
         return 0;
       }
     }
@@ -935,7 +937,7 @@ struct SymbolNode * getTypeLValue(struct TreeNode * node, struct Scope * actualS
       return symbol;
     }
     else {
-      //No existe el id
+      printf("La variable %s no existe\n", list->node->value);
       return 0;
     }
   }
@@ -950,12 +952,12 @@ struct SymbolNode * getTypeLValue(struct TreeNode * node, struct Scope * actualS
         return symbol;
       }
       else {
-        //No existe el atributo
+        printf("El atributo %s no existe\n", id);
         return 0;
       }
     }
     else {
-      //No existe el objeto
+      printf("El objeto no existe\n");
       return 0;
     }
   }
@@ -968,23 +970,23 @@ struct SymbolNode * getTypeLValue(struct TreeNode * node, struct Scope * actualS
         if(typeId) {
           int value = atoi(verifyReturn->id);
           if(value < 0) {
-            //Indice posee valor negativo
+            printf("Indice utilizado en el array es negativo\n");
             return 0;
           }
           return typeId;
         }
         else {
-          //Variable no existe
+          printf("El array %s no existe\n", nodeId);
           return 0;
         }
       }
       else {
-        //Indice debe ser un integer
+        printf("Indice en el array debe ser tipo integer\n");
         return 0;
       }
     }
     else {
-      //Expresion no puede ser void
+      printf("Indice no puede ser void\n");
       return 0;
     }
   }
@@ -1004,12 +1006,12 @@ struct SymbolNode * getTypeCall(struct TreeNode * node, struct Scope * actualSco
         return res;
       }
       else {
-        //Error en los parametros
+        printf("Los parametros dados en la funcion %s son incrrectos\n", id);
         return 0;
       }
     }
     else {
-      //La funcion invocada no existe
+      printf("La funcion %s no existe\n", id);
       return 0;
     }
   }
@@ -1025,7 +1027,7 @@ struct SymbolNode * getTypeCall(struct TreeNode * node, struct Scope * actualSco
           return res;
         }
         else {
-          //Tipo del array es erroneo
+          printf("El tipo de objeto del array no existe\n");
           return 0;
         }
       }
@@ -1040,27 +1042,27 @@ struct SymbolNode * getTypeCall(struct TreeNode * node, struct Scope * actualSco
               return symbol; //Puede no existir o ser void
             }
             else {
-              //Parametros no coinciden
+              printf("Los parametros dados a la funcion %s son incorrectos\n", id);
               return 0;
             }
           }
           else {
-            //Funcion no existe
+            printf("La funcion %s no existe\n", id);
             return 0;
           }
         }
         else {
-          //Clase no existe
+          printf("El tipo de objeto que retorna la funcion %s no existe\n", id);
           return 0;
         }
       }
       else {
-        //Array solo puede invocar metodo length
+        printf("Los arrays solamente pueden utilizar length\n");
         return 0;
       }
     }
     else {
-      //Tipo void no puede invocar una funcion
+      printf("Tipo void no puede invocar una funcion\n");
       return 0;
     }
   }
@@ -1094,13 +1096,13 @@ void probarMetodo(struct TreeNode * node, struct Scope * actualScope) {
   if(strcmp(node->type, "Stmt") == 0) {
     int res = checkStmt(node, actualScope);
     if(res == 0) {
-      printf("%s\n", "Expresion invalida");
+      printf("%s\n", "Expresion invalida\n");
     }
   }
   if(strcmp(node->type, "VariableDecl") == 0) {
     int res = checkDecl(node, actualScope);
     if(res == 0) {
-      printf("%s\n", "Tipo no existe");
+      printf("%s\n", "Tipo no existe\n");
     }
   }
   struct ListNode * temp = node->root;
@@ -1120,7 +1122,7 @@ int checkSymbolScope(struct Scope * scope) {
     struct SymbolNode * temp = root->next;
     for(int j = i + 1; j < size; j++) {     
       if(strcmp(id, temp->id) == 0) {
-        //Variable duplicada
+        printf("Variable %s duplicada\n", id);
         return 0;
       }
       temp = temp->next;
@@ -1138,7 +1140,7 @@ int checkRepeatMethodsAux(struct Scope * scope) {
     struct ScopeNode * temp = root->next;
     for(int j = i + 1; j < size; j++) {
       if(strcmp(id, temp->value->id) == 0) {
-        //Metodo duplicado
+        printf("Metodo %s duplicado\n", id);
         return 0;
       }
       temp = temp->next;
@@ -1156,12 +1158,12 @@ int checkFunctionReturn(struct TreeNode * returnNode, struct Scope * function) {
       return 1;
     }
     else {
-      //Return no coincide con la funcion
+      printf("El tipo de retorno de la funcion %s no coinciden\n", function->id);
       return 0;
     }
   }
   else if(symbol || typeReturn) {
-    //Return no coincide con la funcion
+    printf("El tipo de retorno de la funcion %s no coinciden\n", function->id);
     return 0;
   }
   else {
@@ -1216,7 +1218,7 @@ struct SymbolNode * dupSymbol(struct SymbolNode * symbol) {
   return newNode;
 }
 
-int compareSymbolNodes(struct SymbolNode * params,struct SymbolNode * funct) {
+int compareSymbolNodes(struct SymbolNode * params, struct SymbolNode * funct) {
   if(params && funct) {
     int sizeParam = sizeSymbol(params);
     int sizeFun = sizeSymbol(funct);
@@ -1228,20 +1230,20 @@ int compareSymbolNodes(struct SymbolNode * params,struct SymbolNode * funct) {
           params = params->next;
         }
         else {
-          //Parametros de diferente tipo
+          printf("Parametros %s, %s son de tipo diferente\n", temp->id, params->id);
           return 0;
         }
       }
       return 1;
     }
     else {
-      //Diferente cantidad de parametros
+      printf("La cantidad de parametros de la funcion: %i no coinciden con la llamada: %i\n", sizeFun, sizeParam);
       return 0;
     }
 
   }
   else if(params || funct) {
-    //Diferente cantidad de parametros
+    printf("La cantidad de parametros de la funcion no coinciden con la llamada\n");
     return 0;
   }
   else {
@@ -1251,7 +1253,7 @@ int compareSymbolNodes(struct SymbolNode * params,struct SymbolNode * funct) {
 
 struct Scope * getFunctionScope(struct Scope * classScope, char * id, int global) {
   if(!classScope) {
-    //Scope no se encuentra definido
+    printf("No se encuentra definida la funcion dentro del scope\n");
     return 0;
   }
   struct ScopeNode * list = classScope->pScope;
@@ -1266,14 +1268,14 @@ struct Scope * getFunctionScope(struct Scope * classScope, char * id, int global
   struct Scope * fScope = classScope->fScope;
   if(fScope) {
     if(strcmp("global", fScope->id) == 0 && global == 0) {
-      //Funcion no se encuentra definida
+      printf("Funcion %s no se encuentra definida\n", id);
       return 0;
     }
     else {
       return getFunctionScope(fScope, id, global);
     }
   }
-  //Funcion no se encuentra definida
+  printf("Funcion %s no se encuentra definida\n", id);
   return 0;
 };
 
@@ -1291,7 +1293,7 @@ int implementMethodsAux(struct Scope * class, struct Scope * fScope) {
       return implementMethodsAux(class, fScope->fScope);
     }
     else {
-      //No se encuentran los metodos correctamente definidos
+      printf("Los metodos de la clase %s no se encuentran correctamente definidos\n", class->id);
       return 0;
     }
   }
@@ -1304,7 +1306,7 @@ int methodsInInterface(struct Scope * implements, struct Scope * class) {
     if(strcmp("implement", list->type) == 0) {
       struct Scope * interface = getScopeInterface(list->id);
       if(!scopesInList(class->pScope, interface->pScope)) {
-        //No se encuentran todos los metodos definidos
+        printf("La clase %s no implemento los metodos de la interfaz %s\n", class->id, interface->id);
         return 0;
       }
     }
@@ -1318,7 +1320,7 @@ int scopesInList(struct ScopeNode * list, struct ScopeNode * scope) {
   struct ScopeNode * temp = scope;
   for(int i = 0; i < size; i++) {
     if(!scopeInList(temp->value, list)) {
-      //Metodo no esta definido
+      printf("Metodo %s no se encuentra definido\n", temp->value->id);
       return 0;
     }
     temp = temp->next;
@@ -1347,7 +1349,7 @@ int checkMethods(struct Scope * class) {
     struct Scope * interface = methodInterface(class, function->id);
     if(interface) {
       if(!checkImplementation(function, interface)) {
-        //Metodo no se encuentra correctamente implementado
+        printf("Metodo %s no se encuentra correctamente implementado\n", function->id);
         return 0;
       }
     }
@@ -1364,7 +1366,7 @@ int checkClassName() {
     struct ScopeNode * temp = classes->next;
     for(int j = i + 1; j < size; j++) {
       if(strcmp(id, temp->value->id) == 0) {
-        //El nombre de la clase esta duplicado
+        printf("Clase %s se encuentra duplicada\n", id);
         return 0;
       }
       temp = temp->next;
@@ -1380,7 +1382,7 @@ int checkRepeatMethods(struct Scope * class) {
   int size = sizeScopeList(methods);
   int check = 1;
   if(!checkRepeatMethodsAux(class)) {
-    //Metodos repetidos en la misma clase
+    printf("Metodos repetidos en la clase %s\n", class->id);
     return 0;
   }
   while(check) {
@@ -1396,7 +1398,7 @@ int checkRepeatMethods(struct Scope * class) {
         for(int j = 0; j < sizeFMethods; j++) {
           if(strcmp(id, fMethods->value->id) == 0) {
             if(methodInterface(class, id) == 0 && methodInterface(temp, id) == 0) {
-              //Metodos repetidos en las clases padre
+              printf("Metodo %s en la clase %s se encuentra repetido en la clase %s\n", id, class->id, temp->id);
               return 0;
             }
           }
@@ -1418,7 +1420,7 @@ int checkAtributtes(struct Scope * class) {
   int size = sizeSymbol(list);
   int check = 1;
   if(checkSymbolScope(class) == 0) {
-    //Atributos repetidos en la misma clase
+    printf("Atributos repetidos en la clase %s\n", class->id);
     return 0;
   }
   while(check) {
@@ -1429,7 +1431,7 @@ int checkAtributtes(struct Scope * class) {
       for(int j = 0; j < sizeFScope; j++) {
         char * idFScope = listFScope->id;
         if(strcmp(idFScope, id) == 0) {
-          //Atributo repetido en la clase padre
+          printf("Atributo %s repetido en la clase Padre %s\n", id, fScope->id);
           return 0;
         }
         listFScope = listFScope->next;
@@ -1460,7 +1462,6 @@ struct Scope * methodInterface(struct Scope * class, char * id) {
       for(int j = 0; j < sizeExtends; j++) {
         if(strcmp("implement", extends->type) == 0) {
           struct Scope * interface = getScopeInterface(extends->id);
-
           if(interface) {
             struct ScopeNode * functionsInterface = interface->pScope;
             int sizeFunctions = sizeScopeList(functionsInterface);
@@ -1498,7 +1499,7 @@ int checkImplementation(struct Scope * method1, struct Scope * method2) {
     return compareReturnFunctions(functionInterface, method1);
   }
   else {
-    //Parametros no coinciden con la interfaz
+    printf("Los parametrosde la funcion %s no coinciden\n", method1->id);
     return 0;
   }
 };
@@ -1511,12 +1512,12 @@ int compareReturnFunctions(struct Scope * scope1, struct Scope * scope2) {
       return 1;
     }
     else {
-      //Tipos diferentes
+      printf("Los tipos de retorno de la funcion %s no coinciden\n", scope1->id);
       return 0;
     }
   }
   else if(return1 || return2) {
-    //Una de las funciones es void y la otra no
+    printf("Los tipos de retorno de la funcion %s no coinciden\n", scope1->id);
     return 0;
   }
   else {
@@ -1535,12 +1536,12 @@ int checkStmt(struct TreeNode * node, struct Scope * actualScope) {
           return 1;
         }
         else {
-          //Expresion debe retornar boolean
+          printf("La expresion condicional debe ser tipo boolean\n");
           return 0;
         }
     }
     else {
-      //Expresion no puede ser void
+      printf("La expresion condicional debe ser tipo boolean\n");
       return 0;
     }
   }
@@ -1572,16 +1573,16 @@ int checkStmt(struct TreeNode * node, struct Scope * actualScope) {
       }
       struct SymbolNode * typeReturn = getTypeExpr(expr, actualScope);
       if(typeReturn) {
-        if(strcmp("integer", typeReturn->type) == 0 || strcmp("boolean", typeReturn->type) == 0 || strcmp("string", typeReturn->type) == 0) {
+        if(strcmp("double", typeReturn->type) == 0 || strcmp("integer", typeReturn->type) == 0 || strcmp("boolean", typeReturn->type) == 0 || strcmp("string", typeReturn->type) == 0) {
           return 1;
         }
         else {
-          //Tipo no valido
+          printf("En los prints solamente son validos strings, boolean o datos numericos\n");
           return 0;
         }
       }
       else {
-        //Retorna void
+        printf("En los prints solamente son validos strings, boolean o datos numericos\n");
         return 0;
       }
     }
@@ -1597,7 +1598,7 @@ int checkDecl(struct TreeNode * node, struct Scope * scope) {
     return 1;
   }
   else {
-    //Tipo no existe
+    printf("El atributo %s de la variable %s no existe\n", type->type, node->root->node->root->next->node->value);
     return 0;
   }
 };

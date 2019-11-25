@@ -20,7 +20,7 @@ class Clase implements Test {
 
     }
     
-    int probar2(){
+    int probar2() {
 
     }
 
