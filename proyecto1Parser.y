@@ -115,8 +115,6 @@ struct SymbolNode * getTypeLValue(struct TreeNode * node, struct Scope * actualS
 
 struct SymbolNode * getTypeCall(struct TreeNode * node, struct Scope * actualScope);
 
-void probarMetodo(struct TreeNode * node, struct Scope * actualScope);
-
 %}
 
 %locations
@@ -502,9 +500,6 @@ int main() {
     yyparse();
 	} while(!feof(yyin));
   adjustFScope();
-  struct Scope * scope = getScopeClass("SubClase");
-  //printf("%i\n", checkSymbolScope(scope));
-  //probarMetodo(tree, 0);
   validate();
 	return 0;
 }
@@ -1068,52 +1063,6 @@ struct SymbolNode * getTypeCall(struct TreeNode * node, struct Scope * actualSco
   }
 };
 
-void probarMetodo(struct TreeNode * node, struct Scope * actualScope) { 
-  struct Scope * newScope = getScope(node);
-  if(newScope) {
-    actualScope = newScope;
-  }
-  if(strcmp(node->type, "Expr") == 0) {
-    struct SymbolNode * res = getTypeExpr(node, actualScope);
-    if(res) {
-      //printf("%s\n", res->type);
-    }
-    else {
-      //printf("%s\n", "Error o void");
-    }
-  }
-  if(strcmp(node->type, "ReturnStmt") == 0) {
-    //printf("%i\n", checkFunctionReturn(node, actualScope));
-  }
-  if(strcmp(node->type, "Actuals") == 0) {
-    struct SymbolNode * list = getTypeActuals(node, actualScope);
-    int size = sizeSymbol(list);
-    for(int i = 0; i < size; i++) {
-      //printf("%s\n", list->id);
-      list = list->next;
-    }
-  }
-  if(strcmp(node->type, "Stmt") == 0) {
-    int res = checkStmt(node, actualScope);
-    if(res == 0) {
-      printf("%s\n", "Expresion invalida\n");
-    }
-  }
-  if(strcmp(node->type, "VariableDecl") == 0) {
-    int res = checkDecl(node, actualScope);
-    if(res == 0) {
-      printf("%s\n", "Tipo no existe\n");
-    }
-  }
-  struct ListNode * temp = node->root;
-  int size = listSize(temp);
-  for(int i = 0; i < size; i++) {
-    struct TreeNode * value = temp->node;
-    probarMetodo(value, actualScope);
-    temp = temp->next;
-  }
-};
-
 int checkSymbolScope(struct Scope * scope) {
   struct SymbolNode * root = scope->root;
   int size = sizeSymbol(root);
@@ -1123,24 +1072,6 @@ int checkSymbolScope(struct Scope * scope) {
     for(int j = i + 1; j < size; j++) {     
       if(strcmp(id, temp->id) == 0) {
         printf("Variable %s duplicada\n", id);
-        return 0;
-      }
-      temp = temp->next;
-    }
-    root = root->next;
-  }
-  return 1;
-};
-
-int checkRepeatMethodsAux(struct Scope * scope) {
-  struct ScopeNode * root = scope->pScope;
-  int size = sizeScopeList(root);
-  for(int i = 0; i < (size - 1); i++) {
-    char * id = root->value->id;
-    struct ScopeNode * temp = root->next;
-    for(int j = i + 1; j < size; j++) {
-      if(strcmp(id, temp->value->id) == 0) {
-        printf("Metodo %s duplicado\n", id);
         return 0;
       }
       temp = temp->next;
@@ -1414,6 +1345,24 @@ int checkRepeatMethods(struct Scope * class) {
   return 1;
 };
 
+int checkRepeatMethodsAux(struct Scope * scope) {
+  struct ScopeNode * root = scope->pScope;
+  int size = sizeScopeList(root);
+  for(int i = 0; i < (size - 1); i++) {
+    char * id = root->value->id;
+    struct ScopeNode * temp = root->next;
+    for(int j = i + 1; j < size; j++) {
+      if(strcmp(id, temp->value->id) == 0) {
+        printf("Metodo %s duplicado\n", id);
+        return 0;
+      }
+      temp = temp->next;
+    }
+    root = root->next;
+  }
+  return 1;
+};
+
 int checkAtributtes(struct Scope * class) {
   struct Scope * fScope = class->fScope;
   struct SymbolNode * list = class->root;
@@ -1438,10 +1387,10 @@ int checkAtributtes(struct Scope * class) {
       }
       listFScope = fScope->root;
       list = list->next;
-    }
-    list = class->root;
+    }   
+    list = class->root;    
     fScope = fScope->fScope;
-    if(fScope) {
+    if(!fScope) {
       check = 0;
     }
     else if(strcmp("global", fScope->id) == 0) {
@@ -1616,15 +1565,49 @@ void validateAux(struct TreeNode * node, struct Scope * scope) {
   }
   //Realizar revision de nodo
   int check = 1;
-  //TODO
+  if(strcmp("Expr", node->type) == 0) {
+    getTypeExpr(node, scope);
+    check = 0;
+  }
+  else if(strcmp("VariableDecl", node->type) == 0) {
+    checkDecl(node, scope);
+    check = 0;
+  }
+  else if(strcmp("Stmt", node->type) == 0) {
+    checkStmt(node, scope);
+    struct TreeNode * stmt = node->root->node;
+  }
+  else if(strcmp("ClassDecl", node->type) == 0) {
+    checkMethods(scope);
+    checkRepeatMethods(scope);
+    checkAtributtes(scope);
+  }
+  else if(strcmp("FunctionDecl", node->type) == 0) {
+    checkSymbolScope(scope);
+  }
+  else if(strcmp("Program", node->type) == 0) {
+    checkSymbolScope(scope);
+    checkRepeatMethodsAux(scope);
+  }
   //Revisar cada nodo
   if(check) {
     struct ListNode * list = node->root;
     int size = listSize(list);
+    int avoidExpr = 0;
     for(int i = 0; i < size; i++) {
       struct TreeNode * value = list->node;
-      validateAux(value, scope);
-      list = list->next;
+      if(strcmp("IfStmt", value->type) == 0) {
+        value->root = value->root->next->next->next;
+      }
+      else if(strcmp("WhileStmt", value->type) == 0) {
+        value->root = value->root->next->next->next;
+      }
+      else {
+        list = list->next;
+      }
+      if(strcmp("PrintStmt", value->type) != 0) {
+        validateAux(value, scope);
+      } 
     }
   }
 };

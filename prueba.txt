@@ -8,11 +8,12 @@ class Clase {
     boolean valor2;
 
     void probar(int x, int y) {
+        Print(nadador);
         if(valor1 || valor2) {
-            if(hola < 10) {
-
+            while(valor1 && valor2) {
+                valor1 = false
             }
-        }
+        }   
     }
 
     void metodo2(string x) {
@@ -49,7 +50,7 @@ class Prueba extends Clase {
 
     void metodo() {
         y[5] = "hola"
-        x = z.probar(y,j)
+        z.probar(i,j)
         k = y.length()
         return;
     }
