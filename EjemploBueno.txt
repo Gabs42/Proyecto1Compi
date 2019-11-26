@@ -1,0 +1,109 @@
+interface Entidad {
+
+    void cambiarPosicion(int x, int y);
+    void aumentarVidas(int vidas);
+    void atacar(int ataque);
+
+}
+
+interface Figura {
+
+    string[] getImagenes();
+    void addImagen(string imagen);
+    void setImagenActual(int imagenActual);
+    void setVelocidad(int velocidad);
+
+}
+
+class Util {
+
+    int[] calcularDistancia(int x1, int y1, int x2, int y2) {
+        int[] distancia;
+        distancia[1] = (x2 - x1)
+        distancia[2] = (y2 - y1)
+        return distancia;
+    } 
+
+}
+
+class Objeto implements Figura {
+
+    string[] imagenes;
+    int velocidad;
+    int imagenActual;
+
+    string[] getImagenes() {
+        return imagenes;
+    }
+
+    void addImagen(string imagen) {
+        imagenes[(imagenes.length() - 1)] = imagen
+    }
+
+    void setImagenActual(int imagenActual) {
+        this.imagenActual = imagenActual
+    }
+
+    void setVelocidad(int velocidad) {
+        this.velocidad = velocidad
+    }
+
+    void imprimirImagenes() {
+        int i;
+        for(i = 1; i < imagenes.length(); i = (i + 1)) {
+            Print(imagenes[i]);
+        }
+    }
+
+    string getImagen(int index) {
+        return imagenes[index];
+    }
+
+}
+
+class Personaje extends Objeto implements Entidad {
+
+    int x;
+    int y;
+    int vida;
+    int vidas;
+
+    Util util;
+
+    int[] calcularDistancia(int x1, int y1, int x2, int y2) {
+        return util.calcularDistancia(x1, y1, x2, y2);
+    } 
+
+    void cambiarPosicion(int x, int y) {
+        this.x = x
+        this.y = y
+    }
+
+    void aumentarVidas(int vidas) {
+        this.vidas = (this.vidas + vidas)
+    }
+
+    void atacar(int ataque) {
+        this.vida = (this.vida - ataque)
+        if(this.vida < 1) {
+            this.vida = 1
+        }
+    }
+
+    string[] getImagenes() {
+        return imagenes;
+    }
+
+    void addImagen(string imagen) {
+        imagenes[(imagenes.length() - 1)] = imagen
+    }
+
+    void setImagenActual(int imagenActual) {
+        this.imagenActual = imagenActual
+    }
+
+    void setVelocidad(int velocidad) {
+        this.velocidad = velocidad
+    }
+
+}

@@ -3331,7 +3331,7 @@ int checkFunctionReturn(struct TreeNode * returnNode, struct Scope * function) {
   struct SymbolNode * symbol = getTypeFunction(function->id, function->fScope);
   struct SymbolNode * typeReturn = getTypeReturn(returnNode, function);
   if(symbol && typeReturn) {
-    if(strcmp(typeReturn->type, symbol->type) == 0 && typeReturn->array == symbol->array) {
+    if(strcmp(typeReturn->type, symbol->type) == 0) {
       return 1;
     }
     else {
@@ -3694,7 +3694,7 @@ int checkImplementation(struct Scope * method1, struct Scope * method2) {
     return compareReturnFunctions(functionInterface, method1);
   }
   else {
-    printf("Los parametrosde la funcion %s no coinciden\n", method1->id);
+    printf("Los parametros de la funcion %s no coinciden\n", method1->id);
     return 0;
   }
 };
@@ -3824,6 +3824,7 @@ void validateAux(struct TreeNode * node, struct Scope * scope) {
     struct TreeNode * stmt = node->root->node;
   }
   else if(strcmp("ClassDecl", node->type) == 0) {
+    implementMethods(scope);
     checkMethods(scope);
     checkRepeatMethods(scope);
     checkAtributtes(scope);
@@ -3834,6 +3835,9 @@ void validateAux(struct TreeNode * node, struct Scope * scope) {
   else if(strcmp("Program", node->type) == 0) {
     checkSymbolScope(scope);
     checkRepeatMethodsAux(scope);
+  }
+  else if(strcmp("ReturnStmt", node->type) == 0) {
+    checkFunctionReturn(node, scope);
   }
   //Revisar cada nodo
   if(check) {
