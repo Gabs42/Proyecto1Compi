@@ -1156,7 +1156,7 @@ int compareSymbolNodes(struct SymbolNode * params, struct SymbolNode * funct) {
     if(sizeParam == sizeFun) {
       struct SymbolNode * temp = funct;
       for(int i = 0; i < sizeFun; i++) {
-        if(strcmp(temp->type,params->type) == 0) {
+        if(strcmp(temp->type,params->type) == 0 && temp->array == params->array) {
           temp = temp->next;
           params = params->next;
         }
