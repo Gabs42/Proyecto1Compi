@@ -49,7 +49,6 @@ class Nadador extends Deportista implements Humano {
 
     void probarHerencia() {
         x = null
-        Alien y;
         y = "hola"
     }
 
