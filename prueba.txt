@@ -8,7 +8,7 @@ class Clase {
     boolean valor2;
 
     void probar(int x, int y) {
-        Print(nadador);
+        Print("nadador");
         if(valor1 || valor2) {
             while(valor1 && valor2) {
                 valor1 = false
