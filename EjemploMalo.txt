@@ -1,0 +1,23 @@
+void probar() {
+    this.x = 10
+}
+
+Prueba prueba;
+
+class Prueba {
+
+    void utilizarMetodo() { 
+        string retorno;
+        retorno = prueba.utilizarMetodo(retorno)
+        bool valor1;
+        bool valor2;
+        while(valor1 < valor2) {
+            int x;
+            int y;
+            if(x || y) {
+
+            }
+        }
+    }
+
+}
